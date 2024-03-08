@@ -1,5 +1,9 @@
 ---
 import Layout from "@layouts/Layout.astro";
+import { getAllStoryFragments } from "../api/drupal";
+
+const storyFragments: any = await getAllStoryFragments();
+console.log(storyFragments.at(0));
 ---
 
 <Layout>

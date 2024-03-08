@@ -6,7 +6,7 @@ export async function eventStream() {
     try {
       lastRun.set(Date.now());
       const payload = events.get();
-      if(payload.length) console.log(`send to concierge`,payload)
+      if (payload.length) console.log(`send to concierge`, payload);
     } catch (e) {
       console.log(`error establishing concierge eventStream`, e);
     } finally {

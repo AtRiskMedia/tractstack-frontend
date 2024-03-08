@@ -20,7 +20,7 @@ type ContentMapValue = {
   };
 };
 
-export const lastRun = atom<string>(`0`);
+export const lastRun = atom<number>(0);
 
 export const contentMap = map<ContentMapValue>({});
 
