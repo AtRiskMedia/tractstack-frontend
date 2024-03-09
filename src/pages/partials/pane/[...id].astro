@@ -6,27 +6,29 @@ export async function getStaticPaths() {
   const panes: Pane[] = await getAllPanes();
   const pathsPromises: Promise<{
     params: { id: string };
-    props: { title: string; id: string; slug: string; pane: Pane };
+    props: { title: string; id: string; slug: string };
   }>[] = panes.map(async (pane: Pane) => {
-    const paneDatum: PaneDatum[] = await getPane(id);
     return {
       params: { id: pane.id },
       props: {
         title: pane.title,
         id: pane.id,
         slug: pane.field_slug,
-        payload: paneDatum.at(0),
       },
     };
   });
   return Promise.all(pathsPromises);
 }
-const {
-  title,
-  slug,
-  id,
-  payload,
-}: { title: string; slug: string; id: string; payload: Pane } = Astro.props;
+
+const { title, slug, id }: { title: string; slug: string; id: string } =
+  Astro.props;
+const pane: PaneDatum[] = await getPane(id);
+const thisPane = pane.at(0);
+if (!thisPane)
+  return new Response(null, {
+    status: 301,
+    headers: { Location: "/404" },
+  });
 
 export const prerender = true;
 export const partial = true;
@@ -36,5 +38,5 @@ export const partial = true;
   <p>{title}</p>
   <p><strong>slug:</strong> {slug}</p>
   <p><strong>id:</strong> {id}</p>
-  <p><strong>pane payload:</strong> {JSON.stringify(payload)}</p>
+  <p><strong>pane payload:</strong> {JSON.stringify(thisPane)}</p>
 </div>
