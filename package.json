@@ -27,6 +27,8 @@
     "nanostores": "^0.10.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "@shopify/hydrogen-react": "^2024.1.1",
+    "zod": "^3.22.4",
     "sharp": "^0.33.2"
   },
   "devDependencies": {
