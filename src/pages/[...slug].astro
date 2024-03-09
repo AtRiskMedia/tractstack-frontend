@@ -56,6 +56,8 @@ export const prerender = true;
     ))
   }
 </ul>
+<a href="/welcome">welcome</a>
+<a href="/get">get</a>
 
 <script>
   class Pane extends HTMLElement {
@@ -70,7 +72,10 @@ export const prerender = true;
 <script>
   import InView from "@opuu/inview";
   import type { InViewEvent } from "@opuu/inview";
-  import { panesVisible } from "../store/events.ts";
+  import { panesVisible,lastRun } from "../store/events.ts";
+  import { eventStream } from "../utils/eventStream";
+
+  eventStream();
 
   const elements = new InView({
     selector: ".pane",
@@ -89,8 +94,9 @@ export const prerender = true;
   elements.on("exit", (event: InViewEvent) => {
     const id = event.target.id.substring(5);
     if (panesVisible.get()[id]) {
+      const diff = Date.now() - panesVisible.get()[id]
       panesVisible.setKey(id, null);
-      console.log(`exit`, id);
+      console.log(`exit`, id,diff/1000);
     }
   });
 </script>
