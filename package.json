@@ -19,6 +19,8 @@
     "@astrojs/react": "^3.0.10",
     "@astrojs/sitemap": "^3.1.1",
     "@astrojs/tailwind": "^5.1.0",
+    "@opuu/inview": "^2.0.1",
+    "@shopify/hydrogen-react": "^2024.1.1",
     "astro": "^4.4.15",
     "astro-htmx": "^1.0.5",
     "drupal-jsonapi-params": "^2.3.1",
@@ -27,9 +29,8 @@
     "nanostores": "^0.10.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@shopify/hydrogen-react": "^2024.1.1",
-    "zod": "^3.22.4",
-    "sharp": "^0.33.2"
+    "sharp": "^0.33.2",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@divriots/jampack": "^0.23.3",

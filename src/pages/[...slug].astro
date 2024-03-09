@@ -44,11 +44,53 @@ export const prerender = true;
 <ul>
   {
     thisStoryFragment.field_panes.map((pane: any, idx: number) => (
-      <li
-        hx-get={`/partials/pane/${pane.id}`}
-        hx-trigger={idx < 2 ? `load` : `revealed`}
-        hx-swap="innerHTML"
-      />
+      <astro-pane data-id={`pane-${pane.id}`} key={`pane-${pane.id}`}>
+        <li
+          id={`pane-${pane.id}`}
+          class="pane"
+          hx-get={`/partials/pane/${pane.id}`}
+          hx-trigger={idx < 2 ? `load` : `revealed`}
+          hx-swap="innerHTML"
+        />
+      </astro-pane>
     ))
   }
 </ul>
+
+<script>
+  class Pane extends HTMLElement {
+    constructor() {
+      super();
+      const id = this.dataset.id;
+      const li = this.querySelector("li");
+    }
+  }
+  customElements.define("astro-pane", Pane);
+</script>
+<script>
+  import InView from "@opuu/inview";
+  import type { InViewEvent } from "@opuu/inview";
+  import { panesVisible } from "../store/events.ts";
+
+  const elements = new InView({
+    selector: ".pane",
+    delay: 100,
+    single: false,
+  });
+
+  elements.on("enter", (event: InViewEvent) => {
+    const id = event.target.id.substring(5);
+    if (!panesVisible.get()[id]) {
+      panesVisible.setKey(id, Date.now());
+      console.log(`enter`, id);
+    }
+  });
+
+  elements.on("exit", (event: InViewEvent) => {
+    const id = event.target.id.substring(5);
+    if (panesVisible.get()[id]) {
+      panesVisible.setKey(id, null);
+      console.log(`exit`, id);
+    }
+  });
+</script>

@@ -19,9 +19,14 @@ type ContentMapValue = {
     parentId?: string;
   };
 };
+type PanesVisible = {
+  [key: string]: number | null;
+};
 
 export const lastRun = atom<number>(0);
 
 export const contentMap = map<ContentMapValue>({});
 
 export const events = atom<EventStream[]>([]);
+
+export const panesVisible = map<PanesVisible>({});
