@@ -1,9 +1,100 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import { getAllStoryFragments } from "../api/drupal";
+import {
+  getStoryFragment,
+  getAllStoryFragments,
+  getTractStack,
+  getAllTractStacks,
+  getPane,
+  getAllPanes,
+  getMarkdown,
+  getAllMarkdowns,
+  getResource,
+  getAllResources,
+  getMenu,
+  getAllMenus,
+  getAllFiles,
+} from "../api/drupal";
+import type {
+  Menu,
+  MenuDatum,
+  Resource,
+  ResourceDatum,
+  Pane,
+  PaneDatum,
+  Markdown,
+  MarkdownDatum,
+  StoryFragment,
+  StoryFragmentDatum,
+  TractStack,
+  TractStackDatum,
+  DrupalFile,
+} from "../types";
 
-const storyFragments: any = await getAllStoryFragments();
-console.log(storyFragments.at(0));
+const files: DrupalFile[] = await getAllFiles();
+console.log(`files`, files.at(0));
+const markdowns: Markdown[] = await getAllMarkdowns();
+console.log(`markdown`, markdowns.at(0));
+
+const resources: Resource[] = await getAllResources();
+const _resources = resources.at(0);
+if (_resources) {
+  const resource: ResourceDatum[] = await getResource(_resources.id);
+  const _resource = resource.at(0);
+  if (_resource) {
+    console.log(`resource`, _resource);
+  }
+}
+const menus: Menu[] = await getAllMenus();
+const _menus = menus.at(0);
+if (_menus) {
+  const menu: MenuDatum[] = await getMenu(_menus.id);
+  const _menu = menu.at(0);
+  if (_menu) {
+    console.log(`menu`, _menu);
+  }
+}
+const tractStacks: TractStack[] = await getAllTractStacks();
+const _tractStacks = tractStacks.at(0);
+if (_tractStacks) {
+  const tractStack: TractStackDatum[] = await getTractStack(_tractStacks.id);
+  const _tractStack = tractStack.at(0);
+  if (_tractStack) {
+    console.log(`tractStack`, _tractStack);
+  }
+}
+const storyFragments: StoryFragment[] = await getAllStoryFragments();
+const _storyFragments = storyFragments.at(0);
+if (_storyFragments) {
+  const storyFragment: StoryFragmentDatum[] = await getStoryFragment(
+    _storyFragments.id
+  );
+  const _storyFragment = storyFragment.at(0);
+  console.log(`storyFragment`, _storyFragment);
+}
+const panes: Pane[] = await getAllPanes();
+const _panes = panes.at(0);
+if (_panes) {
+  const pane: PaneDatum[] = await getPane(_panes.id);
+  if (pane) {
+    const _pane = pane.at(0);
+    console.log(`pane`, _pane);
+    if (_pane) {
+      const _markdown = _pane.field_markdown;
+      if (_markdown) {
+        console.log(_markdown);
+        const __markdown = _markdown.at(0);
+        if (__markdown) {
+          const markdownId = __markdown.id;
+          if (markdownId) {
+            const markdown: MarkdownDatum[] = await getMarkdown(markdownId);
+            console.log(`markdown`, markdown.at(0));
+          }
+        }
+      }
+    }
+  }
+}
 ---
 
 <Layout>
