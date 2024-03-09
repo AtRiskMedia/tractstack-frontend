@@ -75,6 +75,22 @@ interface MarkdownNode {
   type: `node--markdown`;
   id: string;
 }
+interface PaneNode {
+  type: `node--pane`;
+  id: string;
+}
+interface StoryFragmentNode {
+  type: `node--story_fragment`;
+  id: string;
+}
+interface TractStackNode {
+  type: `node--tractstack`;
+  id: string;
+}
+interface MenuNode {
+  type: `node--menu`;
+  id: string;
+}
 
 // Tract Stack types
 
@@ -111,9 +127,15 @@ export interface Menu extends T8kNode {
 
 export interface StoryFragmentDatum extends StoryFragment {
   drupal_internal__nid: string;
+  field_social_image_path: string;
+  field_tailwind_background_colour: string;
+  field_tract_stack: TractStackNode[];
+  field_panes: PaneNode[];
+  field_menu: MenuNode[];
 }
 export interface TractStackDatum extends TractStack {
   drupal_internal__nid: string;
+  field_story_fragment: StoryFragmentNode[];
 }
 export interface PaneDatum extends Pane {
   drupal_internal__nid: string;
