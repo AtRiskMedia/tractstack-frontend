@@ -1,7 +1,7 @@
 import { locked, events, panesVisible } from "../store/events";
 import { auth } from "../store/auth";
 import { current } from "../store/events";
-import {eventSync} from "./eventSync"
+import { eventSync } from "./eventSync";
 import { THRESHOLD_READ, THRESHOLD_GLOSSED } from "../constants";
 
 export async function eventProcessQueue() {

@@ -15,6 +15,18 @@ export type SocialObjects = {
   linkTitle: string;
 }[];
 
+// events
+
+export interface Event {
+  id: string;
+  type: string;
+  verb: string;
+  duration?: number;
+  targetId?: string;
+  score?: string;
+  targetSlug?: string;
+}
+
 // for drupal
 
 export interface Path {

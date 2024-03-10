@@ -1,7 +1,7 @@
 import { CONCIERGE_SYNC_INTERVAL } from "../constants";
 import { events, locked } from "../store/events";
 import { auth } from "../store/auth";
-import {eventSync} from "./eventSync"
+import { eventSync } from "./eventSync";
 
 export async function eventStream() {
   async function init() {
@@ -11,7 +11,7 @@ export async function eventStream() {
         if (payload.length) {
           events.set([]);
           auth.setKey("lastRun", Date.now().toString());
-        eventSync(payload);
+          eventSync(payload);
         }
       } catch (e) {
         console.log(`error establishing concierge eventStream`, e);
