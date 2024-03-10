@@ -186,6 +186,43 @@ export const getAllPanes = async (): Promise<Pane[]> => {
   return await fetchUrl(baseUrl + "/jsonapi/node/pane?" + path);
 };
 
+export const getAllPaneDatum = async (): Promise<PaneDatum[]> => {
+  const params: DrupalJsonApiParams = new DrupalJsonApiParams();
+  params
+    .addFields("node--pane", [
+      "type",
+      "id",
+      "drupal_internal__nid",
+      "title",
+      "field_slug",
+      "field_options",
+      "field_is_context_pane",
+      "field_height_ratio_desktop",
+      "field_height_ratio_tablet",
+      "field_height_ratio_mobile",
+      "field_height_offset_desktop",
+      "field_height_offset_tablet",
+      "field_height_offset_mobile",
+      "field_markdown",
+      "field_image",
+      "field_image_svg",
+    ])
+    .addFields("node--markdown", [
+      "type",
+      "id",
+      "drupal_internal__nid",
+      "title",
+      "field_slug",
+      "field_markdown_body",
+      "field_image",
+      "field_image_svg",
+    ])
+    .addInclude(["field_markdown"])
+    .addFilter("status", "1");
+  const path: string = params.getQueryString();
+  return await fetchUrl(baseUrl + "/jsonapi/node/pane?" + path);
+};
+
 export const getMarkdown = async (id: string): Promise<MarkdownDatum[]> => {
   const params: DrupalJsonApiParams = new DrupalJsonApiParams();
   params

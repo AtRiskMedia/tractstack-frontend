@@ -84,13 +84,14 @@ const {
 export const prerender = true;
 ---
 
-<p>{title}</p>
+<h1>{title}</h1>
 <p><strong>slug:</strong> {slug}</p>
 <p><strong>id:</strong> {id}</p>
+<h2>Parent</h2>
 <p>{tractStackTitle}</p>
 <p><strong>slug:</strong> {tractStackSlug}</p>
 <p><strong>id:</strong> {tractStackId}</p>
-<h2>panes</h2>
+<h2>Panes</h2>
 <ul>
   {
     panes.map((pane: PaneNode, idx: number) => (

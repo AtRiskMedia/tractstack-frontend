@@ -1,34 +1,86 @@
 ---
-import { getPane, getAllPanes } from "../../../api/drupal";
-import type { Pane, PaneDatum } from "../../../types";
+import { getAllPaneDatum } from "../../../api/drupal";
+import type { PaneDatum, FileNode, MarkdownDatum } from "../../../types";
 
 export async function getStaticPaths() {
-  const panes: Pane[] = await getAllPanes();
+  const panes: PaneDatum[] = await getAllPaneDatum();
   const pathsPromises: Promise<{
     params: { id: string };
-    props: { title: string; id: string; slug: string };
-  }>[] = panes.map(async (pane: Pane) => {
+    props: {
+      title: string;
+      id: string;
+      slug: string;
+      drupalNid: number;
+      optionsPayload: any;
+      isContextPane: boolean;
+      heightRatioDestop: string;
+      heightRatioTablet: string;
+      heightRatioMobile: string;
+      heightOffsetDestop: number;
+      heightOffsetTablet: number;
+      heightOffsetMobile: number;
+      images: FileNode[];
+      imageSvgs: FileNode[];
+      markdown: MarkdownDatum[];
+    };
+  }>[] = panes.map(async (pane: PaneDatum) => {
     return {
       params: { id: pane.id },
       props: {
         title: pane.title,
         id: pane.id,
         slug: pane.field_slug,
+        drupalNid: pane.drupal_internal__nid,
+        optionsPayload: JSON.parse(pane.field_options),
+        isContextPane: pane.field_is_context_pane,
+        heightRatioDestop: pane.field_height_ratio_desktop,
+        heightRatioTablet: pane.field_height_ratio_tablet,
+        heightRatioMobile: pane.field_height_ratio_mobile,
+        heightOffsetDestop: pane.field_height_offset_desktop,
+        heightOffsetTablet: pane.field_height_offset_tablet,
+        heightOffsetMobile: pane.field_height_offset_mobile,
+        images: pane.field_image,
+        imageSvgs: pane.field_image_svg,
+        markdown: pane.field_markdown,
       },
     };
   });
   return Promise.all(pathsPromises);
 }
 
-const { title, slug, id }: { title: string; slug: string; id: string } =
-  Astro.props;
-const pane: PaneDatum[] = await getPane(id);
-const thisPane = pane.at(0);
-if (!thisPane)
-  return new Response(null, {
-    status: 301,
-    headers: { Location: "/404" },
-  });
+const {
+  title,
+  slug,
+  id,
+  drupalNid,
+  optionsPayload,
+  isContextPane,
+  heightRatioDestop,
+  heightRatioTablet,
+  heightRatioMobile,
+  heightOffsetDestop,
+  heightOffsetTablet,
+  heightOffsetMobile,
+  images,
+  imageSvgs,
+  markdown,
+}: {
+  title: string;
+  slug: string;
+  id: string;
+  drupalNid: number;
+  optionsPayload: any;
+  isContextPane: boolean;
+  heightRatioDestop: string;
+  heightRatioTablet: string;
+  heightRatioMobile: string;
+  heightOffsetDestop: number;
+  heightOffsetTablet: number;
+  heightOffsetMobile: number;
+  images: FileNode[];
+  imageSvgs: FileNode[];
+  markdown: MarkdownDatum[];
+} = Astro.props;
 
 export const prerender = true;
 export const partial = true;
@@ -38,7 +90,7 @@ export const partial = true;
   <p>{title}</p>
   <p><strong>slug:</strong> {slug}</p>
   <p><strong>id:</strong> {id}</p>
-  <p><strong>pane payload:</strong> {JSON.stringify(thisPane)}</p>
+  <p><strong>payload:</strong> {JSON.stringify(optionsPayload)}</p>
   <br />
   <br />
   <br />

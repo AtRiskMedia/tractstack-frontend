@@ -67,12 +67,8 @@ export interface DrupalFileMeta extends Record<string, any> {
   height: number;
 }
 
-interface FileNode {
+export interface FileNode {
   type: `file--file`;
-  id: string;
-}
-interface MarkdownNode {
-  type: `node--markdown`;
   id: string;
 }
 export interface PaneNode {
@@ -91,6 +87,10 @@ interface TractStackNode {
 }
 //interface MenuNode {
 //  type: `node--menu`;
+//  id: string;
+//}
+//interface MarkdownNode {
+//  type: `node--markdown`;
 //  id: string;
 //}
 
@@ -149,7 +149,7 @@ export interface PaneDatum extends Pane {
   field_height_offset_desktop: number;
   field_height_offset_tablet: number;
   field_height_offset_mobile: number;
-  field_markdown: MarkdownNode[];
+  field_markdown: MarkdownDatum[];
   field_image: FileNode[];
   field_image_svg: FileNode[];
 }
