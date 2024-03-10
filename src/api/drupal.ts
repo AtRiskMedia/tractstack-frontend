@@ -186,6 +186,16 @@ export const getAllPanes = async (): Promise<Pane[]> => {
   return await fetchUrl(baseUrl + "/jsonapi/node/pane?" + path);
 };
 
+export const getAllContextPanes = async (): Promise<Pane[]> => {
+  const params: DrupalJsonApiParams = new DrupalJsonApiParams();
+  params
+    .addFields("node--pane", ["type", "id", "title", "field_slug"])
+    .addFilter("field_is_context_pane", "1")
+    .addFilter("status", "1");
+  const path: string = params.getQueryString();
+  return await fetchUrl(baseUrl + "/jsonapi/node/pane?" + path);
+};
+
 export const getAllPaneDatum = async (): Promise<PaneDatum[]> => {
   const params: DrupalJsonApiParams = new DrupalJsonApiParams();
   params

@@ -1,89 +1,45 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import { getAllStoryFragmentDatum } from "../api/drupal";
-import type {
-  MenuDatum,
-  PaneNode,
-  TractStack,
-  Pane,
-  StoryFragmentDatum,
-  StoryFragment,
-  StoryFragmentProps,
-} from "../types";
+import { getAllContextPanes } from "../../api/drupal";
+import type { Pane } from "../../types";
 
 export async function getStaticPaths() {
-  const storyFragments: StoryFragmentDatum[] = await getAllStoryFragmentDatum();
+  const contextPanes: Pane[] = await getAllContextPanes();
   const pathsPromises: Promise<{
     params: { slug: string };
-    props: StoryFragmentProps;
-  }>[] = storyFragments.map(async (storyFragment: StoryFragmentDatum) => {
+    props: any;
+  }>[] = contextPanes.map(async (pane: Pane) => {
     return {
-      params: { slug: storyFragment.field_slug },
+      params: { slug: pane.field_slug },
       props: {
-        title: storyFragment.title,
-        id: storyFragment.id,
-        slug: storyFragment.field_slug,
-        drupalNid: storyFragment.drupal_internal__nid,
-        socialImagePath: storyFragment.field_social_image_path || undefined,
-        tailwindBgColour:
-          storyFragment.field_tailwind_background_colour || undefined,
-        menu: storyFragment.field_menu,
-        panes: storyFragment.field_panes,
-        tractStackId: storyFragment.field_tract_stack.id,
-        tractStackTitle: storyFragment.field_tract_stack.title,
-        tractStackSlug: storyFragment.field_tract_stack.field_slug,
+        title: pane.title,
+        id: pane.id,
+        slug: pane.field_slug,
       },
     };
   });
   return Promise.all(pathsPromises);
 }
-const {
-  title,
-  id,
-  slug,
-  drupalNid,
-  socialImagePath,
-  menu,
-  panes,
-  tractStackId,
-  tractStackTitle,
-  tractStackSlug,
-}: StoryFragmentProps = Astro.props;
+const { title, id, slug, drupalNid }: any = Astro.props;
 
 export const prerender = true;
 ---
 
 <h1>{title}</h1>
-<h2>Story Fragment</h2>
+<h2>Context Panes</h2>
 <p><strong>slug:</strong> {slug}</p>
 <p><strong>id:</strong> {id}</p>
-<h2>Parent</h2>
-<p>{tractStackTitle}</p>
-<p><strong>slug:</strong> {tractStackSlug}</p>
-<p><strong>id:</strong> {tractStackId}</p>
-{
-  !!menu ? (
-    <>
-      <h2>Menu</h2>
-      <p>{JSON.stringify(menu)}</p>
-    </>
-  ) : null
-}
-<h2>Panes</h2>
 <ul>
-  {
-    panes.map((pane: PaneNode, idx: number) => (
-      <astro-pane key={`pane-${pane.id}`}>
-        <li
-          id={`pane-${pane.id}`}
-          class="pane"
-          hx-get={`/partials/pane/${pane.id}`}
-          hx-trigger={idx < 2 ? `load` : `revealed`}
-          hx-swap="innerHTML"
-        />
-      </astro-pane>
-    ))
-  }
+  <astro-pane key={`pane-${id}`}>
+    <li
+      id={`pane-${id}`}
+      class="pane"
+      hx-get={`/partials/pane/${id}`}
+      hx-trigger="load"
+      hx-swap="innerHTML"
+    >
+    </li>
+  </astro-pane>
 </ul>
 
 <astro-link data-id={`welcome`}>
@@ -100,10 +56,10 @@ export const prerender = true;
 </astro-link>
 
 <script>
-  import { inView } from "../utils/inView";
-  import { eventStream } from "../utils/eventStream";
-  import { events, locked } from "../store/events";
-  import { eventProcessQueue } from "../utils/eventProcessQueue";
+  import { inView } from "../../utils/inView";
+  import { eventStream } from "../../utils/eventStream";
+  import { events, locked } from "../../store/events";
+  import { eventProcessQueue } from "../../utils/eventProcessQueue";
 
   class Link extends HTMLElement {
     constructor() {
