@@ -1,11 +1,6 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import {
-  getAllStoryFragmentDatum,
-  getAllStoryFragments,
-  getAllPanes,
-  getAllTractStacks,
-} from "../api/drupal";
+import { getAllStoryFragmentDatum } from "../api/drupal";
 import type {
   MenuDatum,
   PaneNode,
@@ -13,34 +8,14 @@ import type {
   Pane,
   StoryFragmentDatum,
   StoryFragment,
+  StoryFragmentProps,
 } from "../types";
 
 export async function getStaticPaths() {
-  const contentMapPanes: Pane[] = await getAllPanes();
-  const contentMapTractStacks: TractStack[] = await getAllTractStacks();
-  const contentMapStoryFragments: StoryFragment[] =
-    await getAllStoryFragments();
   const storyFragments: StoryFragmentDatum[] = await getAllStoryFragmentDatum();
   const pathsPromises: Promise<{
     params: { slug: string };
-    props: {
-      title: string;
-      id: string;
-      slug: string;
-      drupalNid: number;
-      socialImagePath: string | undefined;
-      tailwindBgColour: string | undefined;
-      menu: MenuDatum;
-      panes: PaneNode[];
-      tractStackId: string;
-      tractStackTitle: string;
-      tractStackSlug: string;
-      contentMap: {
-        panes: Pane[];
-        tractStacks: TractStack[];
-        storyFragments: StoryFragment[];
-      };
-    };
+    props: StoryFragmentProps;
   }>[] = storyFragments.map(async (storyFragment: StoryFragmentDatum) => {
     return {
       params: { slug: storyFragment.field_slug },
@@ -57,11 +32,6 @@ export async function getStaticPaths() {
         tractStackId: storyFragment.field_tract_stack.id,
         tractStackTitle: storyFragment.field_tract_stack.title,
         tractStackSlug: storyFragment.field_tract_stack.field_slug,
-        contentMap: {
-          panes: contentMapPanes,
-          storyFragments: contentMapStoryFragments,
-          tractStack: contentMapTractStacks,
-        },
       },
     };
   });
@@ -78,24 +48,7 @@ const {
   tractStackId,
   tractStackTitle,
   tractStackSlug,
-  contentMap,
-}: {
-  title: string;
-  id: string;
-  slug: string;
-  drupalNid: number;
-  socialImagePath: string | undefined;
-  menu: MenuDatum;
-  panes: PaneNode[];
-  tractStackId: string;
-  tractStackTitle: string;
-  tractStackSlug: string;
-  contentMap: {
-    panes: Pane[];
-    tractStacks: TractStack[];
-    storyFragments: StoryFragment[];
-  };
-} = Astro.props;
+}: StoryFragmentProps = Astro.props;
 
 export const prerender = true;
 ---
@@ -131,8 +84,6 @@ export const prerender = true;
     ))
   }
 </ul>
-<h2>Content Map</h2>
-<p>{JSON.stringify(contentMap)}</p>
 
 <astro-link data-id={`welcome`}>
   <a href="/welcome">welcome</a>

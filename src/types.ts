@@ -169,3 +169,17 @@ export interface MenuDatum extends Menu {
   drupal_internal__nid: number;
   field_options: string;
 }
+
+export interface StoryFragmentProps {
+  title: string;
+  id: string;
+  slug: string;
+  drupalNid: number;
+  socialImagePath: string | undefined;
+  tailwindBgColour: string | undefined;
+  menu: MenuDatum;
+  panes: PaneNode[];
+  tractStackId: string;
+  tractStackTitle: string;
+  tractStackSlug: string;
+}
