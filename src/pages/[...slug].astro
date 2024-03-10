@@ -16,6 +16,10 @@ import type {
 } from "../types";
 
 export async function getStaticPaths() {
+  const contentMapPanes: Pane[] = await getAllPanes();
+  const contentMapTractStacks: TractStack[] = await getAllTractStacks();
+  const contentMapStoryFragments: StoryFragment[] =
+    await getAllStoryFragments();
   const storyFragments: StoryFragmentDatum[] = await getAllStoryFragmentDatum();
   const pathsPromises: Promise<{
     params: { slug: string };
@@ -31,6 +35,11 @@ export async function getStaticPaths() {
       tractStackId: string;
       tractStackTitle: string;
       tractStackSlug: string;
+      contentMap: {
+        panes: Pane[];
+        tractStacks: TractStack[];
+        storyFragments: StoryFragment[];
+      };
     };
   }>[] = storyFragments.map(async (storyFragment: StoryFragmentDatum) => {
     return {
@@ -48,6 +57,11 @@ export async function getStaticPaths() {
         tractStackId: storyFragment.field_tract_stack.id,
         tractStackTitle: storyFragment.field_tract_stack.title,
         tractStackSlug: storyFragment.field_tract_stack.field_slug,
+        contentMap: {
+          panes: contentMapPanes,
+          storyFragments: contentMapStoryFragments,
+          tractStack: contentMapTractStacks,
+        },
       },
     };
   });
@@ -64,6 +78,7 @@ const {
   tractStackId,
   tractStackTitle,
   tractStackSlug,
+  contentMap,
 }: {
   title: string;
   id: string;
@@ -75,11 +90,12 @@ const {
   tractStackId: string;
   tractStackTitle: string;
   tractStackSlug: string;
+  contentMap: {
+    panes: Pane[];
+    tractStacks: TractStack[];
+    storyFragments: StoryFragment[];
+  };
 } = Astro.props;
-
-//const contentMapPanes: Pane[] = await getAllPanes();
-//const contentMapTractStacks: TractStack[] = await getAllTractStacks();
-//const contentMapStoryFragments: StoryFragment[] = await getAllStoryFragments();
 
 export const prerender = true;
 ---
@@ -91,6 +107,14 @@ export const prerender = true;
 <p>{tractStackTitle}</p>
 <p><strong>slug:</strong> {tractStackSlug}</p>
 <p><strong>id:</strong> {tractStackId}</p>
+{
+  !!menu ? (
+    <>
+      <h2>Menu</h2>
+      <p>{JSON.stringify(menu)}</p>
+    </>
+  ) : null
+}
 <h2>Panes</h2>
 <ul>
   {
@@ -107,6 +131,8 @@ export const prerender = true;
     ))
   }
 </ul>
+<h2>Content Map</h2>
+<p>{JSON.stringify(contentMap)}</p>
 
 <astro-link data-id={`welcome`}>
   <a href="/welcome">welcome</a>
@@ -157,13 +183,13 @@ export const prerender = true;
   const utmCampaign = params[`utm_campaign`] || undefined;
   const utmTerm = params[`utm_term`] || undefined;
   const utmContent = params[`utm_content`] || undefined;
+  const internal =
+    document.referrer.indexOf(location.protocol + "//" + location.host) === 0;
+
   if (utmSource)
     console.log(
       `params: source=${utmSource} medium=${utmMedium} campaign=${utmCampaign} term=${utmTerm} content=${utmContent}`
     );
-
-  const internal =
-    document.referrer.indexOf(location.protocol + "//" + location.host) === 0;
   if (!internal) {
     console.log(`entered from external link`, document.referrer, 1);
     const event = {
