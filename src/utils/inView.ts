@@ -1,6 +1,6 @@
 import InView from "@opuu/inview";
 import type { InViewEvent } from "@opuu/inview";
-import { events, panesVisible } from "../store/events.ts";
+import { events, current, panesVisible } from "../store/events.ts";
 import { THRESHOLD_READ, THRESHOLD_GLOSSED } from "../constants";
 
 export function inView() {
@@ -29,10 +29,9 @@ export function inView() {
             ? `GLOSSED`
             : null;
       if (verb) {
-        console.log(verb, id, diff / 1000);
         const event = {
           id: id,
-          parentId: `?`,
+          parentId: current.get().id,
           type: `Pane`,
           verb: verb,
         };

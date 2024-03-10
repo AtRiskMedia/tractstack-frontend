@@ -8,6 +8,7 @@ export async function eventStream() {
       try {
         const payload = events.get();
         if (payload.length) {
+          console.log(`didn't actually send events`);
           events.set([]);
           auth.setKey("lastRun", Date.now().toString());
           //payload.forEach((e:any)=>{

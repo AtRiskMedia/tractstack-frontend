@@ -21,6 +21,14 @@ export async function getStaticPaths() {
   return Promise.all(pathsPromises);
 }
 const { title, id, slug, drupalNid }: any = Astro.props;
+const current = {
+  id,
+  slug,
+  type: `Pane`,
+  parentId: ``,
+  parentSlug: ``,
+  parentType: ``,
+};
 
 export const prerender = true;
 ---
@@ -29,18 +37,20 @@ export const prerender = true;
 <h2>Context Panes</h2>
 <p><strong>slug:</strong> {slug}</p>
 <p><strong>id:</strong> {id}</p>
-<ul>
-  <astro-pane key={`pane-${id}`}>
-    <li
-      id={`pane-${id}`}
-      class="pane"
-      hx-get={`/partials/pane/${id}`}
-      hx-trigger="load"
-      hx-swap="innerHTML"
-    >
-    </li>
-  </astro-pane>
-</ul>
+<astro-storyfragment data-id={JSON.stringify(current)}>
+  <ul>
+    <astro-pane key={`pane-${id}`}>
+      <li
+        id={`pane-${id}`}
+        class="pane"
+        hx-get={`/partials/pane/${id}`}
+        hx-trigger="load"
+        hx-swap="innerHTML"
+      >
+      </li>
+    </astro-pane>
+  </ul>
+</astro-storyfragment>
 
 <astro-link data-id={`welcome`}>
   <a href="/welcome">welcome</a>
@@ -56,59 +66,6 @@ export const prerender = true;
 </astro-link>
 
 <script>
-  import { inView } from "../../utils/inView";
-  import { eventStream } from "../../utils/eventStream";
-  import { events, locked } from "../../store/events";
-  import { eventProcessQueue } from "../../utils/eventProcessQueue";
-
-  class Link extends HTMLElement {
-    constructor() {
-      super();
-      const id = this.dataset.id;
-      const a = this.querySelector("a");
-      if (a)
-        a.addEventListener("click", async () => {
-          console.log(`process events before loading`, id);
-          locked.set(true);
-          eventProcessQueue();
-        });
-    }
-  }
-  customElements.define("astro-link", Link);
-
-  class Pane extends HTMLElement {
-    constructor() {
-      super();
-      this.querySelector("li");
-    }
-  }
-  customElements.define("astro-pane", Pane);
-
-  const urlSearchParams = new URLSearchParams(window.location.search);
-  const params = Object.fromEntries(urlSearchParams.entries());
-  const utmSource = params[`utm_source`] || undefined;
-  const utmMedium = params[`utm_medium`] || undefined;
-  const utmCampaign = params[`utm_campaign`] || undefined;
-  const utmTerm = params[`utm_term`] || undefined;
-  const utmContent = params[`utm_content`] || undefined;
-  const internal =
-    document.referrer.indexOf(location.protocol + "//" + location.host) === 0;
-
-  if (utmSource)
-    console.log(
-      `params: source=${utmSource} medium=${utmMedium} campaign=${utmCampaign} term=${utmTerm} content=${utmContent}`
-    );
-  if (!internal) {
-    console.log(`entered from external link`, document.referrer, 1);
-    const event = {
-      id: `?`,
-      parentId: `?`,
-      type: `StoryFragment`,
-      verb: `ENTERED`,
-    };
-    events.set([...events.get(), event]);
-  }
-
-  eventStream();
-  inView();
+  import { init } from "../../utils/init";
+  init();
 </script>

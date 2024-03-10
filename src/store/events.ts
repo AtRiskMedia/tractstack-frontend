@@ -1,5 +1,14 @@
 import { map, atom } from "nanostores";
 
+export type Current = {
+  id: string;
+  type: string;
+  title: string;
+  parentId?: string;
+  parentType?: string;
+  parentTitle?: string;
+};
+
 export type EventStream = {
   id: string;
   type: string;
@@ -26,5 +35,11 @@ type PanesVisible = {
 export const locked = atom<boolean>(false);
 
 export const events = atom<EventStream[]>([]);
+
+export const current = atom<Current>({
+  id: ``,
+  type: ``,
+  title: ``,
+});
 
 export const panesVisible = map<PanesVisible>({});
