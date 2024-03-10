@@ -35,6 +35,7 @@ export function inView() {
           type: `Pane`,
           verb: verb,
         };
+        console.log(`=event`, event);
         events.set([...events.get(), event]);
       }
     }

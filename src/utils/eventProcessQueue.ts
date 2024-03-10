@@ -1,16 +1,14 @@
 import { locked, events, panesVisible } from "../store/events";
 import { auth } from "../store/auth";
 import { current } from "../store/events";
+import {eventSync} from "./eventSync"
 import { THRESHOLD_READ, THRESHOLD_GLOSSED } from "../constants";
 
 export async function eventProcessQueue() {
-  if (events.get().length)
-    console.log(`INTERCEPT::must send to concierge`, events.get());
   const panes = panesVisible.get();
-  Object.keys(panes).map((id: string) => {
+  Object.keys(panes).forEach((id: string) => {
     const value = panes[id];
     if (value) {
-      console.log(`CHECK::panesVisible queue`, value);
       const diff = Date.now() - value;
       panesVisible.setKey(id, null);
       const verb =
@@ -26,14 +24,15 @@ export async function eventProcessQueue() {
           type: `Pane`,
           verb: verb,
         };
-        console.log(`=event`, event);
+        console.log(`=event-intercept`, event);
         events.set([...events.get(), event]);
       }
     }
   });
-  console.log(`didn't actually send events`);
+  const payload = events.get();
   events.set([]);
-  locked.set(false);
+  eventSync(payload);
   auth.setKey("lastRun", Date.now().toString());
+  locked.set(false);
   return true;
 }

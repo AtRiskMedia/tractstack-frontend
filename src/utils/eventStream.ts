@@ -1,6 +1,7 @@
 import { CONCIERGE_SYNC_INTERVAL } from "../constants";
 import { events, locked } from "../store/events";
 import { auth } from "../store/auth";
+import {eventSync} from "./eventSync"
 
 export async function eventStream() {
   async function init() {
@@ -8,13 +9,9 @@ export async function eventStream() {
       try {
         const payload = events.get();
         if (payload.length) {
-          console.log(`didn't actually send events`);
           events.set([]);
           auth.setKey("lastRun", Date.now().toString());
-          //payload.forEach((e:any)=>{
-          //  console.log(`event`,e.id);
-          //})
-          console.log(`send to concierge`, payload);
+        eventSync(payload);
         }
       } catch (e) {
         console.log(`error establishing concierge eventStream`, e);
