@@ -11,7 +11,6 @@ export function init() {
       const a = this.querySelector("a");
       if (a)
         a.addEventListener("click", async () => {
-          console.log(`process events before loading`, id);
           locked.set(true);
           eventProcessQueue();
         });

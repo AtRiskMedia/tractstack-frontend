@@ -1,6 +1,5 @@
 import { CONCIERGE_SYNC_INTERVAL } from "../constants";
 import { events, locked } from "../store/events";
-import { auth } from "../store/auth";
 import { eventSync } from "./eventSync";
 
 export async function eventStream() {
@@ -10,7 +9,6 @@ export async function eventStream() {
         const payload = events.get();
         if (payload.length) {
           events.set([]);
-          auth.setKey("lastRun", Date.now().toString());
           eventSync(payload);
         }
       } catch (e) {

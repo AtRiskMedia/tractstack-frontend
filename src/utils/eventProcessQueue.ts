@@ -1,5 +1,4 @@
 import { locked, events, panesVisible } from "../store/events";
-import { auth } from "../store/auth";
 import { current } from "../store/events";
 import { eventSync } from "./eventSync";
 import { THRESHOLD_READ, THRESHOLD_GLOSSED } from "../constants";
@@ -24,15 +23,16 @@ export async function eventProcessQueue() {
           type: `Pane`,
           verb: verb,
         };
-        console.log(`=event-intercept`, event);
+        console.log(`=force-event`, event);
         events.set([...events.get(), event]);
       }
     }
   });
   const payload = events.get();
-  events.set([]);
-  eventSync(payload);
-  auth.setKey("lastRun", Date.now().toString());
+  if (payload.length) {
+    events.set([]);
+    eventSync(payload);
+  }
   locked.set(false);
   return true;
 }
