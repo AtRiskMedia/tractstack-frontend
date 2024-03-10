@@ -28,14 +28,19 @@ export const fetchUrl = async (url: string): Promise<any> => {
   let data: TJsonaModel = [];
   let more = true;
   while (more) {
-    const request: Response = await fetch(url);
-    const json: string | DrupalApiBody = await request.json();
-    const dataFormatter: Jsona = new Jsona();
-    const thisData = dataFormatter.deserialize(json);
-    if (thisData.length) data = data.concat(thisData);
-    else data.push(thisData);
-    url = typeof json !== `string` ? json?.links?.next?.href : null;
-    if (typeof url === `undefined`) more = false;
+    try {
+      const request: Response = await fetch(url);
+      const json: string | DrupalApiBody = await request.json();
+      const dataFormatter: Jsona = new Jsona();
+      const thisData = dataFormatter.deserialize(json);
+      if (thisData.length) data = data.concat(thisData);
+      else data.push(thisData);
+      url = typeof json !== `string` ? json?.links?.next?.href : null;
+      if (typeof url === `undefined`) more = false;
+    } catch (e) {
+      console.log(`error connecting to Drupal`, e);
+      more = false;
+    }
   }
   return data;
 };
@@ -57,17 +62,53 @@ export const getStoryFragment = async (
       "id",
       "drupal_internal__nid",
       "title",
+      "field_slug",
       "field_social_image_path",
       "field_tailwind_background_colour",
       "field_tract_stack",
       "field_panes",
       "field_menu",
     ])
+    .addFields("node--tractstack", ["title", "field_slug"])
+    .addInclude(["field_tract_stack"])
     .addFilter("status", "1");
   const path: string = params.getQueryString();
   return await fetchUrl(
     baseUrl + "/jsonapi/node/story_fragment/" + id + "?" + path
   );
+};
+
+export const getAllStoryFragmentDatum = async (): Promise<
+  StoryFragmentDatum[]
+> => {
+  const params: DrupalJsonApiParams = new DrupalJsonApiParams();
+  params
+    .addFields("node--story_fragment", [
+      "type",
+      "id",
+      "drupal_internal__nid",
+      "title",
+      "field_slug",
+      "field_social_image_path",
+      "field_tailwind_background_colour",
+      "field_tract_stack",
+      "field_panes",
+      "field_menu",
+    ])
+    .addInclude(["field_tract_stack"])
+    .addFields("node--tractstack", ["title", "field_slug"])
+    .addInclude(["field_menu"])
+    .addFields("node--menu", [
+      "type",
+      "id",
+      "drupal_internal__nid",
+      "title",
+      "field_theme",
+      "field_options",
+    ])
+    .addFilter("status", "1");
+  const path: string = params.getQueryString();
+  return await fetchUrl(baseUrl + "/jsonapi/node/story_fragment?" + path);
 };
 
 export const getAllStoryFragments = async (): Promise<StoryFragment[]> => {
@@ -87,6 +128,7 @@ export const getTractStack = async (id: string): Promise<TractStackDatum[]> => {
       "id",
       "drupal_internal__nid",
       "title",
+      "field_slug",
       "field_social_image_path",
       "field_story_fragments",
     ])
@@ -114,6 +156,7 @@ export const getPane = async (id: string): Promise<PaneDatum[]> => {
       "id",
       "drupal_internal__nid",
       "title",
+      "field_slug",
       "field_markdown",
       "field_image",
       "field_image_svg",
@@ -123,6 +166,7 @@ export const getPane = async (id: string): Promise<PaneDatum[]> => {
       "id",
       "drupal_internal__nid",
       "title",
+      "field_slug",
       "field_markdown_body",
       "field_image",
       "field_image_svg",
@@ -150,6 +194,7 @@ export const getMarkdown = async (id: string): Promise<MarkdownDatum[]> => {
       "id",
       "drupal_internal__nid",
       "title",
+      "field_slug",
       "field_markdown_body",
       "field_image",
       "field_image_svg",

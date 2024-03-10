@@ -45,7 +45,7 @@ export interface DrupalFile extends Record<string, any> {
   type: string;
   langcode: string;
   status: boolean;
-  drupal_internal__fid: string;
+  drupal_internal__fid: number;
   changed: string;
   created: string;
   filename: string;
@@ -75,7 +75,7 @@ interface MarkdownNode {
   type: `node--markdown`;
   id: string;
 }
-interface PaneNode {
+export interface PaneNode {
   type: `node--pane`;
   id: string;
 }
@@ -86,11 +86,13 @@ interface StoryFragmentNode {
 interface TractStackNode {
   type: `node--tractstack`;
   id: string;
+  title: string;
+  field_slug: string;
 }
-interface MenuNode {
-  type: `node--menu`;
-  id: string;
-}
+//interface MenuNode {
+//  type: `node--menu`;
+//  id: string;
+//}
 
 // Tract Stack types
 
@@ -126,19 +128,19 @@ export interface Menu extends T8kNode {
 }
 
 export interface StoryFragmentDatum extends StoryFragment {
-  drupal_internal__nid: string;
+  drupal_internal__nid: number;
   field_social_image_path: string;
   field_tailwind_background_colour: string;
-  field_tract_stack: TractStackNode[];
+  field_tract_stack: TractStackNode;
   field_panes: PaneNode[];
-  field_menu: MenuNode[];
+  field_menu: MenuDatum;
 }
 export interface TractStackDatum extends TractStack {
-  drupal_internal__nid: string;
+  drupal_internal__nid: number;
   field_story_fragment: StoryFragmentNode[];
 }
 export interface PaneDatum extends Pane {
-  drupal_internal__nid: string;
+  drupal_internal__nid: number;
   field_options: string;
   field_is_context_pane: boolean;
   field_height_ratio_desktop: string;
@@ -152,18 +154,18 @@ export interface PaneDatum extends Pane {
   field_image_svg: FileNode[];
 }
 export interface MarkdownDatum extends Markdown {
-  drupal_internal__nid: string;
+  drupal_internal__nid: number;
   field_markdown_body: string;
   field_image: FileNode[];
   field_image_svg: FileNode[];
 }
 export interface ResourceDatum extends Resource {
-  drupal_internal__nid: string;
+  drupal_internal__nid: number;
   field_options: string;
   field_action_lisp: string;
   field_oneliner: string;
 }
 export interface MenuDatum extends Menu {
-  drupal_internal__nid: string;
+  drupal_internal__nid: number;
   field_options: string;
 }

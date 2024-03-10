@@ -1,34 +1,85 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import { getStoryFragment, getAllStoryFragments } from "../api/drupal";
-import type { StoryFragment, StoryFragmentDatum } from "../types";
+import {
+  getAllStoryFragmentDatum,
+  getAllStoryFragments,
+  getAllPanes,
+  getAllTractStacks,
+} from "../api/drupal";
+import type {
+  MenuDatum,
+  PaneNode,
+  TractStack,
+  Pane,
+  StoryFragmentDatum,
+  StoryFragment,
+} from "../types";
 
 export async function getStaticPaths() {
-  const storyFragments: StoryFragment[] = await getAllStoryFragments();
+  const storyFragments: StoryFragmentDatum[] = await getAllStoryFragmentDatum();
   const pathsPromises: Promise<{
     params: { slug: string };
-    props: { title: string; id: string; slug: string };
-  }>[] = storyFragments.map(async (storyFragment: StoryFragment) => {
+    props: {
+      title: string;
+      id: string;
+      slug: string;
+      drupalNid: number;
+      socialImagePath: string | undefined;
+      tailwindBgColour: string | undefined;
+      menu: MenuDatum;
+      panes: PaneNode[];
+      tractStackId: string;
+      tractStackTitle: string;
+      tractStackSlug: string;
+    };
+  }>[] = storyFragments.map(async (storyFragment: StoryFragmentDatum) => {
     return {
       params: { slug: storyFragment.field_slug },
       props: {
         title: storyFragment.title,
         id: storyFragment.id,
         slug: storyFragment.field_slug,
+        drupalNid: storyFragment.drupal_internal__nid,
+        socialImagePath: storyFragment.field_social_image_path || undefined,
+        tailwindBgColour:
+          storyFragment.field_tailwind_background_colour || undefined,
+        menu: storyFragment.field_menu,
+        panes: storyFragment.field_panes,
+        tractStackId: storyFragment.field_tract_stack.id,
+        tractStackTitle: storyFragment.field_tract_stack.title,
+        tractStackSlug: storyFragment.field_tract_stack.field_slug,
       },
     };
   });
   return Promise.all(pathsPromises);
 }
-const { title, slug, id }: { title: string; slug: string; id: string } =
-  Astro.props;
-const storyFragment: StoryFragmentDatum[] = await getStoryFragment(id);
-const thisStoryFragment = storyFragment.at(0);
-if (!thisStoryFragment)
-  return new Response(null, {
-    status: 301,
-    headers: { Location: "/404" },
-  });
+const {
+  title,
+  id,
+  slug,
+  drupalNid,
+  socialImagePath,
+  menu,
+  panes,
+  tractStackId,
+  tractStackTitle,
+  tractStackSlug,
+}: {
+  title: string;
+  id: string;
+  slug: string;
+  drupalNid: number;
+  socialImagePath: string | undefined;
+  menu: MenuDatum;
+  panes: PaneNode[];
+  tractStackId: string;
+  tractStackTitle: string;
+  tractStackSlug: string;
+} = Astro.props;
+
+//const contentMapPanes: Pane[] = await getAllPanes();
+//const contentMapTractStacks: TractStack[] = await getAllTractStacks();
+//const contentMapStoryFragments: StoryFragment[] = await getAllStoryFragments();
 
 export const prerender = true;
 ---
@@ -36,15 +87,14 @@ export const prerender = true;
 <p>{title}</p>
 <p><strong>slug:</strong> {slug}</p>
 <p><strong>id:</strong> {id}</p>
-<p>
-  <strong>storyFragment payload:</strong>
-  {JSON.stringify(thisStoryFragment)}
-</p>
+<p>{tractStackTitle}</p>
+<p><strong>slug:</strong> {tractStackSlug}</p>
+<p><strong>id:</strong> {tractStackId}</p>
 <h2>panes</h2>
 <ul>
   {
-    thisStoryFragment.field_panes.map((pane: any, idx: number) => (
-      <astro-pane data-id={`pane-${pane.id}`} key={`pane-${pane.id}`}>
+    panes.map((pane: PaneNode, idx: number) => (
+      <astro-pane key={`pane-${pane.id}`}>
         <li
           id={`pane-${pane.id}`}
           class="pane"
@@ -56,47 +106,74 @@ export const prerender = true;
     ))
   }
 </ul>
-<a href="/welcome">welcome</a>
-<a href="/get">get</a>
+
+<astro-link data-id={`welcome`}>
+  <a href="/welcome">welcome</a>
+</astro-link>
+<astro-link data-id={`get`}>
+  <a href="/get">get</a>
+</astro-link>
+<astro-link data-id={`agency`}>
+  <a href="/agency">agency</a>
+</astro-link>
+<astro-link data-id={`#`}>
+  <a href="#">#</a>
+</astro-link>
 
 <script>
-  class Pane extends HTMLElement {
+  import { inView } from "../utils/inView";
+  import { eventStream } from "../utils/eventStream";
+  import { events, locked } from "../store/events";
+  import { eventProcessQueue } from "../utils/eventProcessQueue";
+
+  class Link extends HTMLElement {
     constructor() {
       super();
       const id = this.dataset.id;
-      const li = this.querySelector("li");
+      const a = this.querySelector("a");
+      if (a)
+        a.addEventListener("click", async () => {
+          console.log(`process events before loading`, id);
+          locked.set(true);
+          eventProcessQueue();
+        });
+    }
+  }
+  customElements.define("astro-link", Link);
+
+  class Pane extends HTMLElement {
+    constructor() {
+      super();
+      this.querySelector("li");
     }
   }
   customElements.define("astro-pane", Pane);
-</script>
-<script>
-  import InView from "@opuu/inview";
-  import type { InViewEvent } from "@opuu/inview";
-  import { panesVisible,lastRun } from "../store/events.ts";
-  import { eventStream } from "../utils/eventStream";
+
+  const urlSearchParams = new URLSearchParams(window.location.search);
+  const params = Object.fromEntries(urlSearchParams.entries());
+  const utmSource = params[`utm_source`] || undefined;
+  const utmMedium = params[`utm_medium`] || undefined;
+  const utmCampaign = params[`utm_campaign`] || undefined;
+  const utmTerm = params[`utm_term`] || undefined;
+  const utmContent = params[`utm_content`] || undefined;
+  if (utmSource)
+    console.log(
+      `params: source=${utmSource} medium=${utmMedium} campaign=${utmCampaign} term=${utmTerm} content=${utmContent}`
+    );
+
+  const internal =
+    document.referrer.indexOf(location.protocol + "//" + location.host) === 0;
+  if (!internal) {
+    console.log(`entered from external link`, document.referrer, 1);
+    const event = {
+      id: `?`,
+      parentId: `?`,
+      type: `StoryFragment`,
+      verb: `ENTERED`,
+    };
+    events.set([...events.get(), event]);
+  }
 
   eventStream();
-
-  const elements = new InView({
-    selector: ".pane",
-    delay: 100,
-    single: false,
-  });
-
-  elements.on("enter", (event: InViewEvent) => {
-    const id = event.target.id.substring(5);
-    if (!panesVisible.get()[id]) {
-      panesVisible.setKey(id, Date.now());
-      console.log(`enter`, id);
-    }
-  });
-
-  elements.on("exit", (event: InViewEvent) => {
-    const id = event.target.id.substring(5);
-    if (panesVisible.get()[id]) {
-      const diff = Date.now() - panesVisible.get()[id]
-      panesVisible.setKey(id, null);
-      console.log(`exit`, id,diff/1000);
-    }
-  });
+  inView();
 </script>

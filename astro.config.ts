@@ -5,7 +5,6 @@ import react from "@astrojs/react";
 import htmx from "astro-htmx";
 import sitemap from "@astrojs/sitemap";
 import { SITE } from "./src/config";
-//import basicSsl from "@vitejs/plugin-basic-ssl";
 
 // https://astro.build/config
 export default defineConfig({
@@ -22,14 +21,5 @@ export default defineConfig({
     react(),
     sitemap(),
   ],
-  //vite: {
-  //plugins: [basicSsl()],
-  //server: {
-  //  https: true,
-  //},
-  //optimizeDeps: {
-  //  exclude: ["@resvg/resvg-js"],
-  //},
-  //},
   scopedStyleStrategy: "where",
 });
