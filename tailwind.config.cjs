@@ -9,10 +9,8 @@ function withOpacity(variableName) {
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
+  content: ["./src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}"],
   theme: {
-    // Remove the following screen breakpoint or add other breakpoints
-    // if one breakpoint is not enough for you
     screens: {
       xs: "600px",
       md: "801px",

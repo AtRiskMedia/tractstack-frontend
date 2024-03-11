@@ -146,10 +146,28 @@ export interface StoryFragmentDatum extends StoryFragment {
   field_tract_stack: TractStackNode;
   field_panes: PaneNode[];
   field_menu: MenuDatum;
+  changed: string;
 }
 export interface TractStackDatum extends TractStack {
   drupal_internal__nid: number;
   field_story_fragment: StoryFragmentNode[];
+}
+export interface PaneDatumProps {
+  title: string;
+  id: string;
+  slug: string;
+  drupalNid: number;
+  optionsPayload: any;
+  isContextPane: boolean;
+  heightRatioDestop: string;
+  heightRatioTablet: string;
+  heightRatioMobile: string;
+  heightOffsetDestop: number;
+  heightOffsetTablet: number;
+  heightOffsetMobile: number;
+  images: FileNode[];
+  imageSvgs: FileNode[];
+  markdown: MarkdownDatum[];
 }
 export interface PaneDatum extends Pane {
   drupal_internal__nid: number;
@@ -191,9 +209,11 @@ export interface StoryFragmentProps {
   tailwindBgColour: string | undefined;
   menu: MenuDatum;
   panes: PaneNode[];
+  panesPayload: PaneDatum[];
   tractStackId: string;
   tractStackTitle: string;
   tractStackSlug: string;
+  changed: number;
 }
 
 // axios sync to concierge

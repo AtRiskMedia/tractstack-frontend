@@ -1,11 +1,13 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import { getAllStoryFragmentDatum } from "../api/drupal";
+import PaneReact from "@components/PaneReact.tsx";
+import { getAllStoryFragmentDatum, getAllPaneDatum } from "../api/drupal";
 import type {
   MenuDatum,
-  PaneNode,
   TractStack,
   Pane,
+  PaneDatum,
+  PaneNode,
   StoryFragmentDatum,
   StoryFragment,
   StoryFragmentProps,
@@ -13,10 +15,15 @@ import type {
 
 export async function getStaticPaths() {
   const storyFragments: StoryFragmentDatum[] = await getAllStoryFragmentDatum();
+  const panes: PaneDatum[] = await getAllPaneDatum();
   const pathsPromises: Promise<{
     params: { slug: string };
     props: StoryFragmentProps;
   }>[] = storyFragments.map(async (storyFragment: StoryFragmentDatum) => {
+    const date = new Date(storyFragment.changed);
+    const msTimecode = date.getTime();
+    const thisPanes = storyFragment.field_panes.map((p: PaneNode) => p.id);
+
     return {
       params: { slug: storyFragment.field_slug },
       props: {
@@ -29,9 +36,13 @@ export async function getStaticPaths() {
           storyFragment.field_tailwind_background_colour || undefined,
         menu: storyFragment.field_menu,
         panes: storyFragment.field_panes,
+        panesPayload: panes.filter((payload: PaneDatum) =>
+          thisPanes.includes(payload.id)
+        ),
         tractStackId: storyFragment.field_tract_stack.id,
         tractStackTitle: storyFragment.field_tract_stack.title,
         tractStackSlug: storyFragment.field_tract_stack.field_slug,
+        changed: msTimecode,
       },
     };
   });
@@ -45,9 +56,11 @@ const {
   socialImagePath,
   menu,
   panes,
+  panesPayload,
   tractStackId,
   tractStackTitle,
   tractStackSlug,
+  changed,
 }: StoryFragmentProps = Astro.props;
 const current = {
   id,
@@ -57,7 +70,7 @@ const current = {
   parentSlug: tractStackSlug,
   parentType: `TractStack`,
 };
-
+console.log(panesPayload);
 export const prerender = true;
 ---
 
@@ -65,6 +78,7 @@ export const prerender = true;
 <h2>Story Fragment</h2>
 <p><strong>slug:</strong> {slug}</p>
 <p><strong>id:</strong> {id}</p>
+<p><strong>changed:</strong> {changed}</p>
 <h2>Parent</h2>
 <p>{tractStackTitle}</p>
 <p><strong>slug:</strong> {tractStackSlug}</p>
@@ -83,13 +97,13 @@ export const prerender = true;
     {
       panes.map((pane: PaneNode, idx: number) => (
         <astro-pane key={`pane-${pane.id}`}>
-          <li
-            id={`pane-${pane.id}`}
-            class="pane"
-            hx-get={`/partials/pane/${pane.id}`}
-            hx-trigger={idx < 2 ? `load` : `revealed`}
-            hx-swap="innerHTML"
-          />
+          <li id={`pane-${pane.id}`} class="pane">
+            {idx <= 2 ? (
+              <PaneReact client:load id={pane.id} />
+            ) : (
+              <PaneReact client:visible id={pane.id} />
+            )}
+          </li>
         </astro-pane>
       ))
     }
@@ -97,7 +111,7 @@ export const prerender = true;
 </astro-storyfragment>
 
 <astro-link data-id={`welcome`}>
-  <a href="/welcome">welcome</a>
+  <a class="text-yellow-300 hover:text-black" href="/welcome">welcome</a>
 </astro-link>
 <astro-link data-id={`get`}>
   <a href="/get">get</a>

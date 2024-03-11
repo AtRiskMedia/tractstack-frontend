@@ -94,6 +94,7 @@ export const getAllStoryFragmentDatum = async (): Promise<
       "field_tract_stack",
       "field_panes",
       "field_menu",
+      "changed",
     ])
     .addInclude(["field_tract_stack"])
     .addFields("node--tractstack", ["title", "field_slug"])

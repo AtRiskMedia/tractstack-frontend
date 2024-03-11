@@ -6,8 +6,8 @@ import { eventProcessQueue } from "./eventProcessQueue";
 
 export function init() {
   console.log(`init`);
+  if(import.meta.env.PROD)
   getTokens();
-  console.log(`init done`);
 
   class Link extends HTMLElement {
     constructor() {

@@ -1,28 +1,17 @@
 ---
 import { getAllPaneDatum } from "../../../api/drupal";
-import type { PaneDatum, FileNode, MarkdownDatum } from "../../../types";
+import type {
+  PaneDatumProps,
+  PaneDatum,
+  FileNode,
+  MarkdownDatum,
+} from "../../../types";
 
 export async function getStaticPaths() {
   const panes: PaneDatum[] = await getAllPaneDatum();
   const pathsPromises: Promise<{
     params: { id: string };
-    props: {
-      title: string;
-      id: string;
-      slug: string;
-      drupalNid: number;
-      optionsPayload: any;
-      isContextPane: boolean;
-      heightRatioDestop: string;
-      heightRatioTablet: string;
-      heightRatioMobile: string;
-      heightOffsetDestop: number;
-      heightOffsetTablet: number;
-      heightOffsetMobile: number;
-      images: FileNode[];
-      imageSvgs: FileNode[];
-      markdown: MarkdownDatum[];
-    };
+    props: PaneDatumProps;
   }>[] = panes.map(async (pane: PaneDatum) => {
     return {
       params: { id: pane.id },
