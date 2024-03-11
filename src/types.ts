@@ -195,3 +195,116 @@ export interface StoryFragmentProps {
   tractStackTitle: string;
   tractStackSlug: string;
 }
+
+// axios sync to concierge
+import type { IContentMapDict } from "@tractstack/types";
+
+export interface IEventStream {
+  duration: number;
+  id: string;
+  type: string;
+  verb: string;
+  targetId?: string;
+  score?: string;
+  title?: string;
+  targetSlug?: string;
+  isContextPane?: string;
+}
+export interface IEventStreamDict {
+  [key: string]: IEventStream;
+}
+
+export interface IAxiosClientProps {
+  options: any;
+  getCurrentAccessToken: any;
+  refreshTokenUrl: string | undefined;
+  setRefreshedTokens: any;
+  getAuthData: any;
+  logout: any;
+}
+
+export interface IAxiosRegisterProps {
+  referrer: IReferrer;
+  fingerprint?: string;
+  codeword?: string | undefined;
+  email?: string | undefined;
+  encryptedEmail?: string | undefined;
+  encryptedCode?: string | undefined;
+}
+
+export interface IAxiosPushProps {
+  eventStream: IEventStreamDict;
+  contentMap: IContentMapDict;
+  referrer?: IReferrer;
+  tractStackId?: string;
+}
+
+export interface IAxiosProfileProps {
+  profile: {
+    bio: string;
+    codeword: string;
+    email: string;
+    firstname: string;
+    init: boolean;
+    persona: string;
+  };
+}
+
+export interface ITokens {
+  encryptedCode: string | null;
+  encryptedEmail: string | null;
+}
+
+export interface IAuthStorePayload {
+  firstname: string | null;
+  encryptedEmail: string | null;
+  encryptedCode: string | null;
+  email: string;
+  contactPersona: string;
+  shortBio: string;
+  authenticated: boolean;
+  knownLead: boolean;
+  badLogin: boolean;
+}
+
+export interface IAuthStoreState {
+  accessToken: string | null;
+  authData: IAuthStorePayload;
+  validToken: boolean;
+  viewportKey: string;
+  beliefs: { [key: string]: string };
+  lastSync: number;
+  referrer: IReferrer;
+  fingerprint: string;
+  setFingerprint: any;
+  setReferrer: any;
+  setViewportKey: any;
+  setLastSync: any;
+  unsetBelief: any;
+  updateBeliefs: any;
+  updateAuthData: any;
+  isLoggedIn: any;
+  login: any;
+  logout: any;
+}
+
+export interface IAuthStoreLoginResponse {
+  tokens: string;
+  jwt: string | null;
+  auth: boolean;
+  knownLead: boolean;
+  firstname: string | null;
+  fingerprint: string;
+  encryptedEmail: string | null;
+  encryptedCode: string | null;
+  beliefs: object | null;
+}
+
+export interface IReferrer {
+  httpReferrer?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  utmTerm?: string;
+  utmContent?: string;
+}

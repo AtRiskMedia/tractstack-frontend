@@ -1,13 +1,17 @@
 import { inView } from "./inView";
+import { getTokens } from "../api/axiosClient";
 import { eventStream } from "./eventStream";
 import { events, current, locked } from "../store/events";
 import { eventProcessQueue } from "./eventProcessQueue";
 
 export function init() {
+  console.log(`init`);
+  getTokens();
+  console.log(`init done`);
+
   class Link extends HTMLElement {
     constructor() {
       super();
-      const id = this.dataset.id;
       const a = this.querySelector("a");
       if (a)
         a.addEventListener("click", async () => {
