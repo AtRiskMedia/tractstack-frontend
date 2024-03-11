@@ -12,12 +12,6 @@ export default defineConfig({
     mode: "standalone",
   }),
   site: SITE.website,
-  integrations: [
-    tailwind({
-      applyBaseStyles: false,
-    }),
-    react(),
-    sitemap(),
-  ],
+  integrations: [tailwind(), react(), sitemap()],
   scopedStyleStrategy: "where",
 });

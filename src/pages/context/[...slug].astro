@@ -40,30 +40,10 @@ export const prerender = true;
 <astro-storyfragment data-id={JSON.stringify(current)}>
   <ul>
     <astro-pane key={`pane-${id}`}>
-      <li
-        id={`pane-${id}`}
-        class="pane"
-        hx-get={`/partials/pane/${id}`}
-        hx-trigger="load"
-        hx-swap="innerHTML"
-      >
-      </li>
+      <li id={`pane-${id}`} class="pane"></li>
     </astro-pane>
   </ul>
 </astro-storyfragment>
-
-<astro-link data-id={`welcome`}>
-  <a href="/welcome">welcome</a>
-</astro-link>
-<astro-link data-id={`get`}>
-  <a href="/get">get</a>
-</astro-link>
-<astro-link data-id={`agency`}>
-  <a href="/agency">agency</a>
-</astro-link>
-<astro-link data-id={`#`}>
-  <a href="#">#</a>
-</astro-link>
 
 <script>
   import { init } from "../../utils/init";

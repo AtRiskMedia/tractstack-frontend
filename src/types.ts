@@ -200,6 +200,13 @@ export interface MenuDatum extends Menu {
   field_options: string;
 }
 
+export interface ContentMap {
+  id: string;
+  slug: string;
+  parentId: string;
+  parentSlug: string;
+}
+
 export interface StoryFragmentProps {
   title: string;
   id: string;
@@ -209,11 +216,12 @@ export interface StoryFragmentProps {
   tailwindBgColour: string | undefined;
   menu: MenuDatum;
   panes: PaneNode[];
-  panesPayload: PaneDatum[];
+  panesPayload: PaneDatumProps[];
   tractStackId: string;
   tractStackTitle: string;
   tractStackSlug: string;
   changed: number;
+  contentMap: ContentMap[];
 }
 
 // axios sync to concierge

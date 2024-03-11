@@ -115,7 +115,15 @@ export const getAllStoryFragmentDatum = async (): Promise<
 export const getAllStoryFragments = async (): Promise<StoryFragment[]> => {
   const params: DrupalJsonApiParams = new DrupalJsonApiParams();
   params
-    .addFields("node--story_fragment", ["type", "id", "title", "field_slug"])
+    .addFields("node--story_fragment", [
+      "type",
+      "id",
+      "title",
+      "field_slug",
+      "field_tract_stack",
+    ])
+    .addInclude(["field_tract_stack"])
+    .addFields("node--tractstack", ["type", "id", "title", "field_slug"])
     .addFilter("status", "1");
   const path: string = params.getQueryString();
   return await fetchUrl(baseUrl + "/jsonapi/node/story_fragment?" + path);

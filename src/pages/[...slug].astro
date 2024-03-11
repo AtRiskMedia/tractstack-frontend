@@ -7,14 +7,27 @@ import type {
   TractStack,
   Pane,
   PaneDatum,
+  PaneDatumProps,
   PaneNode,
   StoryFragmentDatum,
   StoryFragment,
   StoryFragmentProps,
+  ContentMap,
 } from "../types";
+import { cleanPaneDatum } from "../utils/cleanPaneDatum";
 
 export async function getStaticPaths() {
   const storyFragments: StoryFragmentDatum[] = await getAllStoryFragmentDatum();
+  const contentMap: ContentMap[] = storyFragments.map(
+    (s: StoryFragmentDatum) => {
+      return {
+        id: s.id,
+        slug: s.field_slug,
+        parentId: s.field_tract_stack.id,
+        parentSlug: s.field_tract_stack.field_slug,
+      };
+    }
+  );
   const panes: PaneDatum[] = await getAllPaneDatum();
   const pathsPromises: Promise<{
     params: { slug: string };
@@ -36,13 +49,14 @@ export async function getStaticPaths() {
           storyFragment.field_tailwind_background_colour || undefined,
         menu: storyFragment.field_menu,
         panes: storyFragment.field_panes,
-        panesPayload: panes.filter((payload: PaneDatum) =>
-          thisPanes.includes(payload.id)
+        panesPayload: cleanPaneDatum(
+          panes.filter((payload: PaneDatum) => thisPanes.includes(payload.id))
         ),
         tractStackId: storyFragment.field_tract_stack.id,
         tractStackTitle: storyFragment.field_tract_stack.title,
         tractStackSlug: storyFragment.field_tract_stack.field_slug,
         changed: msTimecode,
+        contentMap,
       },
     };
   });
@@ -61,16 +75,14 @@ const {
   tractStackTitle,
   tractStackSlug,
   changed,
+  contentMap,
 }: StoryFragmentProps = Astro.props;
 const current = {
   id,
   slug,
-  type: `StoryFragment`,
   parentId: tractStackId,
   parentSlug: tractStackSlug,
-  parentType: `TractStack`,
 };
-console.log(panesPayload);
 export const prerender = true;
 ---
 
@@ -79,6 +91,7 @@ export const prerender = true;
 <p><strong>slug:</strong> {slug}</p>
 <p><strong>id:</strong> {id}</p>
 <p><strong>changed:</strong> {changed}</p>
+<p><strong>contentMap:</strong> {JSON.stringify(contentMap)}</p>
 <h2>Parent</h2>
 <p>{tractStackTitle}</p>
 <p><strong>slug:</strong> {tractStackSlug}</p>
@@ -99,9 +112,27 @@ export const prerender = true;
         <astro-pane key={`pane-${pane.id}`}>
           <li id={`pane-${pane.id}`} class="pane">
             {idx <= 2 ? (
-              <PaneReact client:load id={pane.id} />
+              <PaneReact
+                client:load
+                current={current}
+                contentMap={contentMap}
+                payload={
+                  panesPayload
+                    .filter((p: PaneDatumProps) => p.id === pane.id)
+                    .at(0)!
+                }
+              />
             ) : (
-              <PaneReact client:visible id={pane.id} />
+              <PaneReact
+                client:visible
+                current={current}
+                contentMap={contentMap}
+                payload={
+                  panesPayload
+                    .filter((p: PaneDatumProps) => p.id === pane.id)
+                    .at(0)!
+                }
+              />
             )}
           </li>
         </astro-pane>
