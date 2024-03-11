@@ -41,3 +41,6 @@ src/config.ts
 # favicon (whitelist)
 public/favicon.svg
 !public/favicon.svg.example
+
+# tailwind whitelist *auto generated
+tailwind.whitelist
