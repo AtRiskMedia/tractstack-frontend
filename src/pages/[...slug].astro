@@ -187,12 +187,18 @@ export const prerender = true;
 </astro-storyfragment>
 
 <div class="my-6">
-{contentMap.filter(m=>m.slug!==slug).map(m=>
-<astro-link data-id={m.slug}>
-  <a class="py-2 px-3 hover:text-blue-800" href=`/${m.slug}`>{m.slug}</a>
-</astro-link>
-    )}
-    </div>
+  {
+    contentMap
+      .filter(m => m.slug !== slug)
+      .map(m => (
+        <astro-link data-id={m.slug}>
+          <a class="py-2 px-3 hover:text-blue-800" href={`/${m.slug}`}>
+            {m.slug}
+          </a>
+        </astro-link>
+      ))
+  }
+</div>
 
 <script>
   import { init } from "../utils/init";

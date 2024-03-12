@@ -54,13 +54,19 @@ export default function PaneRender({ payload }: PaneRenderProps) {
   const paneFragmentStyle = {
     gridArea: "1/1/1/1",
   };
+  const bgColour = payload.optionsPayload.paneFragmentsPayload
+    .filter((a: any) => a.internal.type === `bgColour`)
+    .at(0).bgColour;
+  const bgColourStyle = bgColour ? { backgroundColor: bgColour } : {};
+  const styles = { ...paneFragmentStyle, ...bgColourStyle };
   const children = payload.optionsPayload.paneFragmentsPayload
+    .filter((a: any) => a.internal.type !== `bgColour`)
     .sort((a: any, b: any) => (a?.field_zindex || 0) - (b?.field_zindex || 0))
     .map((f: any) => {
       return (
         <div
           className="relative w-full h-full justify-self-start"
-          style={paneFragmentStyle}
+          style={styles}
           key={f.id}
         >
           {compositor(f)}

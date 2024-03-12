@@ -1,33 +1,42 @@
-import {classNames} from "@tractstack/helpers"
+import { classNames } from "@tractstack/helpers";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export function compositor(payload: any) {
-  const hasHidden = payload.hiddenViewports.includes(`desktop`)
-  || payload.hiddenViewports.includes(`tablet`) ||
-payload.hiddenViewports.includes(`mobile`)
-  const hidden = hasHidden ? ``.concat( payload.hiddenViewports.includes(`desktop`) ? `xl:hidden` : `xl:visible`,
-payload.hiddenViewports.includes(`tablet`) ? `md:hidden` : `md:visible`,
-payload.hiddenViewports.includes(`mobile`) ? `hidden` : `visible`) : ``
+  const hasHidden =
+    payload.hiddenViewports.includes(`desktop`) ||
+    payload.hiddenViewports.includes(`tablet`) ||
+    payload.hiddenViewports.includes(`mobile`);
+  const hidden = hasHidden
+    ? ``.concat(
+        payload.hiddenViewports.includes(`desktop`)
+          ? `xl:hidden`
+          : `xl:visible`,
+        payload.hiddenViewports.includes(`tablet`) ? `md:hidden` : `md:visible`,
+        payload.hiddenViewports.includes(`mobile`) ? `hidden` : `visible`
+      )
+    : ``;
 
   switch (payload.internal.type) {
     case `bgColour`:
       return (
         <div
-          className={classNames(`w-full h-full`,hidden)}
+          className={classNames(`w-full h-full`, hidden)}
           style={{ backgroundColor: payload.bgColour }}
         />
       );
-      break;
 
+    case `markdown`:
+      //console.log(payload)
+      return <div>markdown</div>;
 
     case `bgPane`:
       return [
         <div key="mobile" className="visible md:hidden" />,
         <div key="tablet" className="hidden md:visible xl:hidden" />,
-        <div key="desktop" className="hidden xl:visible" />
-      ]
+        <div key="desktop" className="hidden xl:visible" />,
+      ];
 
-      /*
+    /*
     case `bgPane`:
     {
       const optionsPayload = payload.optionsPayload;
@@ -126,7 +135,6 @@ payload.hiddenViewports.includes(`mobile`) ? `hidden` : `visible`) : ``
       }
 */
 
-    case `markdown`:
     default:
       console.log(`missed type in compositor: ${payload.internal.type}`);
       return <p>{payload.internal.type}</p>;
