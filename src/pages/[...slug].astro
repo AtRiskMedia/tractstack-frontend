@@ -1,6 +1,7 @@
 ---
+import { classNames } from "@tractstack/helpers";
 import Layout from "@layouts/Layout.astro";
-import PaneReact from "@components/PaneReact.tsx";
+import PaneWrapper from "@components/PaneWrapper.tsx";
 import { getAllStoryFragmentDatum, getAllPaneDatum } from "../api/drupal";
 import type {
   MenuDatum,
@@ -68,6 +69,7 @@ const {
   slug,
   drupalNid,
   socialImagePath,
+  tailwindBgColour,
   menu,
   panes,
   panesPayload,
@@ -83,6 +85,37 @@ const current = {
   parentId: tractStackId,
   parentSlug: tractStackSlug,
 };
+
+const hiddenPanes: { [key: string]: boolean } = panesPayload.reduce(function (
+  acc,
+  cur
+) {
+  if (cur.id === `dd3569e6-0b60-4087-9cdf-108efec8f9db`)
+    if (cur.optionsPayload.hiddenPane) return { ...acc, [cur.id]: true };
+  return acc;
+}, {});
+const overflowHidden: { [key: string]: boolean } = panesPayload.reduce(
+  function (acc, cur) {
+    if (cur.optionsPayload.overflowHidden) return { ...acc, [cur.id]: true };
+    return acc;
+  },
+  {}
+);
+const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
+  acc,
+  cur
+) {
+  if (cur.optionsPayload.maxHScreen) return { ...acc, [cur.id]: true };
+  return acc;
+}, {});
+
+//import { tailwindWhitelist } from "../utils/tailwindWhitelist";
+//const panes2: PaneDatum[] = await getAllPaneDatum();
+//const whitelist = tailwindWhitelist(cleanPaneDatum(panes2));
+//<ul>
+//  {whitelist.map(s => <li>{s}</li>)}
+//</ul>
+
 export const prerender = true;
 ---
 
@@ -106,13 +139,25 @@ export const prerender = true;
 }
 <h2>Panes</h2>
 <astro-storyfragment data-id={JSON.stringify(current)}>
-  <ul>
+  <ul class={tailwindBgColour}>
     {
       panes.map((pane: PaneNode, idx: number) => (
         <astro-pane key={`pane-${pane.id}`}>
-          <li id={`pane-${pane.id}`} class="pane">
+          <li
+            id={`pane-${pane.id}`}
+            class={classNames(
+              `pane`,
+              typeof overflowHidden[pane.id] === `boolean`
+                ? `overflow-hidden`
+                : ``,
+              typeof maxHScreen[pane.id] === `boolean` ? `h-max-screen` : ``
+            )}
+            data-hidden={
+              typeof hiddenPanes[pane.id] === `boolean` ? `true` : `false`
+            }
+          >
             {idx <= 2 ? (
-              <PaneReact
+              <PaneWrapper
                 client:load
                 current={current}
                 contentMap={contentMap}
@@ -123,7 +168,7 @@ export const prerender = true;
                 }
               />
             ) : (
-              <PaneReact
+              <PaneWrapper
                 client:visible
                 current={current}
                 contentMap={contentMap}

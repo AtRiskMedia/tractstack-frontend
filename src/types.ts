@@ -157,12 +157,12 @@ export interface PaneDatumProps {
   id: string;
   slug: string;
   drupalNid: number;
-  optionsPayload: any;
+  optionsPayload: PaneOptionsPayload;
   isContextPane: boolean;
-  heightRatioDestop: string;
+  heightRatioDesktop: string;
   heightRatioTablet: string;
   heightRatioMobile: string;
-  heightOffsetDestop: number;
+  heightOffsetDesktop: number;
   heightOffsetTablet: number;
   heightOffsetMobile: number;
   images: FileNode[];
@@ -295,27 +295,6 @@ export interface IAuthStorePayload {
   badLogin: boolean;
 }
 
-export interface IAuthStoreState {
-  accessToken: string | null;
-  authData: IAuthStorePayload;
-  validToken: boolean;
-  viewportKey: string;
-  beliefs: { [key: string]: string };
-  lastSync: number;
-  referrer: IReferrer;
-  fingerprint: string;
-  setFingerprint: any;
-  setReferrer: any;
-  setViewportKey: any;
-  setLastSync: any;
-  unsetBelief: any;
-  updateBeliefs: any;
-  updateAuthData: any;
-  isLoggedIn: any;
-  login: any;
-  logout: any;
-}
-
 export interface IAuthStoreLoginResponse {
   tokens: string;
   jwt: string | null;
@@ -335,4 +314,42 @@ export interface IReferrer {
   utmCampaign?: string;
   utmTerm?: string;
   utmContent?: string;
+}
+
+export interface Impression {
+  [key: string]: {
+    id: string;
+    title: string;
+    body: string;
+    buttonText: string;
+    actionsLisp: string;
+    parentId: string;
+  };
+}
+
+export interface CodeHook {
+  target: string;
+  url: string | undefined;
+  height: string | undefined;
+  width: string | undefined;
+}
+
+export interface PaneRenderProps {
+  payload: PaneDatumProps;
+}
+
+export interface Beliefs {
+  [key: string]: string | string[];
+}
+
+export interface PaneOptionsPayload {
+  id: string;
+  paneFragmentsPayload: any[];
+  impressions: Impression[];
+  codeHook: CodeHook;
+  hiddenPane: boolean;
+  overflowHidden: boolean;
+  maxHScreen: boolean;
+  heldBeliefs: Beliefs[];
+  withheldBeliefs: Beliefs[];
 }

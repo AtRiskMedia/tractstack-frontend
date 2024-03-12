@@ -1,6 +1,7 @@
 import type { PaneDatumProps, ContentMap } from "../types";
+import PaneRender from "../components/PaneRender";
 
-const Pane = (props: {
+const PaneWrapper = (props: {
   payload: PaneDatumProps;
   current: ContentMap;
   contentMap: ContentMap[];
@@ -13,30 +14,17 @@ const Pane = (props: {
   // - what needs to be intercepted?
   // -- codehook
   //
+
   const hasCodeHook =
     typeof props?.payload?.optionsPayload?.codeHook?.target === `string`;
-
   if (hasCodeHook)
     return (
-      <div className="min-h-80 my-80 font-bold bg-yellow-300">
-        <p>
-          <strong>id:</strong> {props.payload.id}
-        </p>
-        <p>
-          <strong>payload:</strong> {JSON.stringify(props.payload)}
-        </p>
+      <div className="bg-yellow-300">
+        <p>codehook here {props.payload.optionsPayload.codeHook.target}</p>
       </div>
     );
-  return (
-    <div className="min-h-80 my-80 font-bold">
-      <p>
-        <strong>id:</strong> {props.payload.id}
-      </p>
-      <p>
-        <strong>payload:</strong> {JSON.stringify(props.payload)}
-      </p>
-    </div>
-  );
+
+  return <PaneRender payload={props.payload} />;
 };
 
-export default Pane;
+export default PaneWrapper;

@@ -22,6 +22,7 @@
     "@nanostores/persistent": "^0.10.1",
     "@opuu/inview": "^2.0.1",
     "@shopify/hydrogen-react": "^2024.1.1",
+    "@tractstack/helpers": "^0.1.26",
     "@tractstack/types": "^0.1.15",
     "@types/react": "^18.2.64",
     "astro": "^4.4.15",

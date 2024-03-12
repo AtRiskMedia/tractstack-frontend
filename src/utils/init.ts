@@ -3,6 +3,7 @@ import { getTokens } from "../api/axiosClient";
 import { eventStream } from "./eventStream";
 import { events, current, locked } from "../store/events";
 import { eventProcessQueue } from "./eventProcessQueue";
+import { handleResize } from "../utils/handleResize";
 
 export function init() {
   console.log(`init`);
@@ -66,4 +67,7 @@ export function init() {
 
   eventStream();
   inView();
+
+  window.addEventListener(`resize`, handleResize);
+  handleResize();
 }

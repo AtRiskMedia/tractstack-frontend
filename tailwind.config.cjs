@@ -12,7 +12,7 @@ module.exports = {
   content: ["./tailwind.whitelist","./src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}"],
   theme: {
     screens: {
-      xs: "600px",
+      xs: "0px",
       md: "801px",
       xl: "1367px",
     },
@@ -57,18 +57,6 @@ module.exports = {
         mono: ["IBM Plex Mono", "monospace"],
       },
 
-      typography: {
-        DEFAULT: {
-          css: {
-            pre: {
-              color: false,
-            },
-            code: {
-              color: false,
-            },
-          },
-        },
-      },
     },
   },
 };
