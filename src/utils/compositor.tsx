@@ -26,7 +26,7 @@ export function compositor(payload: any) {
       );
 
     case `markdown`:
-      //console.log(payload)
+      console.log(payload)
       return <div>markdown</div>;
 
     case `bgPane`:

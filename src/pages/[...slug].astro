@@ -37,6 +37,11 @@ export async function getStaticPaths() {
     const date = new Date(storyFragment.changed);
     const msTimecode = date.getTime();
     const thisPanes = storyFragment.field_panes.map((p: PaneNode) => p.id);
+    const panesPayload = panes
+      .filter((payload: PaneDatum) => thisPanes.includes(payload.id))
+      .map((payload: PaneDatum) => {
+        return cleanPaneDatum(payload);
+      });
 
     return {
       params: { slug: storyFragment.field_slug },
@@ -50,9 +55,7 @@ export async function getStaticPaths() {
           storyFragment.field_tailwind_background_colour || undefined,
         menu: storyFragment.field_menu,
         panes: storyFragment.field_panes,
-        panesPayload: cleanPaneDatum(
-          panes.filter((payload: PaneDatum) => thisPanes.includes(payload.id))
-        ),
+        panesPayload,
         tractStackId: storyFragment.field_tract_stack.id,
         tractStackTitle: storyFragment.field_tract_stack.title,
         tractStackSlug: storyFragment.field_tract_stack.field_slug,
