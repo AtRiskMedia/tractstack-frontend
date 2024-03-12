@@ -63,13 +63,14 @@ export default function PaneRender({ payload }: PaneRenderProps) {
     .filter((a: any) => a.internal.type !== `bgColour`)
     .sort((a: any, b: any) => (a?.field_zindex || 0) - (b?.field_zindex || 0))
     .map((f: any) => {
+      const child = compositor(f, payload.markdown);
       return (
         <div
           className="relative w-full h-full justify-self-start"
           style={styles}
           key={f.id}
         >
-          {compositor(f)}
+          {child}
         </div>
       );
     });

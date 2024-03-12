@@ -1,4 +1,4 @@
-import type { PaneDatum, PaneDatumProps } from "../types";
+import type { PaneDatum } from "../types";
 
 export function cleanPaneDatum(pane: PaneDatum) {
   return {
