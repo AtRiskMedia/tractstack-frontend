@@ -22,6 +22,9 @@ export function markdownPane(payload: any, markdown: MarkdownDatum[]) {
     .at(0)!;
   //console.log(thisMarkdown);
   //console.log(payload)
-  return <div className={classNames(`w-full h-full`, hidden)}>
-    {thisMarkdown.field_markdown_body}</div>;
+  return (
+    <div className={classNames(`w-full h-full`, hidden)}>
+      {thisMarkdown.field_markdown_body}
+    </div>
+  );
 }

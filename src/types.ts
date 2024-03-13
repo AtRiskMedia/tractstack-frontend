@@ -342,6 +342,46 @@ export interface Beliefs {
   [key: string]: string | string[];
 }
 
+export interface PaneFragmentDatum {
+  id: string;
+  zindex: number | undefined;
+  hiddenViewports: string;
+}
+export interface BgColourDatum extends PaneFragmentDatum {
+  internal: {
+    type: `bgColour`;
+  };
+  bgColour: string;
+}
+export interface BgPaneDatum extends PaneFragmentDatum {
+  internal: {
+    type: `bgPane`;
+  };
+  shape?: string;
+  shapeDesktop?: string;
+  shapeTablet?: string;
+  shapeMobile?: string;
+  optionsPayload: any; // FIX
+}
+export interface MarkdownPaneDatum extends PaneFragmentDatum {
+  internal: {
+    type: `markdown`;
+  };
+  imageMaskShape: string;
+  imageMaskShapeDesktop?: string;
+  imageMaskShapeTablet?: string;
+  imageMaskShapeMobile?: string;
+  textShapeOutside: string;
+  textShapeOutsideDesktop?: string;
+  textShapeOutsideTablet?: string;
+  textShapeOutsideMobile?: string;
+  optionsPayload: BgColourDatum[] | BgPaneDatum[] | MarkdownPaneDatum[];
+  isModal: boolean;
+  markdownId?: string;
+  markdownBody?: string;
+  // incomplete
+}
+
 export interface PaneOptionsPayload {
   id: string;
   paneFragmentsPayload: any[];

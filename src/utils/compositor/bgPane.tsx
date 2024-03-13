@@ -1,20 +1,23 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export function bgPane(payload: any) {
-  console.log(payload.id)
-  // filter on hiddenViewports and don't return
-  return [
-    <div key="mobile" className="visible md:hidden" />,
-    <div key="tablet" className="hidden md:visible xl:hidden" />,
-    <div key="desktop" className="hidden xl:visible" />,
-  ];
-}
+import { classNames, Svg } from "@tractstack/helpers";
+import { svgImageMask } from "./svgImageMask";
+import type { BgPaneDatum } from "../../types";
 
-    /*
-    case `bgPane`:
-    {
-      const optionsPayload = payload.optionsPayload;
-      const hasArtpack = optionsPayload?.artpack;
-      const hasArtpackAll = hasArtpack?.all;
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export function bgPane(payload: BgPaneDatum) {
+  const optionsPayload = payload.optionsPayload;
+  const hasArtpack = optionsPayload?.artpack;
+  const hasArtpackAll = hasArtpack?.all;
+  const baseClasses: { [key: string]: string } = {
+    mobile: `md:hidden`,
+    tablet: `hidden md:block xl:hidden`,
+    desktop: `hidden xl:block`,
+  };
+
+  return [`mobile`, `tablet`, `desktop`]
+    .map((viewportKey: string) => {
+      if (payload.hiddenViewports.includes(viewportKey)) return null;
+
+      // check for artpack payload
       const hasArtpackViewport =
         hasArtpack &&
         typeof hasArtpack[viewportKey] !== `undefined` &&
@@ -28,7 +31,8 @@ export function bgPane(payload: any) {
       const filenamePrefix =
         artpackCollection !== `custom` ? `${artpackCollection}-` : ``;
       const artpackImage = artpack?.image;
-      const thisId = `${viewportKey}-${payload.id}-pane`;
+
+      // check for shape mask
       const thisShapeSelector =
         viewportKey === `desktop`
           ? payload.shapeDesktop
@@ -38,12 +42,13 @@ export function bgPane(payload: any) {
               ? payload.shapeMobile
               : payload.shape;
       const shapeName = thisShapeSelector !== `none` ? thisShapeSelector : null;
+      const thisId = `${viewportKey}-${payload.id}-pane`;
       const shape =
-        typeof shapeName === `string` ? (
-          Svg(shapeName, viewportKey, thisId)
-        ) : (
-          <></>
-        );
+        typeof shapeName === `string`
+          ? Svg(shapeName, viewportKey, thisId)
+          : null;
+
+      // check for tailwind classes
       const hasClassNamesParent = optionsPayload?.classNamesParent;
       const hasClassNamesParentAll =
         hasClassNamesParent && optionsPayload.classNamesParent.all;
@@ -56,56 +61,86 @@ export function bgPane(payload: any) {
           ? optionsPayload.classNamesParent[viewportKey]
           : ``;
 
-      // modes -- standard = as-is
+      // based on artpack mode
       // break = use artpack, show svg (from shapes), no mask
       // mask = use artpack, show image via css url, apply mask via css
+      // else just show shape
+      //
+      switch (artpackMode) {
+        case `break`: {
+          const breakSvg =
+            typeof artpackImage === `string` &&
+            typeof artpackCollection === `string` ? (
+              Svg(`${artpackCollection}${artpackImage}`, thisId, viewportKey)
+            ) : (
+              <></>
+            );
+          const breakSvgFill =
+            breakSvg && typeof artpack?.svgFill === `string`
+              ? artpack.svgFill
+              : `none`;
+          const breakCss = breakSvg ? { fill: breakSvgFill } : {};
+          return (
+            <div
+              key={`${viewportKey}-${payload.id}`}
+              className={baseClasses[viewportKey]}
+              style={breakCss}
+            >
+              {breakSvg}
+            </div>
+          );
+        }
 
-      const breakSvg =
-        artpackMode === `break` &&
-        typeof artpackImage === `string` &&
-        typeof artpackCollection === `string`
-          ? Svg(`${artpackCollection}${artpackImage}`, thisId, viewportKey)
-          : false;
-      const breakSvgFill =
-        breakSvg && typeof artpack?.svgFill === `string`
-          ? artpack.svgFill
-          : `none`;
-      const maskSvg =
-        artpackMode === `mask` && shapeName
-          ? SvgImageMaskPayload(shapeName, thisId, viewportKey)
-          : false;
-      const maskObjectFit =
-        maskSvg && typeof artpack?.objectFit === `string`
-          ? artpack.objectFit
-          : `cover`;
-      const thisShape = breakSvg || (maskSvg ? <></> : shape);
-      const breakCss = breakSvg
-        ? `#${thisId} svg { fill: ${breakSvgFill}; }`
-        : ``;
-      const url = `/${artpackCollection}-artpack/${viewportPrefix}/${filenamePrefix}${artpackImage}.${artpackFiletype}`;
-      const maskCss =
-        maskSvg &&
-        artpackCollection &&
-        artpackImage &&
-        artpackFiletype &&
-        maskObjectFit
-          ? `#${thisId} { background:url('${url}'); background-size:${maskObjectFit}; ${zIndex} ${maskSvg} }`
-          : ``;
-      const css = `#${thisId} { ${zIndex} } ${breakCss} ${maskCss}`;
-      console.log(css);
-      return (
-        <div
-          id={thisId}
-          key={thisId}
-          className={classNames(
-            `paneFragment paneFragmentShape`,
-            classNamesParent
-          )}
-        >
-          {thisShape}
-        </div>
-      );
+        case `mask`: {
+          // uses empty div; background-url added via css
+          const maskSvg =
+            artpackMode === `mask` && shapeName
+              ? svgImageMask(shapeName, thisId, viewportKey)
+              : null;
+          const maskObjectFit =
+            maskSvg && typeof artpack?.objectFit === `string`
+              ? artpack.objectFit
+              : `cover`;
+          const url = `url(/${artpackCollection}-artpack/${viewportPrefix}/${filenamePrefix}${artpackImage}.${artpackFiletype})`;
+          const maskCss =
+            maskSvg &&
+            artpackCollection &&
+            artpackImage &&
+            artpackFiletype &&
+            maskObjectFit
+              ? {
+                  backgroundImage: url,
+                  backgroundSize: maskObjectFit,
+                  WebkitMaskImage: `url("data:image/svg+xml;base64,PHN2ZyBpZD0ic3ZnX19kZXNrdG9wLTBjNDg4M2U4LTE1NTEtNGU4NS1hYWNjLTgwMGJmZmMwZmZkOS1wYW5lIiBkYXRhLW5hbWU9InN2Z19fY29taWMxOTIwcjNtYWluMi0tZGVza3RvcCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMTkyMCAxMTIxIiBjbGFzcz0ic3ZnIHN2Z19fY29taWMxOTIwcjNtYWluMiBzdmdfX2NvbWljMTkyMHIzbWFpbjItLWRlc2t0b3AiPjxkZXNjIGlkPSJkZXNjIj5kZWNvcmF0aXZlIGJhY2tncm91bmQ8L2Rlc2M+PGc+PHBhdGggZD0iTSAxOTA0LDE3LjEzNTkzIFYgMTA5MS4wNDgyIGEgMjMuMjkwNDgzLDIzLjI3MDI2MyAwIDAgMSAtNC41MTUyLDEuNTY2NSBjIC0zMS40MDgsNC4wMzU0IC02Mi44MDU5LDcuOTMxOSAtOTQuNTQxNCw4LjU5NjIgLTIyMi4xOTczLDQuMzkyMyAtNDQ0LjQzNDMsMC43MzM4IC02NjYuNjQxNiwxLjk4MyAtMS4zMjk4LDAgLTIuNjQ5NiwwIC0zLjk2OTQsMCAtMTcuNzgyOSwtMC41NjUxIC0yNi4zMTcyLC02LjgyMTUgLTI5Ljk4ODksLTI0LjE2MjYgLTUuNzg1NCwtMjcuMzY1MSAtMTAuODA2NywtNTQuODg4OCAtMTUuOTc2OCwtODIuMzgyODYgLTE0Ljc2NjIsLTc4LjYxNTI0IC0yOS4zMTQxLC0xNTcuMjcwMTEgLTQ0LjIwOTMsLTIzNS44NjU1MSBRIDEwMTkuMDYwOSw2MjguMzM5NzQgOTkzLjU0NzUzLDQ5NS45ODU3OCBjIC0xMi40NDQwNywtNjQuOTcyMzEgLTI1LjA3NjcsLTEyOS44ODUxMyAtMzcuMjYyNzYsLTE5NC45MTY5NSAtNC4xMTgyNiwtMjEuOTcxNDEgLTYuODA3NTQsLTQ0LjIwMDYyIC0xMC42OTc1NCwtNjYuMjExNjcgLTUuMzI4OTQsLTMwLjE1MTIxIC0xMS4zMjI3NCwtNjAuMTczNTIgLTE2LjcxMTIsLTkwLjMwNDg5IGEgOTIuNjQ1OTA5LDkyLjU2NTQ3NiAwIDAgMSAtMC45OTIzNSwtMTguNjEwMjYgMTIuNzAyMDk2LDEyLjY5MTA2OCAwIDAgMSA4LjYyMzUzLC0xMi4xMjU5MiBjIDQuMjc3MDIsLTEuNjA2MjIgOC42OTMsLTMuMzExNTggMTMuMTc4NDIsLTMuODc2NzMgMjcuMTUwNzQsLTMuNDUwMzggNTQuMzQxMTcsLTYuNTMzOTEgODEuNTAxNzcsLTkuODM1NTcgcSA0NS42NDgyLC01LjU0MjQzMiA5MS4yOTYzLC0xMS4yNTM0MTMgYyAzMy43NCwtNC4yMDM5MTUgNjcuMzQxLC04LjkyMzQwNiAxMDEuMTAwOCwtMTIuNjMxNTc4IDUyLjA5ODQsLTUuNzEwOTgxIDEwNC4yODYyLC0xMC42Njg0MjkgMTU2LjQyNDMsLTE2LjEwMTc5MyA0NC4yNTg4LC00LjYxMDQyNyA4OC40ODc5LC05LjYyNzM2MyAxMzIuNzY2NiwtMTQuMTE4ODExIDQ1LjU4ODcsLTQuNjMwMjU5IDkxLjE5NzEsLTkuMTgxMTk3IDEzNi44NTUyLC0xMy4xNDcxNTQgMzIuODQ2OCwtMi44NTU0OSA2NS43ODMsLTQuNTcwNzY5IDk4LjY2OTUsLTcuMDM5NTc4IDI3LjkzNDcsLTIuMDgyMTI4IDU1LjgyOTcsLTQuNzI5NDA1IDgzLjc4NDIsLTYuNzIyMjk4IDE5LjczNzksLTEuMzk4MDAxIDM5LjUxNTQsLTIuMjAxMTA5IDU5LjI5MjksLTMuMDUzNzkgMy44NTA0LC0wLjIxODEyNyA3Ljc1MDQsMC42MjQ2MzkgMTIuNjIyOCwxLjEwMDU1NSB6Ij48L3BhdGg+PC9nPjwvc3ZnPg==")`,
+                  maskImage: `url("data:image/svg+xml;base64,PHN2ZyBpZD0ic3ZnX19kZXNrdG9wLTBjNDg4M2U4LTE1NTEtNGU4NS1hYWNjLTgwMGJmZmMwZmZkOS1wYW5lIiBkYXRhLW5hbWU9InN2Z19fY29taWMxOTIwcjNtYWluMi0tZGVza3RvcCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMTkyMCAxMTIxIiBjbGFzcz0ic3ZnIHN2Z19fY29taWMxOTIwcjNtYWluMiBzdmdfX2NvbWljMTkyMHIzbWFpbjItLWRlc2t0b3AiPjxkZXNjIGlkPSJkZXNjIj5kZWNvcmF0aXZlIGJhY2tncm91bmQ8L2Rlc2M+PGc+PHBhdGggZD0iTSAxOTA0LDE3LjEzNTkzIFYgMTA5MS4wNDgyIGEgMjMuMjkwNDgzLDIzLjI3MDI2MyAwIDAgMSAtNC41MTUyLDEuNTY2NSBjIC0zMS40MDgsNC4wMzU0IC02Mi44MDU5LDcuOTMxOSAtOTQuNTQxNCw4LjU5NjIgLTIyMi4xOTczLDQuMzkyMyAtNDQ0LjQzNDMsMC43MzM4IC02NjYuNjQxNiwxLjk4MyAtMS4zMjk4LDAgLTIuNjQ5NiwwIC0zLjk2OTQsMCAtMTcuNzgyOSwtMC41NjUxIC0yNi4zMTcyLC02LjgyMTUgLTI5Ljk4ODksLTI0LjE2MjYgLTUuNzg1NCwtMjcuMzY1MSAtMTAuODA2NywtNTQuODg4OCAtMTUuOTc2OCwtODIuMzgyODYgLTE0Ljc2NjIsLTc4LjYxNTI0IC0yOS4zMTQxLC0xNTcuMjcwMTEgLTQ0LjIwOTMsLTIzNS44NjU1MSBRIDEwMTkuMDYwOSw2MjguMzM5NzQgOTkzLjU0NzUzLDQ5NS45ODU3OCBjIC0xMi40NDQwNywtNjQuOTcyMzEgLTI1LjA3NjcsLTEyOS44ODUxMyAtMzcuMjYyNzYsLTE5NC45MTY5NSAtNC4xMTgyNiwtMjEuOTcxNDEgLTYuODA3NTQsLTQ0LjIwMDYyIC0xMC42OTc1NCwtNjYuMjExNjcgLTUuMzI4OTQsLTMwLjE1MTIxIC0xMS4zMjI3NCwtNjAuMTczNTIgLTE2LjcxMTIsLTkwLjMwNDg5IGEgOTIuNjQ1OTA5LDkyLjU2NTQ3NiAwIDAgMSAtMC45OTIzNSwtMTguNjEwMjYgMTIuNzAyMDk2LDEyLjY5MTA2OCAwIDAgMSA4LjYyMzUzLC0xMi4xMjU5MiBjIDQuMjc3MDIsLTEuNjA2MjIgOC42OTMsLTMuMzExNTggMTMuMTc4NDIsLTMuODc2NzMgMjcuMTUwNzQsLTMuNDUwMzggNTQuMzQxMTcsLTYuNTMzOTEgODEuNTAxNzcsLTkuODM1NTcgcSA0NS42NDgyLC01LjU0MjQzMiA5MS4yOTYzLC0xMS4yNTM0MTMgYyAzMy43NCwtNC4yMDM5MTUgNjcuMzQxLC04LjkyMzQwNiAxMDEuMTAwOCwtMTIuNjMxNTc4IDUyLjA5ODQsLTUuNzEwOTgxIDEwNC4yODYyLC0xMC42Njg0MjkgMTU2LjQyNDMsLTE2LjEwMTc5MyA0NC4yNTg4LC00LjYxMDQyNyA4OC40ODc5LC05LjYyNzM2MyAxMzIuNzY2NiwtMTQuMTE4ODExIDQ1LjU4ODcsLTQuNjMwMjU5IDkxLjE5NzEsLTkuMTgxMTk3IDEzNi44NTUyLC0xMy4xNDcxNTQgMzIuODQ2OCwtMi44NTU0OSA2NS43ODMsLTQuNTcwNzY5IDk4LjY2OTUsLTcuMDM5NTc4IDI3LjkzNDcsLTIuMDgyMTI4IDU1LjgyOTcsLTQuNzI5NDA1IDgzLjc4NDIsLTYuNzIyMjk4IDE5LjczNzksLTEuMzk4MDAxIDM5LjUxNTQsLTIuMjAxMTA5IDU5LjI5MjksLTMuMDUzNzkgMy44NTA0LC0wLjIxODEyNyA3Ljc1MDQsMC42MjQ2MzkgMTIuNjIyOCwxLjEwMDU1NSB6Ij48L3BhdGg+PC9nPjwvc3ZnPg==")`,
+                  maskRepeat: `no-repeat`,
+                  WebkitMaskSize: `100% AUTO`,
+                  maskSize: `100% AUTO`,
+                }
+              : {};
+          return (
+            <div
+              key={`${viewportKey}-${payload.id}`}
+              className={classNames(
+                `w-full h-full`,
+                baseClasses[viewportKey],
+                classNamesParent
+              )}
+              style={maskCss}
+            ></div>
+          );
+        }
+
+        default:
+          return (
+            <div
+              key={`${viewportKey}-${payload.id}`}
+              className={classNames(baseClasses[viewportKey], classNamesParent)}
+            >
+              {shape}
+            </div>
+          );
       }
-*/
-
-
+    })
+    .filter(n => n);
+}

@@ -50,15 +50,16 @@ export default function PaneRender({ payload }: PaneRenderProps) {
       : ``
   );
 
-  // - run compositor on all paneFragments to generate child
-  const paneFragmentStyle = {
-    gridArea: "1/1/1/1",
-  };
+  // - if bgColour, set on parent div
   const bgColour = payload.optionsPayload.paneFragmentsPayload
     .filter((a: any) => a.internal.type === `bgColour`)
     .at(0).bgColour;
   const bgColourStyle = bgColour ? { backgroundColor: bgColour } : {};
-  const styles = { ...paneFragmentStyle, ...bgColourStyle };
+
+  // - run compositor on all paneFragments to generate child
+  const paneFragmentStyle = {
+    gridArea: "1/1/1/1",
+  };
   const children = payload.optionsPayload.paneFragmentsPayload
     .filter((a: any) => a.internal.type !== `bgColour`)
     .sort((a: any, b: any) => (a?.field_zindex || 0) - (b?.field_zindex || 0))
@@ -67,7 +68,7 @@ export default function PaneRender({ payload }: PaneRenderProps) {
       return (
         <div
           className="relative w-full h-full justify-self-start"
-          style={styles}
+          style={paneFragmentStyle}
           key={f.id}
         >
           {child}
@@ -77,6 +78,8 @@ export default function PaneRender({ payload }: PaneRenderProps) {
 
   return (
     <div
+      id={payload.slug}
+      style={bgColourStyle}
       className={classNames(
         paneHeightRatio,
         paneHeightOffset,

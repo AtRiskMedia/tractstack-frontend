@@ -1,18 +1,10 @@
 import { markdownPane } from "./compositor/markdownPane";
 import { bgPane } from "./compositor/bgPane";
-import type { MarkdownDatum } from "../types";
+import type { MarkdownDatum,MarkdownPaneDatum,BgPaneDatum } from "../types";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export function compositor(payload: any, markdown: MarkdownDatum[]) {
-  switch (payload.internal.type) {
-    case `markdown`:
-      return markdownPane(payload, markdown);
-
-    case `bgPane`:
-      return bgPane(payload);
-
-    default:
-      console.log(`missed type in compositor: ${payload.internal.type}`);
-      return <p>{payload.internal.type}</p>;
-  }
+export function compositor(payload: MarkdownPaneDatum | BgPaneDatum, markdown: MarkdownDatum[]) {
+  if(payload.internal.type ===  `bgPane`)
+      return bgPane(payload as BgPaneDatum);
+  if(payload.internal.type ===  `markdown`)
+      return markdownPane(payload as MarkdownPaneDatum, markdown);
 }

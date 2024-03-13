@@ -24,6 +24,7 @@ const PaneWrapper = (props: {
       </div>
     );
 
+  console.log(props.payload.optionsPayload.paneFragmentsPayload);
   return <PaneRender payload={props.payload} />;
 };
 
