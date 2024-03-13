@@ -1,8 +1,10 @@
 import { classNames } from "@tractstack/helpers";
-import type { MarkdownDatum } from "../../types";
+import type { MarkdownDatum, MarkdownPaneDatum } from "../../types";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export function markdownPane(payload: any, markdown: MarkdownDatum[]) {
+export function markdownPane(
+  payload: MarkdownPaneDatum,
+  markdown: MarkdownDatum[]
+) {
   const hasHidden =
     payload.hiddenViewports.includes(`desktop`) ||
     payload.hiddenViewports.includes(`tablet`) ||

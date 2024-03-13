@@ -2,7 +2,6 @@ import { classNames, Svg } from "@tractstack/helpers";
 import { svgImageMask } from "./svgImageMask";
 import type { BgPaneDatum } from "../../types";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export function bgPane(payload: BgPaneDatum) {
   const optionsPayload = payload.optionsPayload;
   const hasArtpack = optionsPayload?.artpack;
@@ -23,14 +22,14 @@ export function bgPane(payload: BgPaneDatum) {
         typeof hasArtpack[viewportKey] !== `undefined` &&
         hasArtpack[viewportKey];
       const artpack = (hasArtpack && hasArtpackAll) || hasArtpackViewport;
-      const artpackMode = artpack?.mode;
-      const artpackFiletype = artpack?.filetype;
-      const artpackCollection = artpack?.collection;
+      const artpackMode = artpack ? artpack.mode : null;
+      const artpackFiletype = artpack ? artpack.filetype : null;
+      const artpackCollection = artpack ? artpack.collection : null;
       const viewportPrefix =
         viewportKey === `desktop` || viewportKey === `tablet` ? `1920` : `800`;
       const filenamePrefix =
         artpackCollection !== `custom` ? `${artpackCollection}-` : ``;
-      const artpackImage = artpack?.image;
+      const artpackImage = artpack ? artpack.image : null;
 
       // check for shape mask
       const thisShapeSelector =
@@ -50,16 +49,15 @@ export function bgPane(payload: BgPaneDatum) {
 
       // check for tailwind classes
       const hasClassNamesParent = optionsPayload?.classNamesParent;
-      const hasClassNamesParentAll =
-        hasClassNamesParent && optionsPayload.classNamesParent.all;
-      const hasClassNamesParentViewport =
+      const classNamesParent =
         hasClassNamesParent &&
-        typeof optionsPayload?.classNamesParent[viewportKey] !== `undefined`;
-      const classNamesParent = hasClassNamesParentAll
-        ? optionsPayload.classNamesParent.all
-        : hasClassNamesParentViewport
-          ? optionsPayload.classNamesParent[viewportKey]
-          : ``;
+        typeof optionsPayload?.classNamesParent?.all !== `undefined`
+          ? optionsPayload.classNamesParent.all
+          : typeof optionsPayload?.classNamesParent !== `undefined` &&
+              typeof optionsPayload?.classNamesParent[viewportKey] !==
+                `undefined`
+            ? optionsPayload.classNamesParent[viewportKey]
+            : ``;
 
       // based on artpack mode
       // break = use artpack, show svg (from shapes), no mask
@@ -75,10 +73,7 @@ export function bgPane(payload: BgPaneDatum) {
             ) : (
               <></>
             );
-          const breakSvgFill =
-            breakSvg && typeof artpack?.svgFill === `string`
-              ? artpack.svgFill
-              : `none`;
+          const breakSvgFill = breakSvg && artpack ? artpack.svgFill : `none`;
           const breakCss = breakSvg ? { fill: breakSvgFill } : {};
           return (
             <div
@@ -98,9 +93,7 @@ export function bgPane(payload: BgPaneDatum) {
               ? svgImageMask(shapeName, thisId, viewportKey)
               : null;
           const maskObjectFit =
-            maskSvg && typeof artpack?.objectFit === `string`
-              ? artpack.objectFit
-              : `cover`;
+            maskSvg && artpack ? artpack.objectFit : `cover`;
           const url = `url(/${artpackCollection}-artpack/${viewportPrefix}/${filenamePrefix}${artpackImage}.${artpackFiletype})`;
           const maskCss =
             maskSvg &&

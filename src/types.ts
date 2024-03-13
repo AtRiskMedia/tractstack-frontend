@@ -361,7 +361,30 @@ export interface BgPaneDatum extends PaneFragmentDatum {
   shapeDesktop?: string;
   shapeTablet?: string;
   shapeMobile?: string;
-  optionsPayload: any; // FIX
+  optionsPayload: {
+    artpack?: {
+      [key: string]: {
+        image: string;
+        collection: string;
+        filetype: string;
+        mode: string;
+        objectFit: string;
+        svgFill?: string;
+      };
+    };
+    classNamesPayload?: {
+      [key: string]: {
+        classes: {
+          [key: string]: {
+            [key: string]: string[];
+          };
+        };
+      };
+    };
+    classNamesParent?: {
+      [key: string]: string;
+    };
+  };
 }
 export interface MarkdownPaneDatum extends PaneFragmentDatum {
   internal: {
@@ -375,11 +398,36 @@ export interface MarkdownPaneDatum extends PaneFragmentDatum {
   textShapeOutsideDesktop?: string;
   textShapeOutsideTablet?: string;
   textShapeOutsideMobile?: string;
-  optionsPayload: BgColourDatum[] | BgPaneDatum[] | MarkdownPaneDatum[];
+  optionsPayload: {
+    classNamesParent?: {
+      [key:string]: string;
+    }
+    classNamesModal?: {
+      [key:string]: string;
+    }
+    classNames?: {
+      [key:string]: {
+        [key:string]: string | string[];
+      }
+    }
+    buttons?: {
+      [key: string]: {
+        urlTarget: string;
+        callbackPayload: string;
+        className: string;
+        classNamesPayload: {
+          [key: string]: {
+            classes: {
+              [key: string]: string[] | number[];
+            };
+          };
+        };
+      };
+    };
+  };
   isModal: boolean;
   markdownId?: string;
   markdownBody?: string;
-  // incomplete
 }
 
 export interface PaneOptionsPayload {
