@@ -167,7 +167,7 @@ export interface PaneDatumProps {
   heightOffsetMobile: number;
   images: FileNode[];
   imageSvgs: FileNode[];
-  markdown: MarkdownDatum[];
+  markdown: MarkdownPaneProps[];
 }
 export interface PaneDatum extends Pane {
   drupal_internal__nid: number;
@@ -342,6 +342,15 @@ export interface Beliefs {
   [key: string]: string | string[];
 }
 
+export interface MarkdownPaneProps {
+  id: string;
+  drupalNid: number;
+  title: string;
+  body: string;
+  slug: string;
+  image: FileNode[];
+  imageSvg: FileNode[];
+}
 export interface PaneFragmentDatum {
   id: string;
   zindex: number | undefined;
@@ -400,16 +409,16 @@ export interface MarkdownPaneDatum extends PaneFragmentDatum {
   textShapeOutsideMobile?: string;
   optionsPayload: {
     classNamesParent?: {
-      [key:string]: string;
-    }
+      [key: string]: string;
+    };
     classNamesModal?: {
-      [key:string]: string;
-    }
+      [key: string]: string;
+    };
     classNames?: {
-      [key:string]: {
-        [key:string]: string | string[];
-      }
-    }
+      [key: string]: {
+        [key: string]: string | string[];
+      };
+    };
     buttons?: {
       [key: string]: {
         urlTarget: string;

@@ -1,9 +1,9 @@
 import { classNames } from "@tractstack/helpers";
-import type { MarkdownDatum, MarkdownPaneDatum } from "../../types";
+import type { MarkdownPaneProps, MarkdownPaneDatum } from "../../types";
 
 export function markdownPane(
   payload: MarkdownPaneDatum,
-  markdown: MarkdownDatum[]
+  markdown: MarkdownPaneProps[]
 ) {
   const hasHidden =
     payload.hiddenViewports.includes(`desktop`) ||
@@ -20,13 +20,13 @@ export function markdownPane(
     : ``;
 
   const thisMarkdown = markdown
-    .filter((m: MarkdownDatum) => m.id === payload.markdownId)
+    .filter((m: MarkdownPaneProps) => m.id === payload.markdownId)
     .at(0)!;
   //console.log(thisMarkdown);
   //console.log(payload)
   return (
     <div className={classNames(`w-full h-full`, hidden)}>
-      {thisMarkdown.field_markdown_body}
+      {thisMarkdown.body}
     </div>
   );
 }

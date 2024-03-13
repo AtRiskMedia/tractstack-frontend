@@ -29,7 +29,7 @@ export async function getStaticPaths() {
       };
     }
   );
-  const panes: PaneDatum[] = await getAllPaneDatum();
+  const panes = await getAllPaneDatum();
   const pathsPromises: Promise<{
     params: { slug: string };
     props: StoryFragmentProps;
@@ -37,9 +37,10 @@ export async function getStaticPaths() {
     const date = new Date(storyFragment.changed);
     const msTimecode = date.getTime();
     const thisPanes = storyFragment.field_panes.map((p: PaneNode) => p.id);
-    const panesPayload = panes
+    const panesPayload: PaneDatumProps[] = panes
       .filter((payload: PaneDatum) => thisPanes.includes(payload.id))
       .map((payload: PaneDatum) => {
+        console.log(cleanPaneDatum(payload));
         return cleanPaneDatum(payload);
       });
 

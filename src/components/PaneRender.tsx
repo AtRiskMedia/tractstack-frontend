@@ -4,12 +4,8 @@ import { compositor } from "../utils/compositor";
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 export default function PaneRender({ payload }: PaneRenderProps) {
-  //console.log(``)
-  //console.log(`payload:`)
+  // returns a Rendered Pane as a div
 
-  // this will return a Rendered Pane as a div
-  //
-  // things to do:
   // - if paneHeightRatio[Desktop|Tablet|Mobile], calculate height and inject
   const paneHeightRatioDesktop =
     Number(payload.heightRatioDesktop) === 0

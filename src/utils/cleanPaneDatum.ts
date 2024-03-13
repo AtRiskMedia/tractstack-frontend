@@ -1,6 +1,17 @@
-import type { PaneDatum } from "../types";
+import type { PaneDatum, MarkdownDatum } from "../types";
 
 export function cleanPaneDatum(pane: PaneDatum) {
+  const markdown = pane.field_markdown.map((m: MarkdownDatum) => {
+    return {
+      id: m.id,
+      drupalNid: m.drupal_internal__nid,
+      title: m.title,
+      body: m.field_markdown_body,
+      slug: m.field_slug,
+      image: m.field_image,
+      imageSvg: m.field_image_svg,
+    };
+  });
   return {
     title: pane.title,
     id: pane.id,
@@ -16,6 +27,6 @@ export function cleanPaneDatum(pane: PaneDatum) {
     heightOffsetMobile: pane.field_height_offset_mobile,
     images: pane.field_image,
     imageSvgs: pane.field_image_svg,
-    markdown: pane.field_markdown,
+    markdown: pane.field_markdown.length ? markdown : [],
   };
 }
