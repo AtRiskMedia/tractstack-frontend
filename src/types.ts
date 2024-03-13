@@ -384,7 +384,7 @@ export interface MarkdownPaneDatum extends PaneFragmentDatum {
 
 export interface PaneOptionsPayload {
   id: string;
-  paneFragmentsPayload: any[];
+  paneFragmentsPayload: BgPaneDatum[] | BgColourDatum[] | MarkdownPaneDatum[];
   impressions: Impression[];
   codeHook: CodeHook;
   hiddenPane: boolean;

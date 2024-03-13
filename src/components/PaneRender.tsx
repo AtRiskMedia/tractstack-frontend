@@ -1,5 +1,5 @@
 import { classNames } from "@tractstack/helpers";
-import type { PaneRenderProps } from "../types";
+import type { PaneRenderProps, BgColourDatum } from "../types";
 import { compositor } from "../utils/compositor";
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
@@ -51,9 +51,10 @@ export default function PaneRender({ payload }: PaneRenderProps) {
   );
 
   // - if bgColour, set on parent div
-  const bgColour = payload.optionsPayload.paneFragmentsPayload
+  const bgColourPane = payload.optionsPayload.paneFragmentsPayload
     .filter((a: any) => a.internal.type === `bgColour`)
-    .at(0).bgColour;
+    .at(0) as BgColourDatum;
+  const bgColour = bgColourPane?.bgColour;
   const bgColourStyle = bgColour ? { backgroundColor: bgColour } : {};
 
   // - run compositor on all paneFragments to generate child
