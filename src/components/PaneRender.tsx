@@ -30,7 +30,7 @@ export default function PaneRender({ payload }: PaneRenderProps) {
       ? `xl:h-[calc(var(--scale)*${paneHeightRatioDesktop}px)]`
       : ``
   );
-  const paneHeight : [number,number,number] = [
+  const paneHeight: [number, number, number] = [
     (600 * Number(paneHeightRatioMobile)) / 100,
     (1080 * Number(paneHeightRatioTablet)) / 100,
     (1920 * Number(paneHeightRatioDesktop)) / 100,

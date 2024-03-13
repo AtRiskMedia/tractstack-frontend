@@ -5,42 +5,48 @@ import type {
   MarkdownPaneDatum,
   BgPaneDatum,
 } from "../types";
+import { markdownPane } from "./compositor/markdownPane";
 
 export function compositor(
   payload: MarkdownPaneDatum | BgPaneDatum,
   markdown: MarkdownPaneProps[],
   paneHeight: [number, number, number]
 ) {
-  if (payload.internal.type === `bgPane`) return bgPane(payload as BgPaneDatum);
+  switch (payload.internal.type) {
+    case `bgPane`:
+      return bgPane(payload as BgPaneDatum);
 
-  if (payload.internal.type === `markdown`) {
-    const thisPayload = payload as MarkdownPaneDatum;
-    // is modal shape
-    if (thisPayload.isModal) {
-      console.log(`modal markdown`);
-      return <p>modal markdown</p>;
+    case `markdown`: {
+      const thisPayload = payload as MarkdownPaneDatum;
+
+      // has modal shape?
+      if (thisPayload.isModal) {
+        console.log(`modal markdown`, paneHeight);
+        return <p>modal markdown</p>;
+      }
+
+      // uses textShapeOutside?
+      if (
+        thisPayload.textShapeOutsideMobile !== `none` ||
+        thisPayload.textShapeOutsideTablet !== `none` ||
+        thisPayload.textShapeOutsideDesktop !== `none`
+      ) {
+        console.log(`shapeOutside markdown`, paneHeight);
+        return <p>shapeOutside modal</p>;
+      }
+
+      // has imageMaskShape **not implemented?
+      if (
+        thisPayload.imageMaskShapeMobile !== `none` ||
+        thisPayload.imageMaskShapeTablet !== `none` ||
+        thisPayload.imageMaskShapeDesktop !== `none`
+      ) {
+        console.log(`imageMaskShape markdown`, paneHeight);
+        return <p>imageMaskShape **not implemented</p>;
+      }
+
+      // regular markdown
+      return markdownPane(thisPayload, markdown);
     }
-    // uses textShapeOutside
-    if (
-      thisPayload.textShapeOutsideMobile !== `none` ||
-      thisPayload.textShapeOutsideTablet !== `none` ||
-      thisPayload.textShapeOutsideDesktop !== `none`
-    ) {
-      console.log(`shapeOutside modal`);
-      return <p>shapeOutside modal</p>;
-    }
-    // has imageMaskShape **not implemented?
-    if (
-      thisPayload.imageMaskShapeMobile !== `none` ||
-      thisPayload.imageMaskShapeTablet !== `none` ||
-      thisPayload.imageMaskShapeDesktop !== `none`
-    ) {
-      console.log(`shapeOutside modal`);
-      return <p>shapeOutside modal</p>;
-    }
-    // regular markdown
-    return <p>markdown</p>;
-    //return markdownPane(thisPayload as MarkdownPaneDatum, markdown, paneHeight);
-    console.log(markdown, paneHeight);
   }
 }

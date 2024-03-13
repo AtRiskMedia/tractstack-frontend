@@ -347,7 +347,7 @@ export interface MarkdownPaneProps {
   drupalNid: number;
   title: string;
   body: string;
-  htmlAst: object;
+  htmlAst: any;
   slug: string;
   image: FileNode[];
   imageSvg: FileNode[];

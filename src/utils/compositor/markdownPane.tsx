@@ -1,10 +1,83 @@
-/*
-import { classNames } from "@tractstack/helpers";
-import { htmlAstToReact } from "./htmlAstToReact";
-import { svgShapeOutsidePayload } from "./svgShapeOutside";
-import { svgImageMask } from "./svgImageMask";
+//import { htmlAstToReact } from "./htmlAstToReact";
 import type { MarkdownPaneProps, MarkdownPaneDatum } from "../../types";
 
+export function markdownPane(
+  payload: MarkdownPaneDatum,
+  markdown: MarkdownPaneProps[]
+) {
+  const hasHidden =
+    payload.hiddenViewports.includes(`desktop`) ||
+    payload.hiddenViewports.includes(`tablet`) ||
+    payload.hiddenViewports.includes(`mobile`);
+  const hidden = hasHidden
+    ? ``.concat(
+        payload.hiddenViewports.includes(`desktop`)
+          ? `xl:hidden`
+          : `xl:visible`,
+        payload.hiddenViewports.includes(`tablet`) ? `md:hidden` : `md:visible`,
+        payload.hiddenViewports.includes(`mobile`) ? `hidden` : `visible`
+      )
+    : ``;
+  const thisMarkdown = markdown
+    .filter((m: MarkdownPaneProps) => m.id === payload.markdownId)
+    .at(0)!;
+
+  const optionsPayload = payload.optionsPayload;
+  const thisId = `markdownPane-${thisMarkdown.id}`;
+
+  const imageDataArrayNew = thisMarkdown.image.concat(thisMarkdown.imageSvg);
+  const imageDataArray =
+    Object.keys(imageDataArrayNew).length > 0 ? imageDataArrayNew : [];
+  const astPayload = {
+    ast: thisMarkdown.htmlAst.children,
+    mode: `paragraph__markdown`,
+    buttonData: optionsPayload?.buttons,
+    imageData: imageDataArray,
+  };
+  const injectClassNames = optionsPayload?.classNames?.all || {};
+  const classNamesParent = optionsPayload?.classNamesParent
+    ? optionsPayload.classNamesParent?.all
+    : ``;
+
+  const markdownArray = <p>{thisMarkdown.body}</p>;
+  /* astPayload ? (
+      htmlAstToReact(
+        astPayload,
+        false,
+        injectClassNames,
+        hooks,
+        {},
+        { ...id, viewportKey }
+      )
+    ) : (
+      <></>
+    ); 
+    */
+console.log(hidden,astPayload,injectClassNames)
+
+  if (typeof classNamesParent === `string`) {
+    return (
+      <div id={thisId} key={thisId}>
+        {markdownArray}
+      </div>
+    );
+  }
+
+  const wrap = (children: string[]) => {
+    if (children.length === 0)
+      return <div className={children.at(0)}>{markdownArray}</div>;
+    return <div className={children.at(0)}>{wrap(children.slice(1))}</div>;
+  };
+  const classes = classNamesParent as string[]
+  const children = wrap(classes.toReversed());
+  return (
+    <div id={thisId} key={thisId}>
+      {children}
+    </div>
+  );
+}
+
+/*
 export function markdownPane(
   payload: MarkdownPaneDatum,
   markdown: MarkdownPaneProps[],
@@ -233,4 +306,4 @@ export function markdownPane(
     </div>
   );
 }
-*/
+ */
