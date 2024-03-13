@@ -1,4 +1,6 @@
 import type { PaneDatum, MarkdownDatum } from "../types";
+import { fromMarkdown } from "mdast-util-from-markdown";
+import { toHast } from "mdast-util-to-hast";
 
 export function cleanPaneDatum(pane: PaneDatum) {
   const markdown = pane.field_markdown.map((m: MarkdownDatum) => {
@@ -7,6 +9,7 @@ export function cleanPaneDatum(pane: PaneDatum) {
       drupalNid: m.drupal_internal__nid,
       title: m.title,
       body: m.field_markdown_body,
+      htmlAst: toHast(fromMarkdown(m.field_markdown_body)),
       slug: m.field_slug,
       image: m.field_image,
       imageSvg: m.field_image_svg,

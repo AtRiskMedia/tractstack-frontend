@@ -40,7 +40,6 @@ export async function getStaticPaths() {
     const panesPayload: PaneDatumProps[] = panes
       .filter((payload: PaneDatum) => thisPanes.includes(payload.id))
       .map((payload: PaneDatum) => {
-        console.log(cleanPaneDatum(payload));
         return cleanPaneDatum(payload);
       });
 

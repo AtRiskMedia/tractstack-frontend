@@ -1,4 +1,5 @@
 import { SvgPanes, SvgBreaks, SvgModals } from "./shapes";
+import type { SvgPaneDatum, SvgBreaksDatum, SvgModalDatum } from "./shapes";
 
 export const SvgString = (
   shapeName: string,
@@ -8,11 +9,11 @@ export const SvgString = (
   const shapeData =
     typeof SvgPanes[shapeName] !== `undefined` &&
     typeof SvgPanes[shapeName][viewportKey] !== `undefined`
-      ? SvgPanes[shapeName][viewportKey]
+      ? (SvgPanes[shapeName][viewportKey] as SvgPaneDatum)
       : typeof SvgBreaks[shapeName] !== `undefined`
-        ? SvgBreaks[shapeName]
+        ? (SvgBreaks[shapeName] as SvgBreaksDatum)
         : typeof SvgModals[shapeName] !== `undefined`
-          ? SvgModals[shapeName]
+          ? (SvgModals[shapeName] as SvgModalDatum)
           : null;
   if (!shapeData) return null;
   return `<svg id="svg__${id}" data-name="svg__${shapeName}--${viewportKey}"

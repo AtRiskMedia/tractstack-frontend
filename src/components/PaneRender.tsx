@@ -30,6 +30,11 @@ export default function PaneRender({ payload }: PaneRenderProps) {
       ? `xl:h-[calc(var(--scale)*${paneHeightRatioDesktop}px)]`
       : ``
   );
+  const paneHeight : [number,number,number] = [
+    (600 * Number(paneHeightRatioMobile)) / 100,
+    (1080 * Number(paneHeightRatioTablet)) / 100,
+    (1920 * Number(paneHeightRatioDesktop)) / 100,
+  ];
 
   // - if paneOffset[Desktop|Tablet|Mobile], calculate margin and inject
   const paneHeightOffset = classNames(
@@ -61,7 +66,7 @@ export default function PaneRender({ payload }: PaneRenderProps) {
     .filter((a: any) => a.internal.type !== `bgColour`)
     .sort((a: any, b: any) => (a?.field_zindex || 0) - (b?.field_zindex || 0))
     .map((f: any) => {
-      const child = compositor(f, payload.markdown);
+      const child = compositor(f, payload.markdown, paneHeight);
       return (
         <div
           className="relative w-full h-full justify-self-start"
