@@ -115,86 +115,90 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
 export const prerender = true;
 ---
 
-<h1>{title}</h1>
-<h2>Story Fragment</h2>
-<p><strong>slug:</strong> {slug}</p>
-<p><strong>id:</strong> {id}</p>
-<p><strong>changed:</strong> {changed}</p>
-<p><strong>contentMap:</strong> {JSON.stringify(contentMap)}</p>
-<h2>Parent</h2>
-<p>{tractStackTitle}</p>
-<p><strong>slug:</strong> {tractStackSlug}</p>
-<p><strong>id:</strong> {tractStackId}</p>
-{
-  !!menu ? (
-    <>
-      <h2>Menu</h2>
-      <p>{JSON.stringify(menu)}</p>
-    </>
-  ) : null
-}
-<h2>Panes</h2>
-<astro-storyfragment data-id={JSON.stringify(current)}>
-  <ul class={tailwindBgColour}>
+<Layout>
+  <main id="main-content">
+    <h1>{title}</h1>
+    <h2>Story Fragment</h2>
+    <p><strong>slug:</strong> {slug}</p>
+    <p><strong>id:</strong> {id}</p>
+    <p><strong>changed:</strong> {changed}</p>
+    <p><strong>contentMap:</strong> {JSON.stringify(contentMap)}</p>
+    <h2>Parent</h2>
+    <p>{tractStackTitle}</p>
+    <p><strong>slug:</strong> {tractStackSlug}</p>
+    <p><strong>id:</strong> {tractStackId}</p>
     {
-      panes.map((pane: PaneNode, idx: number) => (
-        <astro-pane key={`pane-${pane.id}`}>
-          <li
-            id={`pane-${pane.id}`}
-            class={classNames(
-              `pane`,
-              typeof overflowHidden[pane.id] === `boolean`
-                ? `overflow-hidden`
-                : ``,
-              typeof maxHScreen[pane.id] === `boolean` ? `h-max-screen` : ``
-            )}
-            data-hidden={
-              typeof hiddenPanes[pane.id] === `boolean` ? `true` : `false`
-            }
-          >
-            {idx <= 2 ? (
-              <PaneWrapper
-                client:load
-                current={current}
-                contentMap={contentMap}
-                payload={
-                  panesPayload
-                    .filter((p: PaneDatumProps) => p.id === pane.id)
-                    .at(0)!
-                }
-              />
-            ) : (
-              <PaneWrapper
-                client:visible
-                current={current}
-                contentMap={contentMap}
-                payload={
-                  panesPayload
-                    .filter((p: PaneDatumProps) => p.id === pane.id)
-                    .at(0)!
-                }
-              />
-            )}
-          </li>
-        </astro-pane>
-      ))
+      !!menu ? (
+        <>
+          <h2>Menu</h2>
+          <p>{JSON.stringify(menu)}</p>
+        </>
+      ) : null
     }
-  </ul>
-</astro-storyfragment>
+    <h2>Panes</h2>
+    <astro-storyfragment data-id={JSON.stringify(current)}>
+      <ul class={tailwindBgColour}>
+        {
+          panes.map((pane: PaneNode, idx: number) => (
+            <astro-pane key={`pane-${pane.id}`}>
+              <li
+                id={`pane-${pane.id}`}
+                class={classNames(
+                  `pane`,
+                  typeof overflowHidden[pane.id] === `boolean`
+                    ? `overflow-hidden`
+                    : ``,
+                  typeof maxHScreen[pane.id] === `boolean` ? `h-max-screen` : ``
+                )}
+                data-hidden={
+                  typeof hiddenPanes[pane.id] === `boolean` ? `true` : `false`
+                }
+              >
+                {idx <= 2 ? (
+                  <PaneWrapper
+                    client:load
+                    current={current}
+                    contentMap={contentMap}
+                    payload={
+                      panesPayload
+                        .filter((p: PaneDatumProps) => p.id === pane.id)
+                        .at(0)!
+                    }
+                  />
+                ) : (
+                  <PaneWrapper
+                    client:visible
+                    current={current}
+                    contentMap={contentMap}
+                    payload={
+                      panesPayload
+                        .filter((p: PaneDatumProps) => p.id === pane.id)
+                        .at(0)!
+                    }
+                  />
+                )}
+              </li>
+            </astro-pane>
+          ))
+        }
+      </ul>
+    </astro-storyfragment>
 
-<div class="my-6">
-  {
-    contentMap
-      .filter(m => m.slug !== slug)
-      .map(m => (
-        <astro-link data-id={m.slug}>
-          <a class="py-2 px-3 hover:text-blue-800" href={`/${m.slug}`}>
-            {m.slug}
-          </a>
-        </astro-link>
-      ))
-  }
-</div>
+    <div class="my-6">
+      {
+        contentMap
+          .filter(m => m.slug !== slug)
+          .map(m => (
+            <astro-link data-id={m.slug}>
+              <a class="py-2 px-3 hover:text-blue-800" href={`/${m.slug}`}>
+                {m.slug}
+              </a>
+            </astro-link>
+          ))
+      }
+    </div>
+  </main>
+</Layout>
 
 <script>
   import { init } from "../utils/init";

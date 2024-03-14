@@ -21,7 +21,6 @@ export function compositor(
 
       // has modal shape?
       if (thisPayload.isModal) {
-        console.log(`modal markdown`, paneHeight);
         return <p>modal markdown</p>;
       }
 
@@ -31,7 +30,6 @@ export function compositor(
         thisPayload.textShapeOutsideTablet !== `none` ||
         thisPayload.textShapeOutsideDesktop !== `none`
       ) {
-        console.log(`shapeOutside markdown`, paneHeight);
         return <p>shapeOutside modal</p>;
       }
 

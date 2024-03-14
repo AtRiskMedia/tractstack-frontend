@@ -2,21 +2,20 @@ import { classNames } from "@tractstack/helpers";
 import type { PaneRenderProps, BgColourDatum } from "../types";
 import { compositor } from "../utils/compositor";
 
-/* eslint-disable  @typescript-eslint/no-explicit-any */
 export default function PaneRender({ payload }: PaneRenderProps) {
   // returns a Rendered Pane as a div
 
   // - if paneHeightRatio[Desktop|Tablet|Mobile], calculate height and inject
   const paneHeightRatioDesktop =
-    Number(payload.heightRatioDesktop) === 0
+    Number(payload.heightRatioDesktop) == 0
       ? null
       : Math.floor((1920 * Number(payload.heightRatioDesktop)) / 100);
   const paneHeightRatioTablet =
-    Number(payload.heightRatioTablet) === 0
+    Number(payload.heightRatioTablet) == 0
       ? null
       : Math.floor((1080 * Number(payload.heightRatioTablet)) / 100);
   const paneHeightRatioMobile =
-    Number(payload.heightRatioMobile) === 0
+    Number(payload.heightRatioMobile) == 0
       ? null
       : Math.floor((600 * Number(payload.heightRatioMobile)) / 100);
   const paneHeightRatio = classNames(

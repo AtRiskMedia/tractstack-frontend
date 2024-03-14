@@ -1,96 +1,94 @@
-/*
-export const htmlAstToReact = (
-  payload: any,
-  element: any[] | boolean = false,
-  thisClassNames: any = {},
-  hooks: any,
-  memory: any = {},
-  id: IStoryFragmentId,
-  idx: number = 0
-) => {
-  // recursive function
-  const interceptEditInPlace = hooks?.EditInPlace;
-  const Link = hooks?.Link;
-  const processRead = hooks?.processRead;
+import {
+  lispLexer,
+  preParseConcierge,
+  concierge,
+  classNames,
+} from "@tractstack/helpers";
+import type { FileNode } from "../types";
+
+export default function PaneFromAst({
+  payload,
+  thisClassNames,
+  hooks,
+  memory,
+  id,
+  idx,
+  flags,
+}: {
+  payload: {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    ast: any[];
+    imageData: FileNode[];
+    buttonData: {
+      [key: string]: {
+        urlTarget: string;
+        callbackPayload: string;
+        className: string;
+        classNamesPayload: {
+          [key: string]: {
+            classes: {
+              [key: string]: string[] | number[];
+            };
+          };
+        };
+      };
+    };
+  };
+  thisClassNames: any;
+  hooks: any;
+  memory: any;
+  id: string;
+  idx: number;
+  flags: {
+    isBuilderPreview?: boolean;
+  };
+}) {
+  //if (idx) {
+  //  console.log(``);
+  //  console.log(`-RECURSION---${idx} `);
+  //  console.log(payload.ast);
+  //}
   const newMemory = { ...memory };
-  let contents, rawElement, raw;
-  if (element) raw = element;
-  else if (typeof payload?.ast === `object`) raw = payload.ast;
-  else return null;
-  const composed = raw
+  const interceptEditInPlace = hooks?.EditInPlace;
+
+  return payload.ast
     .filter((e: any) => !(e?.type === `text` && e?.value === `\n`))
     .map((e: any, thisIdx: number) => {
-      if (e?.type === `text`) {
-        if (e?.value === `\n`) return null;
-        return e?.value;
-      }
-      const Tag = e?.tagName;
-      const thisId = `${idx}-${thisIdx}`;
-      const thisBuilderId = `${Tag}-${thisIdx}`;
-      let injectClassNames;
-      const injectClassNamesRaw =
-        e?.tagName && typeof thisClassNames[e?.tagName] !== `undefined`
-          ? thisClassNames[e?.tagName]
-          : ``;
-      if (injectClassNamesRaw && typeof injectClassNamesRaw === `string`) {
-        injectClassNames = injectClassNamesRaw;
-      } else if (
-        e?.tagName &&
-        injectClassNamesRaw &&
-        typeof injectClassNamesRaw === `object`
-      ) {
+      const Tag = e?.tagName || e?.type;
+      if (!Tag) return null;
+
+      const thisId = `t8k-${id}--${Tag}-${idx}-${thisIdx}`;
+      const thisBuilderId = `${Tag}-${idx}`;
+
+      // if string[], use idx to select correct nth style to inject
+      // must increment memory index
+      if (e?.tagName && typeof thisClassNames[e?.tagName] === `object`) {
         if (typeof memory[e.tagName] !== `undefined`)
           memory[e.tagName] = memory[e.tagName] + 1;
         else memory[e.tagName] = 0;
-        injectClassNames = injectClassNamesRaw[memory[e.tagName]];
       }
+      const injectClassNames =
+        typeof e?.tagName === `undefined`
+          ? ``
+          : typeof thisClassNames[e?.tagName] === `string`
+            ? thisClassNames[e?.tagName]
+            : typeof thisClassNames[e?.tagName] !== `undefined` &&
+                typeof thisClassNames[e?.tagName][memory[e.tagName]] !==
+                  `undefined`
+              ? thisClassNames[e?.tagName][memory[e.tagName]]
+              : ``;
 
-      switch (e?.tagName) {
-        case `p`:
-          contents = e?.children?.map((p: any) => {
-            // use recursion to compose the MarkdownParagraph
-            return HtmlAstToReact(
-              payload,
-              [p],
-              thisClassNames,
-              hooks,
-              memory,
-              id,
-              idx + 1
-            );
-          });
-          if (id?.isBuilderPreview && interceptEditInPlace)
-            return (
-              <div
-                className="builder relative z-2 border border-transparent"
-                id={thisBuilderId}
-                key={thisId}
-              >
-                {interceptEditInPlace({
-                  nth: thisIdx,
-                  Tag: e?.tagName,
-                  value: (
-                    <div key={thisId} className={classNames(injectClassNames)}>
-                      {contents}
-                    </div>
-                  ),
-                  className: injectClassNames,
-                })}
-              </div>
-            );
-          return (
-            <p key={thisId} className={classNames(injectClassNames)}>
-              {contents}
-            </p>
-          );
+      switch (Tag) {
+        case `text`:
+          return `${e.value}`;
 
         case `h1`:
         case `h2`:
         case `h3`:
         case `h4`:
         case `h5`:
-        case `h6`:
-          if (id?.isBuilderPreview && interceptEditInPlace)
+        case `h6`: {
+          if (flags?.isBuilderPreview && interceptEditInPlace)
             return (
               <div
                 className="builder relative z-2 border border-transparent"
@@ -99,7 +97,7 @@ export const htmlAstToReact = (
               >
                 {interceptEditInPlace({
                   nth: thisIdx,
-                  Tag: e?.tagName,
+                  Tag,
                   value: (
                     <div className={classNames(injectClassNames)} key={thisId}>
                       {e?.children[0].value}
@@ -114,8 +112,56 @@ export const htmlAstToReact = (
               {e?.children[0].value}
             </Tag>
           );
+        }
 
-        case `a`:
+        case `p`: {
+          const children = e?.children?.map((p: any) => {
+            if (id === `4a1dac49-e059-44f9-b429-735ea23b0909`)
+              console.log(e.children.length, p);
+            // use recursion to compose the MarkdownParagraph
+            return (
+              <PaneFromAst
+                payload={{ ...payload, ast: [p] }}
+                thisClassNames={thisClassNames}
+                hooks={hooks}
+                memory={memory}
+                id={id}
+                idx={idx + 1}
+                flags={flags}
+              />
+            );
+          });
+          if (id === `4a1dac49-e059-44f9-b429-735ea23b0909`) {
+            console.log(``);
+            console.log(children);
+          }
+          if (flags?.isBuilderPreview && interceptEditInPlace)
+            return (
+              <div
+                className="builder relative z-2 border border-transparent"
+                id={thisBuilderId}
+                key={thisId}
+              >
+                {interceptEditInPlace({
+                  nth: thisIdx,
+                  Tag: e?.tagName,
+                  value: (
+                    <div key={thisId} className={classNames(injectClassNames)}>
+                      {children}
+                    </div>
+                  ),
+                  className: injectClassNames,
+                })}
+              </div>
+            );
+          return (
+            <p key={thisId} className={classNames(injectClassNames)}>
+              {children}
+            </p>
+          );
+        }
+
+        case `a`: {
           if (
             typeof e?.properties?.href === `string` &&
             e?.children[0]?.type === `text` &&
@@ -136,9 +182,7 @@ export const htmlAstToReact = (
               typeof e?.properties?.href === `string` &&
               e.properties.href.substring(0, 8) === `https://`;
 
-            // if (id?.isBuilderPreview && interceptEditInPlace)
-            //  return ` [${e?.children[0].value}](${e.properties.href}) `
-            if (id?.isBuilderPreview && interceptEditInPlace) {
+            if (flags?.isBuilderPreview && interceptEditInPlace) {
               return (
                 <a
                   className={isButton?.className || injectClassNames}
@@ -148,7 +192,7 @@ export const htmlAstToReact = (
                   {e?.children[0].value}
                 </a>
               );
-            } else if (id?.isBuilderPreview)
+            } else if (flags?.isBuilderPreview)
               return (
                 <button
                   type="button"
@@ -181,20 +225,10 @@ export const htmlAstToReact = (
                 : pre && pre?.length === 1
                   ? pre[0]
                   : null;
+              console.log(targetUrl);
               const injectPayload = function (): void {
                 concierge(thisButtonPayload, hooks, id, payload.parent);
               };
-              if (!!Link && internal && targetUrl)
-                return (
-                  <Link
-                    to={targetUrl}
-                    className={isButton?.className || injectClassNames}
-                    key={thisId}
-                    onClick={() => processRead()}
-                  >
-                    {e?.children[0].value}
-                  </Link>
-                );
               return (
                 <button
                   type="button"
@@ -221,9 +255,9 @@ export const htmlAstToReact = (
             );
           }
           break;
+        }
 
         case `img`: {
-          // check for alt text
           const altText =
             e?.properties?.alt ||
             `This should be descriptive text of an image | We apologize the alt text is missing.`;
@@ -275,7 +309,7 @@ export const htmlAstToReact = (
           if (e?.properties?.src === `ImagePlaceholder`) {
             // for storykeep EditInPlace interface
             const image = <span key={thisId}>[IMAGE HERE]</span>;
-            if (id?.isBuilderPreview && interceptEditInPlace)
+            if (flags?.isBuilderPreview && interceptEditInPlace)
               return (
                 <div
                   className="builder relative z-2 border border-transparent"
@@ -302,37 +336,7 @@ export const htmlAstToReact = (
             const thisImageDataRaw = payload?.imageData?.filter(
               (image: any) => image.filename === e?.properties?.src
             )[0];
-            // payload?.mode === `paragraph__markdown` ? `contain` : `cover`
-            // --  no longer using GatsbyImage
-            /*
-              const thisImageDataRaw = payload?.imageData?.filter(
-                (image: any) => image.filename === e?.properties?.src,
-              )[0]
-              const thisImageData =
-                thisImageDataRaw &&
-                typeof thisImageDataRaw[payload?.viewportKey] !== `undefined` &&
-                thisImageDataRaw[payload.viewportKey]?.childImageSharp
-                  ?.gatsbyImageData
-              const objectFitMode =
-                payload?.mode === `paragraph__markdown` ? `contain` : `cover`
-              if (thisImageData)
-                return (
-                  <GatsbyImage
-                    className={classNames(
-                      injectClassNames,
-                      injectClassNamesImgWrapper,
-                    )}
-                    imgClassName={injectClassNamesImg}
-                    key={thisId}
-                    title={altText}
-                    alt={e?.properties?.alt}
-                    image={thisImageData}
-                    objectFit={objectFitMode}
-                  />
-                )
-            */
-/*
-            if (id?.isBuilderPreview && interceptEditInPlace) {
+            if (flags?.isBuilderPreview && interceptEditInPlace) {
               const image = (
                 <img
                   className={classNames(
@@ -385,7 +389,7 @@ export const htmlAstToReact = (
                 className={classNames(injectClassNames, injectClassNamesImg)}
               />
             );
-            if (id?.isBuilderPreview && interceptEditInPlace)
+            if (flags?.isBuilderPreview && interceptEditInPlace)
               return (
                 <div
                   className="builder relative z-2 border border-transparent"
@@ -405,6 +409,7 @@ export const htmlAstToReact = (
           }
           break;
         }
+
         case `code`: {
           // if (typeof hooks.template === `undefined`) return null
           // currently only supports inject, belief, youtube and resource
@@ -438,8 +443,8 @@ export const htmlAstToReact = (
             thisHookValuesRaw && thisHookValuesRaw.length > 3
               ? thisHookValuesRaw[3]
               : null;
-          if (!hook) return <></>;
-          if (id?.isBuilderPreview && !interceptEditInPlace)
+          if (!hook) return <div key={thisId}>missing hook</div>;
+          if (flags?.isBuilderPreview && !interceptEditInPlace)
             return (
               <div
                 className="builder relative z-2 border border-transparent"
@@ -455,7 +460,7 @@ export const htmlAstToReact = (
             [`belief`, `identifyAs`].includes(hook) &&
             value1 &&
             value2 &&
-            id?.isBuilderPreview &&
+            flags?.isBuilderPreview &&
             interceptEditInPlace
           )
             return (
@@ -498,7 +503,7 @@ export const htmlAstToReact = (
           } else if (
             hook === `inject` &&
             value1 &&
-            id?.isBuilderPreview &&
+            flags?.isBuilderPreview &&
             interceptEditInPlace
           )
             return (
@@ -525,7 +530,7 @@ export const htmlAstToReact = (
           } else if (
             hook === `toggle` &&
             value1 &&
-            id?.isBuilderPreview &&
+            flags?.isBuilderPreview &&
             interceptEditInPlace
           )
             return (
@@ -561,7 +566,7 @@ export const htmlAstToReact = (
             hook === `youtube` &&
             value1 &&
             value2 &&
-            id?.isBuilderPreview &&
+            flags?.isBuilderPreview &&
             interceptEditInPlace
           )
             return (
@@ -595,7 +600,7 @@ export const htmlAstToReact = (
             hook === `resource` &&
             value1 &&
             value2 &&
-            id?.isBuilderPreview &&
+            flags?.isBuilderPreview &&
             interceptEditInPlace
           )
             return (
@@ -634,7 +639,7 @@ export const htmlAstToReact = (
               return template(
                 resources,
                 id,
-                id.viewportKey,
+                "mobile",
                 {
                   ...hooks,
                   concierge,
@@ -647,21 +652,23 @@ export const htmlAstToReact = (
         }
 
         case `ul`:
-        case `ol`:
-          rawElement = e?.children.filter(
+        case `ol`: {
+          const rawElement = e?.children.filter(
             (e: any) => !(e.type === `text` && e.value === `\n`)
           );
-          newMemory.parent = thisIdx;
-          contents = HtmlAstToReact(
-            payload,
-            rawElement,
-            thisClassNames,
-            hooks,
-            newMemory,
-            id,
-            idx + 1
+          const child = (
+            <PaneFromAst
+              payload={{ ...payload, ast: rawElement }}
+              thisClassNames={thisClassNames}
+              hooks={hooks}
+              memory={memory}
+              id={id}
+              idx={idx + 1}
+              flags={flags}
+            />
           );
-          if (id?.isBuilderPreview && interceptEditInPlace)
+          newMemory.parent = thisIdx;
+          if (flags?.isBuilderPreview && interceptEditInPlace)
             return (
               <div
                 key={thisId}
@@ -674,7 +681,7 @@ export const htmlAstToReact = (
                   Tag: e?.tagName,
                   value: (
                     <Tag key={thisId} className={classNames(injectClassNames)}>
-                      {contents}
+                      {child}
                     </Tag>
                   ),
                   className: injectClassNames,
@@ -683,31 +690,34 @@ export const htmlAstToReact = (
             );
           return (
             <Tag key={thisId} className={classNames(injectClassNames)}>
-              {contents}
+              {child}
             </Tag>
           );
+        }
 
-        case `li`:
+        case `li`: {
           newMemory.child = thisIdx;
-          contents = e?.children?.map((li: any) => {
-            return HtmlAstToReact(
-              payload,
-              [li],
-              thisClassNames,
-              hooks,
-              newMemory,
-              id,
-              thisIdx
+          const children = e?.children?.map((li: any) => {
+            return (
+              <PaneFromAst
+                payload={{ ...payload, ast: [li] }}
+                thisClassNames={thisClassNames}
+                hooks={hooks}
+                memory={memory}
+                id={id}
+                idx={idx + 1}
+                flags={flags}
+              />
             );
           });
           if (
-            id?.isBuilderPreview &&
+            flags?.isBuilderPreview &&
             !!interceptEditInPlace &&
-            typeof contents === `object` &&
-            typeof contents[0] === `object` &&
-            ((typeof contents[0][0] === `object` &&
-              contents[0][0].type === `a`) ||
-              typeof contents[0][0] === `string`)
+            typeof children === `object` &&
+            typeof children[0] === `object` &&
+            ((typeof children[0][0] === `object` &&
+              children[0][0].type === `a`) ||
+              typeof children[0][0] === `string`)
           ) {
             // this is text or link
             return (
@@ -722,7 +732,7 @@ export const htmlAstToReact = (
                   Tag: e?.tagName,
                   value: (
                     <div className={classNames(injectClassNames)} key={thisId}>
-                      {contents[0][0]}
+                      {children[0][0]}
                     </div>
                   ),
                   className: injectClassNames,
@@ -730,10 +740,10 @@ export const htmlAstToReact = (
               </li>
             );
           } else if (
-            id?.isBuilderPreview &&
+            flags?.isBuilderPreview &&
             !!interceptEditInPlace &&
-            typeof contents === `object` &&
-            typeof contents[0] === `object`
+            typeof children === `object` &&
+            typeof children[0] === `object`
           ) {
             // this is an image; requires special treatment
             return (
@@ -743,16 +753,17 @@ export const htmlAstToReact = (
                 key={thisId}
               >
                 <div className={classNames(injectClassNames)} key={thisId}>
-                  {contents[0][0]}
+                  {children[0][0]}
                 </div>
               </li>
             );
           }
           return (
             <li className={classNames(injectClassNames)} key={thisId}>
-              {contents[0][0]}
+              {children[0][0]}
             </li>
           );
+        }
 
         case `br`:
           return <br key={thisId} />;
@@ -762,42 +773,17 @@ export const htmlAstToReact = (
             return <em key={thisId}>{e?.children[0]?.value}</em>;
           }
           break;
+          return <div key={`${id}-${idx}-${thisIdx}`} />;
 
         case `strong`:
           if (typeof e?.children[0]?.value === `string`) {
             return <strong key={thisId}>{e?.children[0]?.value}</strong>;
           }
           break;
+          return <div key={`${id}-${idx}-${thisIdx}`} />;
 
-        /*
-        case `blockquote`:
-          rawElement = e?.children.filter(
-            (e: any) => !(e.type === `text` && e.value === `\n`),
-          )
-          contents = HtmlAstToReact(
-            payload,
-            rawElement,
-            thisClassNames,
-            hooks,
-            memory,
-            id,
-            idx + 1,
-          )
-          if (typeof e?.children[0]?.value === `string`) {
-            return (
-            <blockquote className={classNames(injectClassNames)} key={thisId}>
-              {contents}
-            </blockquote>
-            )
-          }
-            break
-            */
-/*
         default:
-          console.log(`helpers.js: MISS on`, e);
+          console.log(`missed on Tag:`, Tag);
       }
-      return null;
     });
-  return composed;
-};
-*/
+}
