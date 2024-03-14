@@ -31,29 +31,26 @@ export function markdownPane(
     Object.keys(imageDataArrayNew).length > 0 ? imageDataArrayNew : [];
   const astPayload = {
     ast: thisMarkdown.htmlAst.children,
-    buttonData: optionsPayload?.buttons,
-    imageData: imageDataArray,
+    buttonData: optionsPayload?.buttons || {},
+    imageData: imageDataArray || [],
   };
   const injectClassNames = optionsPayload?.classNames?.all || {};
   const classNamesParent = optionsPayload?.classNamesParent
     ? optionsPayload.classNamesParent?.all
     : ``;
-  const child = (
-    <PaneFromAst
-      payload={astPayload}
-      thisClassNames={injectClassNames}
-      hooks={{}}
-      memory={{}}
-      id={thisMarkdown.id}
-      idx={0}
-      flags={{}}
-    />
-  );
 
   if (typeof classNamesParent === `string`) {
     return (
       <div className={hidden} id={thisId} key={`t8k-${thisMarkdown.id}-parent`}>
-        {child}
+        <PaneFromAst
+          payload={astPayload}
+          thisClassNames={injectClassNames}
+          hooks={{}}
+          memory={{}}
+          id={thisMarkdown.id}
+          idx={0}
+          flags={{}}
+        />
       </div>
     );
   }
@@ -67,7 +64,15 @@ export function markdownPane(
           key={`t8k-${thisMarkdown.id}-parent-${idx}`}
           className={classNames(thisHidden, children?.at(0) || ``)}
         >
-          {child}
+          <PaneFromAst
+            payload={astPayload}
+            thisClassNames={injectClassNames}
+            hooks={{}}
+            memory={{}}
+            id={thisMarkdown.id}
+            idx={0}
+            flags={{}}
+          />
         </div>
       );
     return (

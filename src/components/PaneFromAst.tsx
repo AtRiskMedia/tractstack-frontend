@@ -4,7 +4,7 @@ import {
   concierge,
   classNames,
 } from "@tractstack/helpers";
-import type { FileNode } from "../types";
+import type { FileNode, ButtonData } from "../types";
 
 export default function PaneFromAst({
   payload,
@@ -19,20 +19,7 @@ export default function PaneFromAst({
     /* eslint-disable @typescript-eslint/no-explicit-any */
     ast: any[];
     imageData: FileNode[];
-    buttonData: {
-      [key: string]: {
-        urlTarget: string;
-        callbackPayload: string;
-        className: string;
-        classNamesPayload: {
-          [key: string]: {
-            classes: {
-              [key: string]: string[] | number[];
-            };
-          };
-        };
-      };
-    };
+    buttonData: { [key: string]: ButtonData };
   };
   thisClassNames: any;
   hooks: any;
@@ -115,26 +102,6 @@ export default function PaneFromAst({
         }
 
         case `p`: {
-          const children = e?.children?.map((p: any) => {
-            if (id === `4a1dac49-e059-44f9-b429-735ea23b0909`)
-              console.log(e.children.length, p);
-            // use recursion to compose the MarkdownParagraph
-            return (
-              <PaneFromAst
-                payload={{ ...payload, ast: [p] }}
-                thisClassNames={thisClassNames}
-                hooks={hooks}
-                memory={memory}
-                id={id}
-                idx={idx + 1}
-                flags={flags}
-              />
-            );
-          });
-          if (id === `4a1dac49-e059-44f9-b429-735ea23b0909`) {
-            console.log(``);
-            console.log(children);
-          }
           if (flags?.isBuilderPreview && interceptEditInPlace)
             return (
               <div
@@ -146,17 +113,42 @@ export default function PaneFromAst({
                   nth: thisIdx,
                   Tag: e?.tagName,
                   value: (
-                    <div key={thisId} className={classNames(injectClassNames)}>
-                      {children}
-                    </div>
+                    <p key={thisId} className={classNames(injectClassNames)}>
+                      {e?.children?.map((p: any, x: number) => (
+                        <span key={`${thisId}-${x}`}>
+                          <PaneFromAst
+                            payload={{ ...payload, ast: [p] }}
+                            thisClassNames={thisClassNames}
+                            hooks={hooks}
+                            memory={memory}
+                            id={id}
+                            idx={idx + 1}
+                            flags={flags}
+                          />
+                        </span>
+                      ))}
+                    </p>
                   ),
                   className: injectClassNames,
                 })}
               </div>
             );
+
           return (
             <p key={thisId} className={classNames(injectClassNames)}>
-              {children}
+              {e?.children?.map((p: any, x: number) => (
+                <span key={`${thisId}-${x}`}>
+                  <PaneFromAst
+                    payload={{ ...payload, ast: [p] }}
+                    thisClassNames={thisClassNames}
+                    hooks={hooks}
+                    memory={memory}
+                    id={id}
+                    idx={idx + 1}
+                    flags={flags}
+                  />
+                </span>
+              ))}
             </p>
           );
         }
@@ -169,15 +161,14 @@ export default function PaneFromAst({
           ) {
             // check for buttons action payload
             // requires match on button's urlTarget === link's href
-            let isButton;
-            if (
+            const isButton =
               typeof payload?.buttonData === `object` &&
-              Object.keys(payload?.buttonData).length
-            ) {
-              const target = e?.properties?.href;
-              if (target && typeof payload?.buttonData[target] !== `undefined`)
-                isButton = payload?.buttonData[target];
-            }
+              Object.keys(payload?.buttonData).length &&
+              e?.properties?.href &&
+              typeof payload?.buttonData[e.properties.href] !== `undefined`
+                ? payload.buttonData[e.properties.href]
+                : undefined;
+
             const isExternalUrl =
               typeof e?.properties?.href === `string` &&
               e.properties.href.substring(0, 8) === `https://`;
@@ -232,7 +223,7 @@ export default function PaneFromAst({
               return (
                 <button
                   type="button"
-                  className={isButton?.className || injectClassNames}
+                  className={isButton.className}
                   key={thisId}
                   onClick={injectPayload}
                 >
@@ -246,7 +237,7 @@ export default function PaneFromAst({
             );
             return (
               <button
-                className={isButton?.className || injectClassNames}
+                  className={injectClassNames}
                 onClick={() => concierge(thisPayload, hooks, id)}
                 key={thisId}
               >
@@ -780,7 +771,6 @@ export default function PaneFromAst({
             return <strong key={thisId}>{e?.children[0]?.value}</strong>;
           }
           break;
-          return <div key={`${id}-${idx}-${thisIdx}`} />;
 
         default:
           console.log(`missed on Tag:`, Tag);

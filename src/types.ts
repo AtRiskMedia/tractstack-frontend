@@ -451,3 +451,16 @@ export interface PaneOptionsPayload {
   heldBeliefs: Beliefs[];
   withheldBeliefs: Beliefs[];
 }
+
+export interface ButtonData {
+  urlTarget: string;
+  callbackPayload: string;
+  className: string;
+  classNamesPayload: {
+    [key: string]: {
+      classes: {
+        [key: string]: string[] | number[];
+      };
+    };
+  };
+}
