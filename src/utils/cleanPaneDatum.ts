@@ -1,12 +1,30 @@
-import type { PaneFileNodes, PaneDatum, MarkdownDatum } from "../types";
+import type {
+  PaneFileNode,
+  FileNode,
+  PaneDatum,
+  MarkdownDatum,
+} from "../types";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { toHast } from "mdast-util-to-hast";
 
-export function cleanPaneDatum(pane: PaneDatum, files: PaneFileNodes[]) {
-  const thisFilesArray = files
-    .filter((f: PaneFileNodes) => f.id === pane.id)
-    .at(0);
-  const thisFiles = thisFilesArray?.files || [];
+export function cleanPaneDatum(pane: PaneDatum, files?: PaneFileNode) {
+  const thisFiles = files?.files?.map((f: FileNode, idx: number) => {
+    let altText = ``;
+    pane.field_markdown.forEach((m: MarkdownDatum) => {
+      const regexpImage = `^.*\\[(.*)\\]\\((${f.filename})\\)`;
+      const match = m.field_markdown_body
+        .replace(/[\n\r]+/g, " ")
+        .match(regexpImage);
+      if (match && typeof match[1] === `string`) altText = match[1];
+    });
+    return {
+      ...f,
+      index: idx,
+      altText:
+        altText ||
+        `This should be a description of the image; we apologize for this information being unset`,
+    };
+  });
   const markdown = pane.field_markdown.map((m: MarkdownDatum) => {
     //console.log(m.field_image, m.field_image_svg)
     return {
@@ -32,6 +50,6 @@ export function cleanPaneDatum(pane: PaneDatum, files: PaneFileNodes[]) {
     heightOffsetTablet: pane.field_height_offset_tablet,
     heightOffsetMobile: pane.field_height_offset_mobile,
     markdown: pane.field_markdown.length ? markdown : [],
-    files: thisFiles,
+    files: thisFiles || [],
   };
 }

@@ -21,7 +21,7 @@ import type {
   MarkdownDatum,
   FileNode,
   DrupalFile,
-  PaneFileNodes,
+  PaneFileNode,
 } from "../types";
 import { cleanPaneDatum } from "../utils/cleanPaneDatum";
 import { cleanFileDatum } from "../utils/cleanFileDatum";
@@ -47,7 +47,7 @@ export async function getStaticPaths() {
     const dateCreated = new Date(storyFragment.created);
     const dateChanged = new Date(storyFragment.changed);
     const thisPanes = storyFragment.field_panes.map((p: PaneNode) => p.id);
-    const paneFileNodes: PaneFileNodes[] = [];
+    const paneFileNodes: PaneFileNode[] = [];
     panes
       .filter((payload: PaneDatum) => thisPanes.includes(payload.id))
       .forEach((payload: PaneDatum) => {
@@ -83,7 +83,10 @@ export async function getStaticPaths() {
     const panesPayload: PaneDatumProps[] = panes
       .filter((payload: PaneDatum) => thisPanes.includes(payload.id))
       .map((payload: PaneDatum) => {
-        return cleanPaneDatum(payload, paneFileNodes);
+        const thisFilesArray = paneFileNodes
+          .filter((f: PaneFileNode) => f.id === payload.id)
+          .at(0);
+        return cleanPaneDatum(payload, thisFilesArray);
       });
 
     return {
@@ -159,12 +162,9 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
 export const prerender = true;
 ---
 
-<Layout title={title}
-  pubDatetime={created}
-  modDatetime={changed}
->
+<Layout title={title} pubDatetime={created} modDatetime={changed}>
   <main id="main-content">
-   {
+    {
       !!menu ? (
         <>
           <h2>Menu</h2>
@@ -177,45 +177,49 @@ export const prerender = true;
       <ul class={tailwindBgColour}>
         {
           panes.map((pane: PaneNode, idx: number) => (
-            <astro-pane key={`pane-${pane.id}`}>
-              <li
-                id={`pane-${pane.id}`}
-                class={classNames(
-                  `pane`,
-                  typeof overflowHidden[pane.id] === `boolean`
-                    ? `overflow-hidden`
-                    : ``,
-                  typeof maxHScreen[pane.id] === `boolean` ? `h-max-screen` : ``
-                )}
-                data-hidden={
-                  typeof hiddenPanes[pane.id] === `boolean` ? `true` : `false`
-                }
-              >
-                {idx <= 2 ? (
-                  <PaneWrapper
-                    client:load
-                    current={current}
-                    contentMap={contentMap}
-                    payload={
-                      panesPayload
-                        .filter((p: PaneDatumProps) => p.id === pane.id)
-                        .at(0)!
-                    }
-                  />
-                ) : (
-                  <PaneWrapper
-                    client:visible
-                    current={current}
-                    contentMap={contentMap}
-                    payload={
-                      panesPayload
-                        .filter((p: PaneDatumProps) => p.id === pane.id)
-                        .at(0)!
-                    }
-                  />
-                )}
-              </li>
-            </astro-pane>
+            <>
+             <astro-pane key={`pane-${pane.id}`}>
+                <li
+                  id={`pane-${pane.id}`}
+                  class={classNames(
+                    `pane`,
+                    typeof overflowHidden[pane.id] === `boolean`
+                      ? `overflow-hidden`
+                      : ``,
+                    typeof maxHScreen[pane.id] === `boolean`
+                      ? `h-max-screen`
+                      : ``
+                  )}
+                  data-hidden={
+                    typeof hiddenPanes[pane.id] === `boolean` ? `true` : `false`
+                  }
+                >
+                  {idx <= 2 ? (
+                    <PaneWrapper
+                      client:load
+                      current={current}
+                      contentMap={contentMap}
+                      payload={
+                        panesPayload
+                          .filter((p: PaneDatumProps) => p.id === pane.id)
+                          .at(0)!
+                      }
+                    />
+                  ) : (
+                    <PaneWrapper
+                      client:visible
+                      current={current}
+                      contentMap={contentMap}
+                      payload={
+                        panesPayload
+                          .filter((p: PaneDatumProps) => p.id === pane.id)
+                          .at(0)!
+                      }
+                    />
+                  )}
+                </li>
+              </astro-pane>
+            </>
           ))
         }
       </ul>
@@ -241,3 +245,5 @@ export const prerender = true;
   import { init } from "../utils/init";
   init();
 </script>
+
+ 

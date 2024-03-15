@@ -227,8 +227,8 @@ export interface StoryFragmentProps {
   tractStackId: string;
   tractStackTitle: string;
   tractStackSlug: string;
-  changed: number;
-  created: number;
+  changed: Date;
+  created: Date;
   contentMap: ContentMap[];
 }
 
@@ -482,7 +482,7 @@ export interface PaneFromAstProps {
   idx: number;
 }
 
-export interface PaneFileNodes {
+export interface PaneFileNode {
   id: string;
   files: FileNode[];
 }
