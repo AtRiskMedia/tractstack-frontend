@@ -46,11 +46,6 @@ export async function getStaticPaths() {
     const date = new Date(storyFragment.changed);
     const msTimecode = date.getTime();
     const thisPanes = storyFragment.field_panes.map((p: PaneNode) => p.id);
-    const panesPayload: PaneDatumProps[] = panes
-      .filter((payload: PaneDatum) => thisPanes.includes(payload.id))
-      .map((payload: PaneDatum) => {
-        return cleanPaneDatum(payload);
-      });
     const filesPayload: FileNode[] = [];
     panes
       .filter((payload: PaneDatum) => thisPanes.includes(payload.id))
@@ -77,6 +72,11 @@ export async function getStaticPaths() {
             if (thisFile) filesPayload.push(cleanFileDatum(thisFile));
           });
         });
+      });
+    const panesPayload: PaneDatumProps[] = panes
+      .filter((payload: PaneDatum) => thisPanes.includes(payload.id))
+      .map((payload: PaneDatum) => {
+        return cleanPaneDatum(payload, filesPayload);
       });
 
     return {

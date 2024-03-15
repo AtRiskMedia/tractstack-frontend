@@ -1,8 +1,8 @@
-import type { PaneDatum, MarkdownDatum } from "../types";
+import type { PaneDatum, MarkdownDatum, FileNode } from "../types";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { toHast } from "mdast-util-to-hast";
 
-export function cleanPaneDatum(pane: PaneDatum) {
+export function cleanPaneDatum(pane: PaneDatum, files: FileNode[]) {
   const markdown = pane.field_markdown.map((m: MarkdownDatum) => {
     //console.log(m.field_image, m.field_image_svg)
     return {
@@ -12,8 +12,6 @@ export function cleanPaneDatum(pane: PaneDatum) {
       body: m.field_markdown_body,
       htmlAst: toHast(fromMarkdown(m.field_markdown_body)),
       slug: m.field_slug,
-      image: m.field_image,
-      imageSvg: m.field_image_svg,
     };
   });
   //console.log(pane.field_image_svg, pane.field_image_svg)
@@ -30,8 +28,7 @@ export function cleanPaneDatum(pane: PaneDatum) {
     heightOffsetDesktop: pane.field_height_offset_desktop,
     heightOffsetTablet: pane.field_height_offset_tablet,
     heightOffsetMobile: pane.field_height_offset_mobile,
-    images: pane.field_image,
-    imageSvgs: pane.field_image_svg,
     markdown: pane.field_markdown.length ? markdown : [],
+    files,
   };
 }

@@ -1,10 +1,15 @@
 import PaneFromAst from "../../components/PaneFromAst";
 import { classNames } from "@tractstack/helpers";
-import type { MarkdownPaneProps, MarkdownPaneDatum } from "../../types";
+import type {
+  FileNode,
+  MarkdownPaneProps,
+  MarkdownPaneDatum,
+} from "../../types";
 
 export function markdownPane(
   payload: MarkdownPaneDatum,
-  markdown: MarkdownPaneProps[]
+  markdown: MarkdownPaneProps[],
+  files: FileNode[]
 ) {
   const hasHidden =
     payload.hiddenViewports.includes(`desktop`) ||
@@ -26,13 +31,10 @@ export function markdownPane(
   const optionsPayload = payload.optionsPayload;
   const thisId = `markdownPane-${thisMarkdown.id}`;
 
-  const imageDataArrayNew = thisMarkdown.image.concat(thisMarkdown.imageSvg);
-  const imageDataArray =
-    Object.keys(imageDataArrayNew).length > 0 ? imageDataArrayNew : [];
   const astPayload = {
     ast: thisMarkdown.htmlAst.children,
     buttonData: optionsPayload?.buttons || {},
-    imageData: imageDataArray || [],
+    imageData: files,
   };
   const injectClassNames = optionsPayload?.classNames?.all || {};
   const classNamesParent = optionsPayload?.classNamesParent

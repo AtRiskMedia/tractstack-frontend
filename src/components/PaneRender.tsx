@@ -83,7 +83,7 @@ export default function PaneRender({ payload }: PaneRenderProps) {
         (b.internal.type === `markdown` ? 1 : 0)
     )
     .map((f: BgPaneDatum | MarkdownPaneDatum) => {
-      const child = compositor(f, payload.markdown, paneHeight);
+      const child = compositor(f, payload.markdown, payload.files, paneHeight);
       return (
         <div
           className="relative w-full h-full justify-self-start"

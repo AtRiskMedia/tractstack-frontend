@@ -172,9 +172,8 @@ export interface PaneDatumProps {
   heightOffsetDesktop: number;
   heightOffsetTablet: number;
   heightOffsetMobile: number;
-  images: DrupalFile[];
-  imageSvgs: DrupalFile[];
   markdown: MarkdownPaneProps[];
+  files: FileNode[];
 }
 export interface PaneDatum extends Pane {
   drupal_internal__nid: number;
@@ -357,8 +356,6 @@ export interface MarkdownPaneProps {
   body: string;
   htmlAst: any;
   slug: string;
-  image: DrupalFile[];
-  imageSvg: DrupalFile[];
 }
 export interface PaneFragmentDatum {
   id: string;
@@ -470,4 +467,16 @@ export interface ButtonData {
       };
     };
   };
+}
+
+export interface PaneFromAstProps {
+  payload: {
+    ast: any[];
+    imageData: FileNode[];
+    buttonData: { [key: string]: ButtonData };
+  };
+  thisClassNames: any;
+  memory: any;
+  id: string;
+  idx: number;
 }
