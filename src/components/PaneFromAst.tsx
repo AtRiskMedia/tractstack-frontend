@@ -1,51 +1,37 @@
 import {
-  lispLexer,
-  preParseConcierge,
-  concierge,
+  //lispLexer,
+  //preParseConcierge,
+  //concierge,
   classNames,
 } from "@tractstack/helpers";
-import type { FileNode, ButtonData } from "../types";
+import type { DrupalFile, ButtonData } from "../types";
 
 export default function PaneFromAst({
   payload,
   thisClassNames,
-  hooks,
   memory,
   id,
   idx,
-  flags,
 }: {
   payload: {
     /* eslint-disable @typescript-eslint/no-explicit-any */
     ast: any[];
-    imageData: FileNode[];
+    imageData: DrupalFile[];
     buttonData: { [key: string]: ButtonData };
   };
   thisClassNames: any;
-  hooks: any;
   memory: any;
   id: string;
   idx: number;
-  flags: {
-    isBuilderPreview?: boolean;
-  };
 }) {
-  //if (idx) {
-  //  console.log(``);
-  //  console.log(`-RECURSION---${idx} `);
-  //  console.log(payload.ast);
-  //}
   const newMemory = { ...memory };
-  const interceptEditInPlace = hooks?.EditInPlace;
 
   return payload.ast
     .filter((e: any) => !(e?.type === `text` && e?.value === `\n`))
     .map((e: any, thisIdx: number) => {
       const Tag = e?.tagName || e?.type;
-      if (!Tag) return null;
-
       const thisId = `t8k-${id}--${Tag}-${idx}-${thisIdx}`;
-      const thisBuilderId = `${Tag}-${idx}`;
+      if (!Tag) return <div key={thisId} />;
 
       // if string[], use idx to select correct nth style to inject
       // must increment memory index
@@ -75,25 +61,6 @@ export default function PaneFromAst({
         case `h4`:
         case `h5`:
         case `h6`: {
-          if (flags?.isBuilderPreview && interceptEditInPlace)
-            return (
-              <div
-                className="builder relative z-2 border border-transparent"
-                id={thisBuilderId}
-                key={thisId}
-              >
-                {interceptEditInPlace({
-                  nth: thisIdx,
-                  Tag,
-                  value: (
-                    <div className={classNames(injectClassNames)} key={thisId}>
-                      {e?.children[0].value}
-                    </div>
-                  ),
-                  className: injectClassNames,
-                })}
-              </div>
-            );
           return (
             <Tag className={classNames(injectClassNames)} key={thisId}>
               {e?.children[0].value}
@@ -102,38 +69,6 @@ export default function PaneFromAst({
         }
 
         case `p`: {
-          if (flags?.isBuilderPreview && interceptEditInPlace)
-            return (
-              <div
-                className="builder relative z-2 border border-transparent"
-                id={thisBuilderId}
-                key={thisId}
-              >
-                {interceptEditInPlace({
-                  nth: thisIdx,
-                  Tag: e?.tagName,
-                  value: (
-                    <p key={thisId} className={classNames(injectClassNames)}>
-                      {e?.children?.map((p: any, x: number) => (
-                        <span key={`${thisId}-${x}`}>
-                          <PaneFromAst
-                            payload={{ ...payload, ast: [p] }}
-                            thisClassNames={thisClassNames}
-                            hooks={hooks}
-                            memory={memory}
-                            id={id}
-                            idx={idx + 1}
-                            flags={flags}
-                          />
-                        </span>
-                      ))}
-                    </p>
-                  ),
-                  className: injectClassNames,
-                })}
-              </div>
-            );
-
           return (
             <p key={thisId} className={classNames(injectClassNames)}>
               {e?.children?.map((p: any, x: number) => (
@@ -141,11 +76,9 @@ export default function PaneFromAst({
                   <PaneFromAst
                     payload={{ ...payload, ast: [p] }}
                     thisClassNames={thisClassNames}
-                    hooks={hooks}
                     memory={memory}
                     id={id}
                     idx={idx + 1}
-                    flags={flags}
                   />
                 </span>
               ))}
@@ -173,28 +106,7 @@ export default function PaneFromAst({
               typeof e?.properties?.href === `string` &&
               e.properties.href.substring(0, 8) === `https://`;
 
-            if (flags?.isBuilderPreview && interceptEditInPlace) {
-              return (
-                <a
-                  className={isButton?.className || injectClassNames}
-                  key={thisId}
-                  href={e.properties.href}
-                >
-                  {e?.children[0].value}
-                </a>
-              );
-            } else if (flags?.isBuilderPreview)
-              return (
-                <button
-                  type="button"
-                  className={isButton?.className || injectClassNames}
-                  key={thisId}
-                  value={e.properties.href}
-                >
-                  {e?.children[0].value}
-                </button>
-              );
-            else if (isExternalUrl) {
+            if (isExternalUrl) {
               return (
                 <a
                   target="_blank"
@@ -208,17 +120,17 @@ export default function PaneFromAst({
               );
             } else if (isButton) {
               // inject button with callback function, add css className
-              const thisButtonPayload = lispLexer(isButton?.callbackPayload);
-              const pre = preParseConcierge(thisButtonPayload, id, hooks);
-              const internal = typeof pre === `string`;
-              const targetUrl = internal
-                ? pre
-                : pre && pre?.length === 1
-                  ? pre[0]
-                  : null;
-              console.log(targetUrl);
+              //const thisButtonPayload = lispLexer(isButton?.callbackPayload);
+              //const pre = preParseConcierge(thisButtonPayload, id, hooks);
+              //const internal = typeof pre === `string`;
+              //const targetUrl = internal
+              //  ? pre
+              //  : pre && pre?.length === 1
+              //    ? pre[0]
+              //    : null;
               const injectPayload = function (): void {
-                concierge(thisButtonPayload, hooks, id, payload.parent);
+                console.log(`injected payload`);
+                //concierge(thisButtonPayload, hooks, id, payload.parent);
               };
               return (
                 <button
@@ -232,15 +144,12 @@ export default function PaneFromAst({
               );
             }
             // else, treat at internal link to a storyfragment
-            const thisPayload = lispLexer(
-              `(hookGotoStoryFragment (${e?.properties?.href}))`
-            );
+            //const thisPayload = lispLexer(
+            //  `(hookGotoStoryFragment (${e?.properties?.href}))`
+            //);
+            // onClick={() => concierge(thisPayload, hooks, id)}
             return (
-              <button
-                  className={injectClassNames}
-                onClick={() => concierge(thisPayload, hooks, id)}
-                key={thisId}
-              >
+              <button className={injectClassNames} key={thisId}>
                 {e?.children[0].value}
               </button>
             );
@@ -249,6 +158,7 @@ export default function PaneFromAst({
         }
 
         case `img`: {
+          return <div key={thisId}>missed on {Tag}</div>;
           const altText =
             e?.properties?.alt ||
             `This should be descriptive text of an image | We apologize the alt text is missing.`;
@@ -297,38 +207,19 @@ export default function PaneFromAst({
           const pass = /\.[A-Za-z0-9]+$/;
           const extcheck = e?.properties?.src?.match(pass);
 
-          if (e?.properties?.src === `ImagePlaceholder`) {
-            // for storykeep EditInPlace interface
-            const image = <span key={thisId}>[IMAGE HERE]</span>;
-            if (flags?.isBuilderPreview && interceptEditInPlace)
-              return (
-                <div
-                  className="builder relative z-2 border border-transparent"
-                  id={thisBuilderId}
-                  key={thisId}
-                >
-                  {interceptEditInPlace({
-                    nth: memory.child,
-                    Tag: e?.tagName,
-                    value: image,
-                    parent: memory.parent,
-                    className: injectClassNames,
-                  })}
-                </div>
-              );
-            return image;
-          } else if (
+          if (
             extcheck &&
             (extcheck[0] === `.png` ||
               extcheck[0] === `.jpg` ||
               extcheck[0] === `.gif`)
           ) {
             // imageData in this case is an array ... assumes image is first element
-            const thisImageDataRaw = payload?.imageData?.filter(
-              (image: any) => image.filename === e?.properties?.src
-            )[0];
-            if (flags?.isBuilderPreview && interceptEditInPlace) {
-              const image = (
+            //const thisImageDataRaw = payload?.imageData?.filter(
+            //  (image: any) => image.filename === e?.properties?.src
+            //)[0];
+            const url = ``; // thisImageDataRaw?.localFile?.publicURL
+            if (url)
+              return (
                 <img
                   className={classNames(
                     injectClassNames,
@@ -336,67 +227,27 @@ export default function PaneFromAst({
                     injectClassNamesImg
                   )}
                   key={thisId}
-                  src={thisImageDataRaw?.localFile?.publicURL}
+                  src={url}
+                  title={altText}
+                  alt={e?.properties?.alt}
                 />
               );
-              return (
-                <div
-                  className="builder relative z-2 border border-transparent"
-                  id={thisBuilderId}
-                  key={thisId}
-                >
-                  {interceptEditInPlace({
-                    nth: memory.child,
-                    Tag: e?.tagName,
-                    value: image,
-                    parent: memory.parent,
-                    className: injectClassNames,
-                  })}
-                </div>
-              );
-            }
-            return (
-              <img
-                className={classNames(
-                  injectClassNames,
-                  injectClassNamesImgWrapper,
-                  injectClassNamesImg
-                )}
-                key={thisId}
-                src={thisImageDataRaw?.localFile?.publicURL}
-                title={altText}
-                alt={e?.properties?.alt}
-              />
-            );
           } else if (extcheck && extcheck[0] === `.svg`) {
-            const thisImageDataRaw = payload?.imageData.filter(
-              (image: any) => image.filename === e?.properties?.src
-            )[0];
-            const image = (
-              <img
-                key={thisId}
-                src={thisImageDataRaw?.localFile?.publicURL}
-                title={altText}
-                className={classNames(injectClassNames, injectClassNamesImg)}
-              />
-            );
-            if (flags?.isBuilderPreview && interceptEditInPlace)
-              return (
-                <div
-                  className="builder relative z-2 border border-transparent"
-                  id={thisBuilderId}
+            //const thisImageDataRaw = payload?.imageData.filter(
+            //  (image: any) => image.filename === e?.properties?.src
+            //)[0];
+            const url = ``; //thisImageDataRaw?.localFile?.publicURL
+            if (url) {
+              const image = (
+                <img
                   key={thisId}
-                >
-                  {interceptEditInPlace({
-                    nth: memory.child,
-                    Tag: e?.tagName,
-                    value: image,
-                    parent: memory.parent,
-                    className: injectClassNames,
-                  })}
-                </div>
+                  src={url}
+                  title={altText}
+                  className={classNames(injectClassNames, injectClassNamesImg)}
+                />
               );
-            return image;
+              return image;
+            }
           }
           break;
         }
@@ -434,44 +285,14 @@ export default function PaneFromAst({
             thisHookValuesRaw && thisHookValuesRaw.length > 3
               ? thisHookValuesRaw[3]
               : null;
+          return (
+            <div key={thisId}>
+              code hook inline: {hook} {value1} {value2} {value3} {value4}
+            </div>
+          );
           if (!hook) return <div key={thisId}>missing hook</div>;
-          if (flags?.isBuilderPreview && !interceptEditInPlace)
-            return (
-              <div
-                className="builder relative z-2 border border-transparent"
-                id={thisBuilderId}
-                key={thisId}
-              >
-                <p className={injectClassNames}>
-                  Code hook: {hook} = {value1} | {value2}
-                </p>
-              </div>
-            );
-          if (
-            [`belief`, `identifyAs`].includes(hook) &&
-            value1 &&
-            value2 &&
-            flags?.isBuilderPreview &&
-            interceptEditInPlace
-          )
-            return (
-              <div
-                className={classNames(
-                  injectClassNames,
-                  `builder relative z-2 border border-transparent`
-                )}
-                id={thisBuilderId}
-                key={thisId}
-              >
-                {interceptEditInPlace({
-                  nth: memory.child,
-                  Tag: e?.tagName,
-                  value: `Belief widget: ${value1}`,
-                  parent: memory.parent,
-                })}
-              </div>
-            );
           else if (hook === `belief` && value1 && value2) {
+            /*
             const Belief = hooks.belief;
             return (
               <Belief
@@ -481,7 +302,9 @@ export default function PaneFromAst({
                 storyFragmentId={id}
               />
             );
+            */
           } else if (hook === `identifyAs` && value1 && value2) {
+            /*
             const IdentifyAs = hooks.identifyAs;
             return (
               <IdentifyAs
@@ -491,57 +314,15 @@ export default function PaneFromAst({
                 storyFragmentId={id}
               />
             );
-          } else if (
-            hook === `inject` &&
-            value1 &&
-            flags?.isBuilderPreview &&
-            interceptEditInPlace
-          )
-            return (
-              <div
-                className={classNames(
-                  injectClassNames,
-                  `builder relative z-2 border border-transparent`
-                )}
-                id={thisBuilderId}
-                key={thisId}
-              >
-                {interceptEditInPlace({
-                  nth: memory.child,
-                  Tag: e?.tagName,
-                  value: `Inject component: widget ${value1}`,
-                  parent: memory.parent,
-                })}
-              </div>
-            );
-          else if (hook === `inject` && value1) {
+              */
+          } else if (hook === `inject` && value1) {
+            /*
             const InjectComponent = hooks?.templates?.injectComponent;
             if (InjectComponent)
               return <InjectComponent key={thisId} target={value1} />;
-          } else if (
-            hook === `toggle` &&
-            value1 &&
-            flags?.isBuilderPreview &&
-            interceptEditInPlace
-          )
-            return (
-              <div
-                className={classNames(
-                  injectClassNames,
-                  `builder relative z-2 border border-transparent`
-                )}
-                id={thisBuilderId}
-                key={thisId}
-              >
-                {interceptEditInPlace({
-                  nth: memory.child,
-                  Tag: e?.tagName,
-                  value: `Toggle belief: ${value1}`,
-                  parent: memory.parent,
-                })}
-              </div>
-            );
-          else if (hook === `toggle` && value1 && value3 && value4) {
+            */
+          } else if (hook === `toggle` && value1 && value3 && value4) {
+            /*
             const ToggleBelief = hooks?.toggle;
             return (
               <ToggleBelief
@@ -553,31 +334,9 @@ export default function PaneFromAst({
                 cssClasses={injectClassNames}
               />
             );
-          } else if (
-            hook === `youtube` &&
-            value1 &&
-            value2 &&
-            flags?.isBuilderPreview &&
-            interceptEditInPlace
-          )
-            return (
-              <div
-                className={classNames(
-                  injectClassNames,
-                  `builder relative z-2 border border-transparent`
-                )}
-                id={thisBuilderId}
-                key={thisId}
-              >
-                {interceptEditInPlace({
-                  nth: memory.child,
-                  Tag: e?.tagName,
-                  value: `YouTube embed: ${value2}`,
-                  parent: memory.parent,
-                })}
-              </div>
-            );
-          else if (hook === `youtube` && value1 && value2) {
+              */
+          } else if (hook === `youtube` && value1 && value2) {
+            /*
             const YouTube = hooks?.youtube;
             return (
               <YouTube
@@ -587,58 +346,37 @@ export default function PaneFromAst({
                 cssClasses={injectClassNames}
               />
             );
-          } else if (
-            hook === `resource` &&
-            value1 &&
-            value2 &&
-            flags?.isBuilderPreview &&
-            interceptEditInPlace
-          )
-            return (
-              <div
-                className={classNames(
-                  injectClassNames,
-                  `builder relative z-2 border border-transparent`
-                )}
-                id={thisBuilderId}
-                key={thisId}
-              >
-                {interceptEditInPlace({
-                  nth: memory.child,
-                  Tag: e?.tagName,
-                  value: `Resource embed: ${value1} | ${value2}`,
-                  parent: memory.parent,
-                })}
-              </div>
-            );
-          else if (hook === `resource` && value1 && value2) {
-            const values =
-              value1[0] === `*` ? value1.substring(1) : value1.split(/[,]+/);
-            const resources =
-              value1[0] === `*`
-                ? hooks?.resourcePayload?.filter((e: any) =>
-                    values?.includes(e?.node?.categorySlug)
-                  )
-                : hooks?.resourcePayload?.filter((e: any) =>
-                    values?.includes(e?.node?.slug)
-                  );
-            const template =
-              hooks?.templates &&
-              Object.prototype.hasOwnProperty.call(hooks?.templates, value2) &&
-              hooks.templates[value2];
-            if (resources && template)
-              return template(
-                resources,
-                id,
-                "mobile",
-                {
-                  ...hooks,
-                  concierge,
-                },
-                injectClassNames
-              );
-            return null;
-          } else return null;
+              */
+          } else if (hook === `resource` && value1 && value2) {
+            /*
+            //const values =
+            //  value1[0] === `*` ? value1.substring(1) : value1.split(/[,]+/);
+            //const resources =
+            //  value1[0] === `*`
+            //    ? hooks?.resourcePayload?.filter((e: any) =>
+            //        values?.includes(e?.node?.categorySlug)
+            //      )
+            //    : hooks?.resourcePayload?.filter((e: any) =>
+            //        values?.includes(e?.node?.slug)
+            //      );
+            //const template =
+            //  hooks?.templates &&
+            //  Object.prototype.hasOwnProperty.call(hooks?.templates, value2) &&
+            //  hooks.templates[value2];
+            //if (resources && template)
+            //  return template(
+            //    resources,
+            //    id,
+            //    "mobile",
+            //    {
+            //      ...hooks,
+            //      concierge,
+            //    },
+            //    injectClassNames
+            //  );
+            return <div key={thisId} />;
+              */
+          }
           break;
         }
 
@@ -651,34 +389,12 @@ export default function PaneFromAst({
             <PaneFromAst
               payload={{ ...payload, ast: rawElement }}
               thisClassNames={thisClassNames}
-              hooks={hooks}
               memory={memory}
               id={id}
               idx={idx + 1}
-              flags={flags}
             />
           );
           newMemory.parent = thisIdx;
-          if (flags?.isBuilderPreview && interceptEditInPlace)
-            return (
-              <div
-                key={thisId}
-                id={thisBuilderId}
-                className="builder relative z-2 border border-transparent"
-              >
-                {interceptEditInPlace({
-                  nth: thisIdx,
-                  parent: memory.parent,
-                  Tag: e?.tagName,
-                  value: (
-                    <Tag key={thisId} className={classNames(injectClassNames)}>
-                      {child}
-                    </Tag>
-                  ),
-                  className: injectClassNames,
-                })}
-              </div>
-            );
           return (
             <Tag key={thisId} className={classNames(injectClassNames)}>
               {child}
@@ -688,70 +404,19 @@ export default function PaneFromAst({
 
         case `li`: {
           newMemory.child = thisIdx;
-          const children = e?.children?.map((li: any) => {
-            return (
-              <PaneFromAst
-                payload={{ ...payload, ast: [li] }}
-                thisClassNames={thisClassNames}
-                hooks={hooks}
-                memory={memory}
-                id={id}
-                idx={idx + 1}
-                flags={flags}
-              />
-            );
-          });
-          if (
-            flags?.isBuilderPreview &&
-            !!interceptEditInPlace &&
-            typeof children === `object` &&
-            typeof children[0] === `object` &&
-            ((typeof children[0][0] === `object` &&
-              children[0][0].type === `a`) ||
-              typeof children[0][0] === `string`)
-          ) {
-            // this is text or link
-            return (
-              <li
-                className="builder relative z-2 border border-transparent"
-                id={`${Tag}-${memory.parent}-${thisIdx}`}
-                key={thisId}
-              >
-                {interceptEditInPlace({
-                  nth: thisIdx,
-                  parent: memory.parent,
-                  Tag: e?.tagName,
-                  value: (
-                    <div className={classNames(injectClassNames)} key={thisId}>
-                      {children[0][0]}
-                    </div>
-                  ),
-                  className: injectClassNames,
-                })}
-              </li>
-            );
-          } else if (
-            flags?.isBuilderPreview &&
-            !!interceptEditInPlace &&
-            typeof children === `object` &&
-            typeof children[0] === `object`
-          ) {
-            // this is an image; requires special treatment
-            return (
-              <li
-                className="builder relative z-2 border border-transparent"
-                id={`${Tag}-${memory.parent}-${thisIdx}`}
-                key={thisId}
-              >
-                <div className={classNames(injectClassNames)} key={thisId}>
-                  {children[0][0]}
-                </div>
-              </li>
-            );
-          }
           return (
-            <li className={classNames(injectClassNames)} key={thisId}>
-              {children[0][0]}
+            <li key={thisId} className={classNames(injectClassNames)}>
+              {e?.children?.map((li: any, x: number) => (
+                <span key={`${thisId}-${x}`}>
+                  <PaneFromAst
+                    payload={{ ...payload, ast: [li] }}
+                    thisClassNames={thisClassNames}
+                    memory={newMemory}
+                    id={id}
+                    idx={idx + 1}
+                  />
+                </span>
+              ))}
             </li>
           );
         }
@@ -774,6 +439,7 @@ export default function PaneFromAst({
 
         default:
           console.log(`missed on Tag:`, Tag);
+          return <div key={thisId}>missed on {Tag}</div>;
       }
     });
 }

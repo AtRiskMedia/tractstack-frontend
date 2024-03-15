@@ -47,7 +47,9 @@ export const fetchUrl = async (url: string): Promise<any> => {
 
 export const getAllFiles = async (): Promise<DrupalFile[]> => {
   const params: DrupalJsonApiParams = new DrupalJsonApiParams();
-  params.addFields("file--file", ["type", "id"]).addFilter("status", "1");
+  params
+    .addFields("file--file", ["type", "id", "filename", "uri"])
+    .addFilter("status", "1");
   const path: string = params.getQueryString();
   return await fetchUrl(baseUrl + "/jsonapi/file/file?" + path);
 };

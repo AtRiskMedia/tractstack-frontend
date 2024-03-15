@@ -4,6 +4,7 @@ import { toHast } from "mdast-util-to-hast";
 
 export function cleanPaneDatum(pane: PaneDatum) {
   const markdown = pane.field_markdown.map((m: MarkdownDatum) => {
+    //console.log(m.field_image, m.field_image_svg)
     return {
       id: m.id,
       drupalNid: m.drupal_internal__nid,
@@ -15,6 +16,7 @@ export function cleanPaneDatum(pane: PaneDatum) {
       imageSvg: m.field_image_svg,
     };
   });
+  //console.log(pane.field_image_svg, pane.field_image_svg)
   return {
     title: pane.title,
     id: pane.id,

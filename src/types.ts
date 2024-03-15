@@ -80,9 +80,16 @@ export interface DrupalFileMeta extends Record<string, any> {
 }
 
 export interface FileNode {
-  type: `file--file`;
   id: string;
+  filename: string;
+  uri: {
+    value: string;
+    url: string;
+  };
+  type?: `file--file`;
+  links?: { self: object };
 }
+
 export interface PaneNode {
   type: `node--pane`;
   id: string;
@@ -165,8 +172,8 @@ export interface PaneDatumProps {
   heightOffsetDesktop: number;
   heightOffsetTablet: number;
   heightOffsetMobile: number;
-  images: FileNode[];
-  imageSvgs: FileNode[];
+  images: DrupalFile[];
+  imageSvgs: DrupalFile[];
   markdown: MarkdownPaneProps[];
 }
 export interface PaneDatum extends Pane {
@@ -180,14 +187,14 @@ export interface PaneDatum extends Pane {
   field_height_offset_tablet: number;
   field_height_offset_mobile: number;
   field_markdown: MarkdownDatum[];
-  field_image: FileNode[];
-  field_image_svg: FileNode[];
+  field_image: DrupalFile[];
+  field_image_svg: DrupalFile[];
 }
 export interface MarkdownDatum extends Markdown {
   drupal_internal__nid: number;
   field_markdown_body: string;
-  field_image: FileNode[];
-  field_image_svg: FileNode[];
+  field_image: DrupalFile[];
+  field_image_svg: DrupalFile[];
 }
 export interface ResourceDatum extends Resource {
   drupal_internal__nid: number;
@@ -217,6 +224,7 @@ export interface StoryFragmentProps {
   menu: MenuDatum;
   panes: PaneNode[];
   panesPayload: PaneDatumProps[];
+  filesPayload: FileNode[];
   tractStackId: string;
   tractStackTitle: string;
   tractStackSlug: string;
@@ -349,12 +357,11 @@ export interface MarkdownPaneProps {
   body: string;
   htmlAst: any;
   slug: string;
-  image: FileNode[];
-  imageSvg: FileNode[];
+  image: DrupalFile[];
+  imageSvg: DrupalFile[];
 }
 export interface PaneFragmentDatum {
   id: string;
-  zindex: number | undefined;
   hiddenViewports: string;
 }
 export interface BgColourDatum extends PaneFragmentDatum {

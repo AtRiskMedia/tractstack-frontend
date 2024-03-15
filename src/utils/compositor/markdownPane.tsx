@@ -41,15 +41,17 @@ export function markdownPane(
 
   if (typeof classNamesParent === `string`) {
     return (
-      <div className={hidden} id={thisId} key={`t8k-${thisMarkdown.id}-parent`}>
+      <div
+        className={classNames(hidden, classNamesParent)}
+        id={thisId}
+        key={`t8k-${thisMarkdown.id}-parent`}
+      >
         <PaneFromAst
           payload={astPayload}
           thisClassNames={injectClassNames}
-          hooks={{}}
           memory={{}}
           id={thisMarkdown.id}
           idx={0}
-          flags={{}}
         />
       </div>
     );
@@ -57,33 +59,29 @@ export function markdownPane(
 
   // multiple parent layers
   const wrap = (children: string[], idx: number) => {
-    const thisHidden = idx === 0 ? hidden : ``;
     if (children.length === 1)
       return (
         <div
           key={`t8k-${thisMarkdown.id}-parent-${idx}`}
-          className={classNames(thisHidden, children?.at(0) || ``)}
+          className={classNames(idx === 0 ? hidden : ``, children?.at(0) || ``)}
         >
           <PaneFromAst
             payload={astPayload}
             thisClassNames={injectClassNames}
-            hooks={{}}
             memory={{}}
             id={thisMarkdown.id}
             idx={0}
-            flags={{}}
           />
         </div>
       );
     return (
       <div
         key={`t8k-${thisMarkdown.id}-parent-${idx}`}
-        className={classNames(thisHidden, children?.at(0) || ``)}
+        className={classNames(idx === 0 ? hidden : ``, children?.at(0) || ``)}
       >
         {wrap(children.slice(1), idx + 1)}
       </div>
     );
   };
-  const classes = classNamesParent as string[];
-  return wrap(classes, 0);
+  return wrap(classNamesParent, 0);
 }

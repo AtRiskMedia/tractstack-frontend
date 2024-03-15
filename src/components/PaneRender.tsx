@@ -1,5 +1,10 @@
 import { classNames } from "@tractstack/helpers";
-import type { PaneRenderProps, BgColourDatum } from "../types";
+import type {
+  PaneRenderProps,
+  BgColourDatum,
+  BgPaneDatum,
+  MarkdownPaneDatum,
+} from "../types";
 import { compositor } from "../utils/compositor";
 
 export default function PaneRender({ payload }: PaneRenderProps) {
@@ -52,7 +57,10 @@ export default function PaneRender({ payload }: PaneRenderProps) {
 
   // - if bgColour, set on parent div
   const bgColourPane = payload.optionsPayload.paneFragmentsPayload
-    .filter((a: any) => a.internal.type === `bgColour`)
+    .filter(
+      (a: BgColourDatum | BgPaneDatum | MarkdownPaneDatum) =>
+        a.internal.type === `bgColour`
+    )
     .at(0) as BgColourDatum;
   const bgColour = bgColourPane?.bgColour;
   const bgColourStyle = bgColour ? { backgroundColor: bgColour } : {};
@@ -61,10 +69,20 @@ export default function PaneRender({ payload }: PaneRenderProps) {
   const paneFragmentStyle = {
     gridArea: "1/1/1/1",
   };
-  const children = payload.optionsPayload.paneFragmentsPayload
-    .filter((a: any) => a.internal.type !== `bgColour`)
-    .sort((a: any, b: any) => (a?.field_zindex || 0) - (b?.field_zindex || 0))
-    .map((f: any) => {
+  const paneFragments = payload.optionsPayload.paneFragmentsPayload.filter(
+    (a: BgColourDatum | BgPaneDatum | MarkdownPaneDatum) =>
+      a.internal.type !== `bgColour`
+  ) as BgPaneDatum[] | MarkdownPaneDatum[];
+  const children = paneFragments
+    .sort(
+      (
+        a: BgPaneDatum | MarkdownPaneDatum,
+        b: BgPaneDatum | MarkdownPaneDatum
+      ) =>
+        (a.internal.type === `markdown` ? 1 : 0) -
+        (b.internal.type === `markdown` ? 1 : 0)
+    )
+    .map((f: BgPaneDatum | MarkdownPaneDatum) => {
       const child = compositor(f, payload.markdown, paneHeight);
       return (
         <div

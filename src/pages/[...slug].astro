@@ -2,7 +2,11 @@
 import { classNames } from "@tractstack/helpers";
 import Layout from "@layouts/Layout.astro";
 import PaneWrapper from "@components/PaneWrapper.tsx";
-import { getAllStoryFragmentDatum, getAllPaneDatum } from "../api/drupal";
+import {
+  getAllStoryFragmentDatum,
+  getAllPaneDatum,
+  getAllFiles,
+} from "../api/drupal";
 import type {
   MenuDatum,
   TractStack,
@@ -14,10 +18,15 @@ import type {
   StoryFragment,
   StoryFragmentProps,
   ContentMap,
+  MarkdownDatum,
+  FileNode,
+  DrupalFile,
 } from "../types";
 import { cleanPaneDatum } from "../utils/cleanPaneDatum";
+import { cleanFileDatum } from "../utils/cleanFileDatum";
 
 export async function getStaticPaths() {
+  const files = await getAllFiles();
   const storyFragments: StoryFragmentDatum[] = await getAllStoryFragmentDatum();
   const contentMap: ContentMap[] = storyFragments.map(
     (s: StoryFragmentDatum) => {
@@ -42,6 +51,33 @@ export async function getStaticPaths() {
       .map((payload: PaneDatum) => {
         return cleanPaneDatum(payload);
       });
+    const filesPayload: FileNode[] = [];
+    panes
+      .filter((payload: PaneDatum) => thisPanes.includes(payload.id))
+      .forEach((payload: PaneDatum) => {
+        payload.field_image.forEach((f: DrupalFile) => {
+          const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
+          const thisFile = thisFiles.at(0);
+          if (thisFile) filesPayload.push(cleanFileDatum(thisFile));
+        });
+        payload.field_image_svg.forEach((f: DrupalFile) => {
+          const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
+          const thisFile = thisFiles.at(0);
+          if (thisFile) filesPayload.push(cleanFileDatum(thisFile));
+        });
+        payload?.field_markdown.forEach((m: MarkdownDatum) => {
+          m.field_image.forEach((f: DrupalFile) => {
+            const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
+            const thisFile = thisFiles.at(0);
+            if (thisFile) filesPayload.push(cleanFileDatum(thisFile));
+          });
+          m.field_image_svg.forEach((f: DrupalFile) => {
+            const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
+            const thisFile = thisFiles.at(0);
+            if (thisFile) filesPayload.push(cleanFileDatum(thisFile));
+          });
+        });
+      });
 
     return {
       params: { slug: storyFragment.field_slug },
@@ -56,6 +92,7 @@ export async function getStaticPaths() {
         menu: storyFragment.field_menu,
         panes: storyFragment.field_panes,
         panesPayload,
+        filesPayload,
         tractStackId: storyFragment.field_tract_stack.id,
         tractStackTitle: storyFragment.field_tract_stack.title,
         tractStackSlug: storyFragment.field_tract_stack.field_slug,
@@ -76,6 +113,7 @@ const {
   menu,
   panes,
   panesPayload,
+  filesPayload,
   tractStackId,
   tractStackTitle,
   tractStackSlug,
@@ -88,7 +126,7 @@ const current = {
   parentId: tractStackId,
   parentSlug: tractStackSlug,
 };
-
+//console.log(filesPayload)
 const hiddenPanes: { [key: string]: boolean } = panesPayload.reduce(function (
   acc,
   cur
@@ -201,6 +239,7 @@ export const prerender = true;
 </Layout>
 
 <script>
-  import { init } from "../utils/init";
-  init();
+  console.log(`not running init`);
+  //import { init } from "../utils/init";
+  //init();
 </script>
