@@ -44,3 +44,9 @@ public/favicon.svg
 
 # tailwind whitelist *auto generated
 tailwind.whitelist
+
+# fonts
+public/fonts
+
+# custom css
+public/styles

@@ -44,8 +44,8 @@ export async function getStaticPaths() {
     params: { slug: string };
     props: StoryFragmentProps;
   }>[] = storyFragments.map(async (storyFragment: StoryFragmentDatum) => {
-    const date = new Date(storyFragment.changed);
-    const msTimecode = date.getTime();
+    const dateCreated = new Date(storyFragment.created);
+    const dateChanged = new Date(storyFragment.changed);
     const thisPanes = storyFragment.field_panes.map((p: PaneNode) => p.id);
     const paneFileNodes: PaneFileNodes[] = [];
     panes
@@ -102,7 +102,8 @@ export async function getStaticPaths() {
         tractStackId: storyFragment.field_tract_stack.id,
         tractStackTitle: storyFragment.field_tract_stack.title,
         tractStackSlug: storyFragment.field_tract_stack.field_slug,
-        changed: msTimecode,
+        changed: dateChanged,
+        created: dateCreated,
         contentMap,
       },
     };
@@ -123,6 +124,7 @@ const {
   tractStackTitle,
   tractStackSlug,
   changed,
+  created,
   contentMap,
 }: StoryFragmentProps = Astro.props;
 const current = {
@@ -157,19 +159,12 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
 export const prerender = true;
 ---
 
-<Layout>
+<Layout title={title}
+  pubDatetime={created}
+  modDatetime={changed}
+>
   <main id="main-content">
-    <h1>{title}</h1>
-    <h2>Story Fragment</h2>
-    <p><strong>slug:</strong> {slug}</p>
-    <p><strong>id:</strong> {id}</p>
-    <p><strong>changed:</strong> {changed}</p>
-    <p><strong>contentMap:</strong> {JSON.stringify(contentMap)}</p>
-    <h2>Parent</h2>
-    <p>{tractStackTitle}</p>
-    <p><strong>slug:</strong> {tractStackSlug}</p>
-    <p><strong>id:</strong> {tractStackId}</p>
-    {
+   {
       !!menu ? (
         <>
           <h2>Menu</h2>

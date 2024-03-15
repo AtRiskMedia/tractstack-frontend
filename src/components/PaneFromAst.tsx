@@ -49,15 +49,14 @@ export default function PaneFromAst({
           case `h3`:
           case `h4`:
           case `h5`:
-          case `h6`: {
+          case `h6`:
             return (
               <Tag className={classNames(injectClassNames)} key={thisId}>
                 {e?.children[0].value}
               </Tag>
             );
-          }
 
-          case `p`: {
+          case `p`:
             return (
               <p key={thisId} className={classNames(injectClassNames)}>
                 {e?.children?.map((p: any, x: number) => (
@@ -73,7 +72,6 @@ export default function PaneFromAst({
                 ))}
               </p>
             );
-          }
 
           case `a`: {
             if (
@@ -353,7 +351,7 @@ export default function PaneFromAst({
             );
           }
 
-          case `li`: {
+          case `li`:
             return (
               <li key={thisId} className={classNames(injectClassNames)}>
                 {e?.children?.map((li: any, x: number) => (
@@ -369,7 +367,6 @@ export default function PaneFromAst({
                 ))}
               </li>
             );
-          }
 
           case `br`:
             return <br key={thisId} />;

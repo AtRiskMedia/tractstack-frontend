@@ -154,6 +154,7 @@ export interface StoryFragmentDatum extends StoryFragment {
   field_panes: PaneNode[];
   field_menu: MenuDatum;
   changed: string;
+  created: string;
 }
 export interface TractStackDatum extends TractStack {
   drupal_internal__nid: number;
@@ -227,6 +228,7 @@ export interface StoryFragmentProps {
   tractStackTitle: string;
   tractStackSlug: string;
   changed: number;
+  created: number;
   contentMap: ContentMap[];
 }
 
