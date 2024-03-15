@@ -147,100 +147,58 @@ export default function PaneFromAst({
           }
 
           case `img`: {
-            return <div key={thisId}>missed on {Tag}</div>;
+            //console.log(payload.imageData);
             const altText =
               e?.properties?.alt ||
               `This should be descriptive text of an image | We apologize the alt text is missing.`;
             // check for image and imageWrapper style tag
-            let injectClassNamesImgWrapper;
-            let injectClassNamesImg;
-            const injectClassNamesImgRawWrapper =
-              e?.tagName && typeof thisClassNames.imgWrapper !== `undefined`
-                ? thisClassNames.imgWrapper
-                : ``;
-            const injectClassNamesImgRaw =
-              e?.tagName && typeof thisClassNames.img !== `undefined`
-                ? thisClassNames.img
-                : ``;
-            if (
-              injectClassNamesImgRawWrapper &&
-              typeof injectClassNamesImgRawWrapper === `string`
-            ) {
-              injectClassNamesImgWrapper = injectClassNamesImgRawWrapper;
-            } else if (
-              e?.tagName &&
-              injectClassNamesImgRawWrapper &&
-              typeof injectClassNamesImgRawWrapper === `object`
-            ) {
-              if (e?.tagName && typeof memory.imgWrapper !== `undefined`)
-                memory.imgWrapper = memory.imgWrapper + 1;
-              else memory.imgWrapper = 0;
-              injectClassNamesImgWrapper =
-                injectClassNamesImgRawWrapper[memory.imgWrapper];
-            }
-            if (
-              injectClassNamesImgRaw &&
-              typeof injectClassNamesImgRaw === `string`
-            ) {
-              injectClassNamesImg = injectClassNamesImgRaw;
-            } else if (
-              e?.tagName &&
-              injectClassNamesImgRaw &&
-              typeof injectClassNamesImgRaw === `object`
-            ) {
-              //if (e?.tagName && typeof memory.img !== `undefined`)
-              //  memory.img = memory.img + 1;
-              //else memory.img = 0;
-              injectClassNamesImg = injectClassNamesImgRaw[memory.img];
-            }
-            const pass = /\.[A-Za-z0-9]+$/;
-            const extcheck = e?.properties?.src?.match(pass);
 
-            if (
-              extcheck &&
-              (extcheck[0] === `.png` ||
-                extcheck[0] === `.jpg` ||
-                extcheck[0] === `.gif`)
-            ) {
-              // imageData in this case is an array ... assumes image is first element
-              //const thisImageDataRaw = payload?.imageData?.filter(
-              //  (image: any) => image.filename === e?.properties?.src
-              //)[0];
-              const url = ``; // thisImageDataRaw?.localFile?.publicURL
-              if (url)
-                return (
-                  <img
-                    className={classNames(
-                      injectClassNames,
-                      injectClassNamesImgWrapper,
-                      injectClassNamesImg
-                    )}
-                    key={thisId}
-                    src={url}
-                    title={altText}
-                    alt={e?.properties?.alt}
-                  />
-                );
-            } else if (extcheck && extcheck[0] === `.svg`) {
-              //const thisImageDataRaw = payload?.imageData.filter(
-              //  (image: any) => image.filename === e?.properties?.src
-              //)[0];
-              const url = ``; //thisImageDataRaw?.localFile?.publicURL
-              if (url) {
-                const image = (
-                  <img
-                    key={thisId}
-                    src={url}
-                    title={altText}
-                    className={classNames(
-                      injectClassNames,
-                      injectClassNamesImg
-                    )}
-                  />
-                );
-                return image;
-              }
-            }
+            const injectClassNamesImgWrapper =
+              e?.tagName &&
+              typeof thisClassNames.imgWrapper !== `undefined` &&
+              typeof thisClassNames.imgWrapper === `string`
+                ? thisClassNames.imgWrapper
+                : e?.tagName &&
+                    typeof thisClassNames.imgWrapper !== `undefined` &&
+                    typeof thisClassNames.imgWrapper === `object`
+                  ? thisClassNames.imgWrapper[
+                      e?.tagName && typeof memory.imgWrapper !== `undefined`
+                        ? memory.imgWrapper + 1
+                        : 0
+                    ]
+                  : ``;
+            const injectClassNamesImg =
+              e?.tagName &&
+              typeof thisClassNames.img !== `undefined` &&
+              typeof thisClassNames.img === `string`
+                ? thisClassNames.img
+                : e?.tagName &&
+                    typeof thisClassNames.img !== `undefined` &&
+                    typeof thisClassNames.img === `object`
+                  ? thisClassNames.img[
+                      e?.tagName && typeof memory.img !== `undefined`
+                        ? memory.img + 1
+                        : 0
+                    ]
+                  : ``;
+            const thisImage = payload?.imageData?.filter(
+              (image: any) => image.filename === e?.properties?.src
+            )[0];
+            const src = `${import.meta.env.PUBLIC_IMAGE_URL}${thisImage.uri.url}`;
+            if (src)
+              return (
+                <img
+                  className={classNames(
+                    injectClassNames,
+                    injectClassNamesImgWrapper,
+                    injectClassNamesImg
+                  )}
+                  key={thisId}
+                  src={src}
+                  title={altText}
+                  alt={e?.properties?.alt}
+                />
+              );
             break;
           }
 
@@ -429,8 +387,8 @@ export default function PaneFromAst({
 
           default:
             console.log(`missed on Tag:`, Tag);
-            return <div key={thisId}>missed on {Tag}</div>;
         }
+        return <div key={thisId}>missed on {Tag}</div>;
       })
   );
 }

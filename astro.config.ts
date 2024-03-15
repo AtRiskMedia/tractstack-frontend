@@ -11,6 +11,9 @@ export default defineConfig({
   adapter: node({
     mode: "standalone",
   }),
+  image: {
+    domains: ["tractstack.com", "atriskmedia.com"],
+  },
   site: SITE.website,
   integrations: [tailwind(), react(), sitemap()],
   scopedStyleStrategy: "where",
