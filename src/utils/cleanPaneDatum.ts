@@ -1,8 +1,12 @@
-import type { PaneDatum, MarkdownDatum, FileNode } from "../types";
+import type { PaneFileNodes, PaneDatum, MarkdownDatum } from "../types";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { toHast } from "mdast-util-to-hast";
 
-export function cleanPaneDatum(pane: PaneDatum, files: FileNode[]) {
+export function cleanPaneDatum(pane: PaneDatum, files: PaneFileNodes[]) {
+  const thisFilesArray = files
+    .filter((f: PaneFileNodes) => f.id === pane.id)
+    .at(0);
+  const thisFiles = thisFilesArray?.files || [];
   const markdown = pane.field_markdown.map((m: MarkdownDatum) => {
     //console.log(m.field_image, m.field_image_svg)
     return {
@@ -14,7 +18,6 @@ export function cleanPaneDatum(pane: PaneDatum, files: FileNode[]) {
       slug: m.field_slug,
     };
   });
-  //console.log(pane.field_image_svg, pane.field_image_svg)
   return {
     title: pane.title,
     id: pane.id,
@@ -29,6 +32,6 @@ export function cleanPaneDatum(pane: PaneDatum, files: FileNode[]) {
     heightOffsetTablet: pane.field_height_offset_tablet,
     heightOffsetMobile: pane.field_height_offset_mobile,
     markdown: pane.field_markdown.length ? markdown : [],
-    files,
+    files: thisFiles,
   };
 }

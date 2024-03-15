@@ -184,21 +184,23 @@ export default function PaneFromAst({
             const thisImage = payload?.imageData?.filter(
               (image: any) => image.filename === e?.properties?.src
             )[0];
-            const src = `${import.meta.env.PUBLIC_IMAGE_URL}${thisImage.uri.url}`;
-            if (src)
-              return (
-                <img
-                  className={classNames(
-                    injectClassNames,
-                    injectClassNamesImgWrapper,
-                    injectClassNamesImg
-                  )}
-                  key={thisId}
-                  src={src}
-                  title={altText}
-                  alt={e?.properties?.alt}
-                />
-              );
+            if (thisImage?.uri?.url) {
+              const src = `${import.meta.env.PUBLIC_IMAGE_URL}${thisImage.uri.url}`;
+              if (src)
+                return (
+                  <img
+                    className={classNames(
+                      injectClassNames,
+                      injectClassNamesImgWrapper,
+                      injectClassNamesImg
+                    )}
+                    key={thisId}
+                    src={src}
+                    title={altText}
+                    alt={e?.properties?.alt}
+                  />
+                );
+            }
             break;
           }
 

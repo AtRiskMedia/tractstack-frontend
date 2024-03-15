@@ -21,6 +21,7 @@ import type {
   MarkdownDatum,
   FileNode,
   DrupalFile,
+  PaneFileNodes,
 } from "../types";
 import { cleanPaneDatum } from "../utils/cleanPaneDatum";
 import { cleanFileDatum } from "../utils/cleanFileDatum";
@@ -46,37 +47,43 @@ export async function getStaticPaths() {
     const date = new Date(storyFragment.changed);
     const msTimecode = date.getTime();
     const thisPanes = storyFragment.field_panes.map((p: PaneNode) => p.id);
-    const filesPayload: FileNode[] = [];
+    const paneFileNodes: PaneFileNodes[] = [];
     panes
       .filter((payload: PaneDatum) => thisPanes.includes(payload.id))
       .forEach((payload: PaneDatum) => {
+        const thisFilesPayload: FileNode[] = [];
         payload.field_image.forEach((f: DrupalFile) => {
           const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
           const thisFile = thisFiles.at(0);
-          if (thisFile) filesPayload.push(cleanFileDatum(thisFile));
+          if (thisFile) thisFilesPayload.push(cleanFileDatum(thisFile));
         });
         payload.field_image_svg.forEach((f: DrupalFile) => {
           const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
           const thisFile = thisFiles.at(0);
-          if (thisFile) filesPayload.push(cleanFileDatum(thisFile));
+          if (thisFile) thisFilesPayload.push(cleanFileDatum(thisFile));
         });
         payload?.field_markdown.forEach((m: MarkdownDatum) => {
           m.field_image.forEach((f: DrupalFile) => {
             const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
             const thisFile = thisFiles.at(0);
-            if (thisFile) filesPayload.push(cleanFileDatum(thisFile));
+            if (thisFile) thisFilesPayload.push(cleanFileDatum(thisFile));
           });
           m.field_image_svg.forEach((f: DrupalFile) => {
             const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
             const thisFile = thisFiles.at(0);
-            if (thisFile) filesPayload.push(cleanFileDatum(thisFile));
+            if (thisFile) thisFilesPayload.push(cleanFileDatum(thisFile));
           });
         });
+        if (thisFilesPayload.length)
+          paneFileNodes.push({
+            id: payload.id,
+            files: thisFilesPayload,
+          });
       });
     const panesPayload: PaneDatumProps[] = panes
       .filter((payload: PaneDatum) => thisPanes.includes(payload.id))
       .map((payload: PaneDatum) => {
-        return cleanPaneDatum(payload, filesPayload);
+        return cleanPaneDatum(payload, paneFileNodes);
       });
 
     return {
@@ -92,7 +99,6 @@ export async function getStaticPaths() {
         menu: storyFragment.field_menu,
         panes: storyFragment.field_panes,
         panesPayload,
-        filesPayload,
         tractStackId: storyFragment.field_tract_stack.id,
         tractStackTitle: storyFragment.field_tract_stack.title,
         tractStackSlug: storyFragment.field_tract_stack.field_slug,
@@ -113,7 +119,6 @@ const {
   menu,
   panes,
   panesPayload,
-  filesPayload,
   tractStackId,
   tractStackTitle,
   tractStackSlug,
@@ -126,7 +131,6 @@ const current = {
   parentId: tractStackId,
   parentSlug: tractStackSlug,
 };
-//console.log(filesPayload)
 const hiddenPanes: { [key: string]: boolean } = panesPayload.reduce(function (
   acc,
   cur

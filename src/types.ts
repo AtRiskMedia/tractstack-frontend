@@ -223,7 +223,6 @@ export interface StoryFragmentProps {
   menu: MenuDatum;
   panes: PaneNode[];
   panesPayload: PaneDatumProps[];
-  filesPayload: FileNode[];
   tractStackId: string;
   tractStackTitle: string;
   tractStackSlug: string;
@@ -479,4 +478,9 @@ export interface PaneFromAstProps {
   memory: any;
   id: string;
   idx: number;
+}
+
+export interface PaneFileNodes {
+  id: string;
+  files: FileNode[];
 }
