@@ -15,7 +15,7 @@ export function init() {
       if (a)
         a.addEventListener("click", async () => {
           locked.set(true);
-          eventProcessQueue();
+          //eventProcessQueue();
         });
     }
   }

@@ -312,8 +312,9 @@ export const prerender = true;
 <script>
   import { init } from "../utils/init";
   import { handleResize } from "../utils/handleResize";
-
+import { eventProcessQueue } from "../utils/eventProcessQueue";
   window.addEventListener(`resize`, handleResize);
   document.addEventListener("astro:page-load", () => handleResize());
+  document.addEventListener("astro:before-swap", () => eventProcessQueue());
   init();
 </script>
