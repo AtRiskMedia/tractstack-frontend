@@ -23,7 +23,7 @@ import type {
   DrupalFile,
   PaneFileNode,
   OptimizedImagePre,
-  OptimizedImage
+  OptimizedImage,
 } from "../types";
 import { cleanPaneDatum } from "../utils/cleanPaneDatum";
 import { cleanFileDatum } from "../utils/cleanFileDatum";
@@ -311,5 +311,9 @@ export const prerender = true;
 
 <script>
   import { init } from "../utils/init";
+  import { handleResize } from "../utils/handleResize";
+
+  window.addEventListener(`resize`, handleResize);
+  document.addEventListener("astro:page-load", () => handleResize());
   init();
 </script>
