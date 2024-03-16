@@ -116,18 +116,20 @@ export async function getStaticPaths() {
         const markdownFiles =
           payload?.field_markdown
             .map((m: MarkdownDatum) => {
-              return [].concat(
-                typeof m.field_image === `object` ? m.field_image : [],
-                typeof m.field_image_svg === `object` ? m.field_image_svg : []
-              );
+              let val: DrupalFile[] = [];
+              if (typeof m.field_image === `object`) {
+                val = val.concat(m.field_image);
+              }
+              if (typeof m.field_image_svg === `object`)
+                val = val.concat(m.field_image_svg);
+              return val;
             })
             .at(0) || [];
-        const paneFiles: DrupalFile[] = [].concat(
-          typeof payload.field_image === `object` ? payload.field_image : [],
-          typeof payload.field_image_svg === `object`
-            ? payload.field_image_svg
-            : []
-        );
+        let paneFiles: DrupalFile[] = [];
+        if (typeof payload.field_image === `object`)
+          paneFiles = paneFiles.concat(payload.field_image);
+        if (typeof payload.field_image_svg === `object`)
+          paneFiles = paneFiles.concat(payload.field_image_svg);
         const allFiles = [...markdownFiles, ...paneFiles];
         allFiles?.forEach((f: DrupalFile) => {
           const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
