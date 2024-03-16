@@ -22,9 +22,24 @@ import type {
   FileNode,
   DrupalFile,
   PaneFileNode,
+  OptimizedImagePre,
+  OptimizedImage
 } from "../types";
 import { cleanPaneDatum } from "../utils/cleanPaneDatum";
 import { cleanFileDatum } from "../utils/cleanFileDatum";
+import { getImage } from "astro:assets";
+
+export async function getOptimizedImage(src: string) {
+  try {
+    const img = await getImage({
+      src,
+      inferSize: true,
+    });
+    return img.src;
+  } catch {
+    console.log(`error`);
+  }
+}
 
 export async function getStaticPaths() {
   const files = await getAllFiles();
@@ -40,6 +55,52 @@ export async function getStaticPaths() {
     }
   );
   const panes = await getAllPaneDatum();
+
+  // must intercept image|imageSvg from panes; then optimize
+  const optimizedImagesPre: OptimizedImagePre[] = [];
+  panes.forEach((p: PaneDatum) => {
+    const markdownFiles =
+      p?.field_markdown
+        .map((m: MarkdownDatum) => {
+          let val: DrupalFile[] = [];
+          if (typeof m.field_image === `object`)
+            val = val.concat(m.field_image);
+          if (typeof m.field_image_svg === `object`)
+            val = val.concat(m.field_image_svg);
+          return val;
+        })
+        .at(0) || [];
+    let paneFiles: DrupalFile[] = [];
+    if (typeof p.field_image === `object`)
+      paneFiles = paneFiles.concat(p.field_image);
+    if (typeof p.field_image_svg === `object`)
+      paneFiles = paneFiles.concat(p.field_image_svg);
+    const allFiles = [...markdownFiles, ...paneFiles];
+    allFiles?.forEach((f: DrupalFile) => {
+      const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
+      const thisFile = thisFiles.at(0);
+      if (
+        thisFile &&
+        !optimizedImagesPre.filter(
+          (i: OptimizedImagePre) => i.id === thisFile.id
+        ).length
+      )
+        optimizedImagesPre.push({
+          id: thisFile.id,
+          filename: thisFile.filename,
+          url: thisFile.uri.url,
+        });
+    });
+  });
+  const optimizedImages = await Promise.all(
+    optimizedImagesPre.map(async (i: OptimizedImagePre) => {
+      const src = `${import.meta.env.PUBLIC_IMAGE_URL}${i.url}`;
+      const optimized = await getOptimizedImage(src);
+      const val = { id: i.id, src: optimized };
+      return val as OptimizedImage;
+    })
+  );
+
   const pathsPromises: Promise<{
     params: { slug: string };
     props: StoryFragmentProps;
@@ -52,27 +113,34 @@ export async function getStaticPaths() {
       .filter((payload: PaneDatum) => thisPanes.includes(payload.id))
       .forEach((payload: PaneDatum) => {
         const thisFilesPayload: FileNode[] = [];
-        payload.field_image.forEach((f: DrupalFile) => {
+        const markdownFiles =
+          payload?.field_markdown
+            .map((m: MarkdownDatum) => {
+              let val: DrupalFile[] = [];
+              if (typeof m.field_image === `object`) {
+                val = val.concat(m.field_image);
+              }
+              if (typeof m.field_image_svg === `object`)
+                val = val.concat(m.field_image_svg);
+              return val;
+            })
+            .at(0) || [];
+        let paneFiles: DrupalFile[] = [];
+        if (typeof payload.field_image === `object`)
+          paneFiles = paneFiles.concat(payload.field_image);
+        if (typeof payload.field_image_svg === `object`)
+          paneFiles = paneFiles.concat(payload.field_image_svg);
+        const allFiles = [...markdownFiles, ...paneFiles];
+        allFiles?.forEach((f: DrupalFile) => {
           const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
           const thisFile = thisFiles.at(0);
-          if (thisFile) thisFilesPayload.push(cleanFileDatum(thisFile));
-        });
-        payload.field_image_svg.forEach((f: DrupalFile) => {
-          const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
-          const thisFile = thisFiles.at(0);
-          if (thisFile) thisFilesPayload.push(cleanFileDatum(thisFile));
-        });
-        payload?.field_markdown.forEach((m: MarkdownDatum) => {
-          m.field_image.forEach((f: DrupalFile) => {
-            const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
-            const thisFile = thisFiles.at(0);
-            if (thisFile) thisFilesPayload.push(cleanFileDatum(thisFile));
-          });
-          m.field_image_svg.forEach((f: DrupalFile) => {
-            const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
-            const thisFile = thisFiles.at(0);
-            if (thisFile) thisFilesPayload.push(cleanFileDatum(thisFile));
-          });
+          if (thisFile) {
+            const optimizedSrcRaw = optimizedImages.filter(
+              (i: OptimizedImage) => i.id === thisFile.id
+            );
+            const optimizedSrc = optimizedSrcRaw.at(0);
+            thisFilesPayload.push(cleanFileDatum(thisFile, optimizedSrc?.src));
+          }
         });
         if (thisFilesPayload.length)
           paneFileNodes.push({
@@ -178,7 +246,7 @@ export const prerender = true;
         {
           panes.map((pane: PaneNode, idx: number) => (
             <>
-             <astro-pane key={`pane-${pane.id}`}>
+              <astro-pane key={`pane-${pane.id}`}>
                 <li
                   id={`pane-${pane.id}`}
                   class={classNames(
@@ -245,5 +313,3 @@ export const prerender = true;
   import { init } from "../utils/init";
   init();
 </script>
-
- 

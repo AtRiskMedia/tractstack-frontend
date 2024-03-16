@@ -86,6 +86,7 @@ export interface FileNode {
     value: string;
     url: string;
   };
+  optimizedSrc?: string;
   type?: `file--file`;
   links?: { self: object };
 }
@@ -485,4 +486,14 @@ export interface PaneFromAstProps {
 export interface PaneFileNode {
   id: string;
   files: FileNode[];
+}
+
+export interface OptimizedImagePre {
+  id: string;
+  filename: string;
+  url: string;
+}
+export interface OptimizedImage {
+  id: string;
+  src: string;
 }

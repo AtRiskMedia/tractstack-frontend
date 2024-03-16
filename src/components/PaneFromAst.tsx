@@ -145,7 +145,6 @@ export default function PaneFromAst({
           }
 
           case `img`: {
-            //console.log(payload.imageData);
             const altText =
               e?.properties?.alt ||
               `This should be descriptive text of an image | We apologize the alt text is missing.`;
@@ -182,8 +181,10 @@ export default function PaneFromAst({
             const thisImage = payload?.imageData?.filter(
               (image: any) => image.filename === e?.properties?.src
             )[0];
-            if (thisImage?.uri?.url) {
-              const src = `${import.meta.env.PUBLIC_IMAGE_URL}${thisImage.uri.url}`;
+            if (thisImage?.optimizedSrc || thisImage?.uri?.url) {
+              const src =
+                thisImage?.optimizedSrc ||
+                `${import.meta.env.PUBLIC_IMAGE_URL}${thisImage.uri.url}`;
               if (src)
                 return (
                   <img

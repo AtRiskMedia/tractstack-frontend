@@ -26,7 +26,6 @@ export function cleanPaneDatum(pane: PaneDatum, files?: PaneFileNode) {
     };
   });
   const markdown = pane.field_markdown.map((m: MarkdownDatum) => {
-    //console.log(m.field_image, m.field_image_svg)
     return {
       id: m.id,
       drupalNid: m.drupal_internal__nid,
