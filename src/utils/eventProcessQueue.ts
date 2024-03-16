@@ -1,4 +1,4 @@
-import { locked, events, panesVisible } from "../store/events";
+import { events, panesVisible } from "../store/events";
 import { current } from "../store/events";
 import { eventSync } from "./eventSync";
 import { THRESHOLD_READ, THRESHOLD_GLOSSED } from "../constants";
@@ -22,6 +22,7 @@ export async function eventProcessQueue() {
           parentId: current.get().id,
           type: `Pane`,
           verb: verb,
+          duration: diff,
         };
         console.log(`=force-event`, event);
         events.set([...events.get(), event]);
@@ -33,6 +34,5 @@ export async function eventProcessQueue() {
     events.set([]);
     eventSync(payload);
   }
-  locked.set(false);
   return true;
 }

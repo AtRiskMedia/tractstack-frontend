@@ -32,7 +32,7 @@ type PanesVisible = {
   [key: string]: number | null;
 };
 
-export const locked = atom<boolean>(false);
+//export const locked = atom<boolean>(false);
 
 export const events = atom<EventStream[]>([]);
 

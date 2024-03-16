@@ -298,11 +298,9 @@ export const prerender = true;
         contentMap
           .filter(m => m.slug !== slug)
           .map(m => (
-            <astro-link data-id={m.slug}>
-              <a class="py-2 px-3 hover:text-blue-800" href={`/${m.slug}`}>
-                {m.slug}
-              </a>
-            </astro-link>
+            <a class="py-2 px-3 hover:text-blue-800" href={`/${m.slug}`}>
+              {m.slug}
+            </a>
           ))
       }
     </div>
@@ -311,10 +309,18 @@ export const prerender = true;
 
 <script>
   import { init } from "../utils/init";
+  import { eventProcessQueue } from "../utils/eventProcessQueue";
+  import { inView } from "../utils/inView";
+  import { eventStream } from "../utils/eventStream";
   import { handleResize } from "../utils/handleResize";
-import { eventProcessQueue } from "../utils/eventProcessQueue";
+
   window.addEventListener(`resize`, handleResize);
-  document.addEventListener("astro:page-load", () => handleResize());
+
+  document.addEventListener("astro:page-load", () => {
+    handleResize();
+    eventStream();
+    inView();
+  });
   document.addEventListener("astro:before-swap", () => eventProcessQueue());
   init();
 </script>

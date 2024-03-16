@@ -1,25 +1,28 @@
-import { inView } from "./inView";
 import { getTokens } from "../api/axiosClient";
+import { inView } from "./inView";
 import { eventStream } from "./eventStream";
-import { events, current, locked } from "../store/events";
-import { eventProcessQueue } from "./eventProcessQueue";
+import { events, current } from "../store/events";
+import { handleResize } from "./handleResize";
 
 export function init() {
   console.log(`init`);
-  if (import.meta.env.PROD) getTokens();
 
-  class Link extends HTMLElement {
-    constructor() {
-      super();
-      const a = this.querySelector("a");
-      if (a)
-        a.addEventListener("click", async () => {
-          locked.set(true);
-          //eventProcessQueue();
-        });
-    }
-  }
-  customElements.define("astro-link", Link);
+  // check for utmParams
+  const urlSearchParams = new URLSearchParams(window.location.search);
+  const params = Object.fromEntries(urlSearchParams.entries());
+  const utmSource = params[`utm_source`] || undefined;
+  const utmMedium = params[`utm_medium`] || undefined;
+  const utmCampaign = params[`utm_campaign`] || undefined;
+  const utmTerm = params[`utm_term`] || undefined;
+  const utmContent = params[`utm_content`] || undefined;
+  if (utmSource)
+    console.log(
+      `params: source=${utmSource} medium=${utmMedium} campaign=${utmCampaign} term=${utmTerm} content=${utmContent}`
+    );
+
+  // must pass utmSource and fingerprint if avail
+  if (import.meta.env.PROD) getTokens();
+  else console.log(`DEV MODE: not connecting to concierge`);
 
   class StoryFragment extends HTMLElement {
     constructor() {
@@ -39,20 +42,8 @@ export function init() {
   }
   customElements.define("astro-pane", Pane);
 
-  const urlSearchParams = new URLSearchParams(window.location.search);
-  const params = Object.fromEntries(urlSearchParams.entries());
-  const utmSource = params[`utm_source`] || undefined;
-  const utmMedium = params[`utm_medium`] || undefined;
-  const utmCampaign = params[`utm_campaign`] || undefined;
-  const utmTerm = params[`utm_term`] || undefined;
-  const utmContent = params[`utm_content`] || undefined;
   const internal =
     document.referrer.indexOf(location.protocol + "//" + location.host) === 0;
-
-  if (utmSource)
-    console.log(
-      `params: source=${utmSource} medium=${utmMedium} campaign=${utmCampaign} term=${utmTerm} content=${utmContent}`
-    );
   if (!internal) {
     console.log(`entered from external link`, document.referrer, 1);
     const event = {
@@ -63,7 +54,4 @@ export function init() {
     };
     events.set([...events.get(), event]);
   }
-
-  eventStream();
-  inView();
 }

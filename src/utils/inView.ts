@@ -39,6 +39,7 @@ export function inView() {
             parentId: current.get().id,
             type: `Pane`,
             verb: verb,
+            duration: diff,
           };
           console.log(`=event`, event);
           events.set([...events.get(), event]);
