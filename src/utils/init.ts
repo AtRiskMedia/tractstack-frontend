@@ -1,8 +1,5 @@
 import { getTokens } from "../api/axiosClient";
-import { inView } from "./inView";
-import { eventStream } from "./eventStream";
 import { events, current } from "../store/events";
-import { handleResize } from "./handleResize";
 
 export function init() {
   console.log(`init`);

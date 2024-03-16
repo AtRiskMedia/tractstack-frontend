@@ -6,7 +6,7 @@ import {
   getAllStoryFragmentDatum,
   getAllPaneDatum,
   getAllFiles,
-} from "../api/drupal";
+} from "@api/drupal";
 import type {
   MenuDatum,
   TractStack,
@@ -25,8 +25,8 @@ import type {
   OptimizedImagePre,
   OptimizedImage,
 } from "../types";
-import { cleanPaneDatum } from "../utils/cleanPaneDatum";
-import { cleanFileDatum } from "../utils/cleanFileDatum";
+import { cleanPaneDatum } from "@utils/compositor/cleanPaneDatum";
+import { cleanFileDatum } from "@utils/compositor/cleanFileDatum";
 import { getImage } from "astro:assets";
 
 export async function getOptimizedImage(src: string) {
@@ -308,11 +308,11 @@ export const prerender = true;
 </Layout>
 
 <script>
-  import { init } from "../utils/init";
-  import { eventProcessQueue } from "../utils/eventProcessQueue";
-  import { inView } from "../utils/inView";
-  import { eventStream } from "../utils/eventStream";
-  import { handleResize } from "../utils/handleResize";
+  import { init } from "@utils/init";
+  import { eventProcessQueue } from "@utils/compositor/eventProcessQueue";
+  import { inView } from "@utils/compositor/inView";
+  import { eventStream } from "@utils/compositor/eventStream";
+  import { handleResize } from "@utils/compositor/handleResize";
 
   window.addEventListener(`resize`, handleResize);
 

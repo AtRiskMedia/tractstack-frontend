@@ -1,4 +1,4 @@
-import type { DrupalFile, FileNode } from "../types";
+import type { DrupalFile, FileNode } from "../../types";
 
 export function cleanFileDatum(
   file: DrupalFile,

@@ -3,7 +3,7 @@ import type {
   FileNode,
   PaneDatum,
   MarkdownDatum,
-} from "../types";
+} from "../../types";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { toHast } from "mdast-util-to-hast";
 

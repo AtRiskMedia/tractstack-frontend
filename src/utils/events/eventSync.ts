@@ -1,5 +1,5 @@
-import type { Event } from "../types";
-import { auth } from "../store/auth";
+import type { Event } from "../../types";
+import { auth } from "../../store/auth";
 
 export async function eventSync(payload: Event[]) {
   console.log(`didn't actually send yet`);
