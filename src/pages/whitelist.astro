@@ -1,7 +1,7 @@
 ---
 import { tailwindWhitelist } from "../utils/tailwindWhitelist";
-import { getAllPaneDatum } from "@/api/drupal";
-import { cleanPaneDatum } from "@/utils/compositor/cleanPaneDatum";
+import { getAllPaneDatum } from "../api/drupal";
+import { cleanPaneDatum } from "../utils/compositor/cleanPaneDatum";
 import type { PaneDatum } from "../types";
 
 const panes: PaneDatum[] = await getAllPaneDatum();
