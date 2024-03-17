@@ -1,5 +1,6 @@
 import { BgPane } from "./panes/BgPane";
 import { MarkdownPane } from "./panes/MarkdownPane";
+import { MarkdownInsidePane } from "./panes/MarkdownInsidePane";
 import type {
   MarkdownPaneProps,
   MarkdownPaneDatum,
@@ -38,17 +39,14 @@ export function PaneCompositor({
         thisPayload.textShapeOutsideTablet !== `none` ||
         thisPayload.textShapeOutsideDesktop !== `none`
       ) {
-        return <p>shapeOutside modal</p>;
-      }
-
-      // has imageMaskShape **not implemented?
-      if (
-        thisPayload.imageMaskShapeMobile !== `none` ||
-        thisPayload.imageMaskShapeTablet !== `none` ||
-        thisPayload.imageMaskShapeDesktop !== `none`
-      ) {
-        console.log(`imageMaskShape markdown`, paneHeight);
-        return <p>imageMaskShape **not implemented</p>;
+        return (
+          <MarkdownInsidePane
+            payload={thisPayload}
+            markdown={markdown}
+            files={files}
+            paneHeight={paneHeight}
+          />
+        );
       }
 
       // regular markdown

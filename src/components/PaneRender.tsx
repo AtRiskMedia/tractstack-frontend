@@ -35,9 +35,9 @@ export default function PaneRender({ payload }: PaneRenderProps) {
       : ``
   );
   const paneHeight: [number, number, number] = [
-    (600 * Number(paneHeightRatioMobile)) / 100,
-    (1080 * Number(paneHeightRatioTablet)) / 100,
-    (1920 * Number(paneHeightRatioDesktop)) / 100,
+    Math.floor((600 * Number(payload.heightRatioMobile)) / 100),
+    Math.floor((1080 * Number(payload.heightRatioTablet)) / 100),
+    Math.floor((1920 * Number(payload.heightRatioDesktop)) / 100),
   ];
 
   // - if paneOffset[Desktop|Tablet|Mobile], calculate margin and inject
@@ -73,31 +73,6 @@ export default function PaneRender({ payload }: PaneRenderProps) {
     (a: BgColourDatum | BgPaneDatum | MarkdownPaneDatum) =>
       a.internal.type !== `bgColour`
   ) as BgPaneDatum[] | MarkdownPaneDatum[];
-  const children = paneFragments
-    .sort(
-      (
-        a: BgPaneDatum | MarkdownPaneDatum,
-        b: BgPaneDatum | MarkdownPaneDatum
-      ) =>
-        (a.internal.type === `markdown` ? 1 : 0) -
-        (b.internal.type === `markdown` ? 1 : 0)
-    )
-    .map((f: BgPaneDatum | MarkdownPaneDatum) => {
-      return (
-        <div
-          className="relative w-full h-full justify-self-start"
-          style={paneFragmentStyle}
-          key={f.id}
-        >
-          <PaneCompositor
-            payload={f}
-            markdown={payload.markdown}
-            files={payload.files}
-            paneHeight={paneHeight}
-          />
-        </div>
-      );
-    });
 
   return (
     <div
@@ -109,7 +84,29 @@ export default function PaneRender({ payload }: PaneRenderProps) {
         `grid h-fit-contents`
       )}
     >
-      {children}
+      {paneFragments
+        .sort(
+          (
+            a: BgPaneDatum | MarkdownPaneDatum,
+            b: BgPaneDatum | MarkdownPaneDatum
+          ) =>
+            (a.internal.type === `markdown` ? 1 : 0) -
+            (b.internal.type === `markdown` ? 1 : 0)
+        )
+        .map((f: BgPaneDatum | MarkdownPaneDatum) => (
+          <div
+            className="relative w-full h-full justify-self-start"
+            style={paneFragmentStyle}
+            key={f.id}
+          >
+            <PaneCompositor
+              payload={f}
+              markdown={payload.markdown}
+              files={payload.files}
+              paneHeight={paneHeight}
+            />
+          </div>
+        ))}
     </div>
   );
 }

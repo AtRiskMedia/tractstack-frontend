@@ -45,10 +45,10 @@ export async function init() {
       auth.setKey(`key`, conciergeSync.fingerprint);
     if (conciergeSync?.firstname)
       auth.setKey(`firstname`, conciergeSync.firstname);
-    if (conciergeSync?.consent==="1") auth.setKey(`consent`, `1`);
+    if (conciergeSync?.consent === "1") auth.setKey(`consent`, `1`);
     else {
-      auth.setKey(`consent`,undefined)
-      auth.setKey(`firstname`,undefined)
+      auth.setKey(`consent`, undefined);
+      auth.setKey(`firstname`, undefined);
     }
   }
 

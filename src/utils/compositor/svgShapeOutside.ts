@@ -2,7 +2,7 @@ import { Buffer } from "buffer";
 import { SvgPanes } from "@assets/shapes";
 import type { SvgPaneDatum } from "@assets/shapes";
 
-export const svgShapeOutsidePayload = (
+export const svgShapeOutside = (
   shapeName: string,
   viewportKey: string,
   thisId: string,
