@@ -22,6 +22,7 @@
     "@headlessui/react": "^1.7.18",
     "@heroicons/react": "^2.1.1",
     "@nanostores/persistent": "^0.10.1",
+    "@nanostores/react": "^0.7.2",
     "@opuu/inview": "^2.0.1",
     "@shopify/hydrogen-react": "^2024.1.1",
     "@types/react": "^18.2.64",

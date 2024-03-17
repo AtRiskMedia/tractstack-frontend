@@ -43,6 +43,7 @@ export function inView() {
           };
           console.log(`=event`, event);
           events.set([...events.get(), event]);
+          console.log(`==events after panes visible change`, events.get());
         }
       }
     }

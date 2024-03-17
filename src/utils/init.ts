@@ -52,5 +52,6 @@ export function init() {
       verb: `ENTERED`,
     };
     events.set([...events.get(), event]);
+    console.log(`==events after entered`, events.get());
   }
 }

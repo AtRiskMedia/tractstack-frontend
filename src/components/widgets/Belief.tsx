@@ -1,11 +1,12 @@
 import { Fragment, useState, useEffect } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import { useStore } from "@nanostores/react";
 import { heldBeliefsScales, heldBeliefsTitles } from "@assets/beliefs";
 import { classNames } from "../../utils/helpers";
 import { heldBeliefs } from "../../store/beliefs";
 import { events } from "../../store/events";
-import type { BeliefOptionDatum, BeliefDatum } from "../../types";
+import type { BeliefOptionDatum, BeliefDatum,EventStream} from "../../types";
 
 // whitelist: bg-teal-400 bg-lime-400 bg-slate-200 bg-amber-400 bg-red-400 bg-lime-400 bg-amber-400 bg-lime-400 bg-amber-400 bg-lime-400 bg-amber-400 bg-lime-400 bg-amber-400
 
@@ -14,7 +15,7 @@ const Belief = ({
 }: {
   value: { slug: string; scale: string; extra: string };
 }) => {
-  const heldBeliefsAll = heldBeliefs.get();
+  const $heldBeliefsAll = useStore(heldBeliefs);
   const thisScaleLookup = value.scale as keyof typeof heldBeliefsScales;
   const extra = value && typeof value.extra === `string` ? value.extra : null;
   const thisTitle = heldBeliefsTitles[thisScaleLookup];
@@ -25,19 +26,16 @@ const Belief = ({
     return b.id - a.id;
   });
   const start = {
-      id: 0,
-      slug: "0",
-      name: thisTitle,
-      color: `bg-myorange`,
-    }
-  const thisScale = [
-    start,
-        ...thisScaleRaw,
-  ];
+    id: 0,
+    slug: "0",
+    name: thisTitle,
+    color: `bg-myorange`,
+  };
+  const thisScale = [start, ...thisScaleRaw];
   const [selected, setSelected] = useState(start);
 
   useEffect(() => {
-    const hasMatchingBelief = heldBeliefsAll
+    const hasMatchingBelief = $heldBeliefsAll
       .filter((e: BeliefDatum) => e.slug === value.slug)
       .at(0);
     const knownOffset =
@@ -47,22 +45,32 @@ const Belief = ({
             .at(0)
         : false;
     if (knownOffset && knownOffset?.slug) setSelected(knownOffset);
-  }, [heldBeliefsAll]);
+  }, [$heldBeliefsAll]);
 
   const handleClick = (e: BeliefOptionDatum) => {
-    const event = {
-      verb: e.slug,
-      id: value.slug,
-      title: value.slug,
-      type: `Belief`,
-    };
-    const belief = {
-      id: value.slug,
-      slug: value.slug,
-      verb: e.slug,
-    };
-    heldBeliefs.set([...heldBeliefs.get(), belief]);
-    events.set([...events.get(), event]);
+    if (e.id > 0) {
+      const event = {
+        verb: e.slug,
+        id: value.slug,
+        title: value.slug,
+        type: `Belief`,
+      };
+      const belief = {
+        id: value.slug,
+        slug: value.slug,
+        verb: e.slug,
+      };
+      const prevBeliefs = $heldBeliefsAll.filter(
+        (b: BeliefDatum) => b.slug !== value.slug
+      );
+      heldBeliefs.set([...prevBeliefs, belief]);
+      const prevEvents = events
+        .get()
+        .filter(
+          (e: EventStream) => !(e.type === `Belief` && e.id === value.slug)
+        );
+      events.set([...prevEvents, event]);
+    }
   };
 
   return (

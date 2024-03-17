@@ -16,8 +16,8 @@ const IdentifyAs = ({ value, cssClasses = ``, storyFragmentId }: any) => {
     //  hasMatchingBelief === identifyAsObject
     //)
     //  return thisScale.filter((e: any) => e.slug === `AGREES`)[0];
-    return {id:0,slug:`0`,name:`0`,color:``};
-  }, [ thisScale, identifyAsObject, value.slug]);
+    return { id: 0, slug: `0`, name: `0`, color: `` };
+  }, [thisScale, identifyAsObject, value.slug]);
 
   const handleClick = () => {
     //if (identifyAsObject && identifyAsSlug) {

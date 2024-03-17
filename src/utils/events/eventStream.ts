@@ -7,7 +7,8 @@ export async function eventStream() {
     try {
       const payload = events.get();
       if (payload.length) {
-        events.set([]);
+        //events.set([]);
+        console.log(`not clearing event queue`);
         eventSync(payload);
       }
     } catch (e) {
