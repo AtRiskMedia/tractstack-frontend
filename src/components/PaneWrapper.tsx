@@ -1,20 +1,8 @@
-import type { PaneDatumProps, ContentMap } from "../types";
 import PaneRender from "../components/PaneRender";
+import type { PaneDatumProps } from "../types";
 
-const PaneWrapper = (props: {
-  payload: PaneDatumProps;
-  current: ContentMap;
-  contentMap: ContentMap[];
-}) => {
-  // must pass payload through @tractstack/helpers Compositor
-  // - what needs to be passed?
-  // -- onClick handler intercept fn to process events on a href
-  // -- inline "resource", YouTube, Belief, IdentifyAs, Toggle -- pass templating fn, returns Jsx
-  //
-  // - what needs to be intercepted?
-  // -- codehook
-  //
-
+const PaneWrapper = (props: { payload: PaneDatumProps }) => {
+  // intercept codehook on panePayload
   const hasCodeHook =
     typeof props?.payload?.optionsPayload?.codeHook?.target === `string`;
   if (hasCodeHook)
@@ -24,6 +12,7 @@ const PaneWrapper = (props: {
       </div>
     );
 
+  // otherwise render as Pane
   return <PaneRender payload={props.payload} />;
 };
 

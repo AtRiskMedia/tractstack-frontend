@@ -1,5 +1,5 @@
 ---
-import { classNames } from "@tractstack/helpers";
+import { classNames } from "../utils/helpers";
 import Layout from "@layouts/Layout.astro";
 import PaneWrapper from "@components/PaneWrapper.tsx";
 import {
@@ -24,6 +24,7 @@ import type {
   PaneFileNode,
   OptimizedImagePre,
   OptimizedImage,
+  Current,
 } from "../types";
 import { cleanPaneDatum } from "../utils/compositor/cleanPaneDatum";
 import { cleanFileDatum } from "../utils/compositor/cleanFileDatum";
@@ -43,18 +44,20 @@ export async function getOptimizedImage(src: string) {
 
 export async function getStaticPaths() {
   const files = await getAllFiles();
+  const panes = await getAllPaneDatum();
   const storyFragments: StoryFragmentDatum[] = await getAllStoryFragmentDatum();
   const contentMap: ContentMap[] = storyFragments.map(
     (s: StoryFragmentDatum) => {
       return {
         id: s.id,
         slug: s.field_slug,
+        title: s.title,
         parentId: s.field_tract_stack.id,
         parentSlug: s.field_tract_stack.field_slug,
+        parentTitle: s.field_tract_stack.title,
       };
     }
   );
-  const panes = await getAllPaneDatum();
 
   // must intercept image|imageSvg from panes; then optimize
   const optimizedImagesPre: OptimizedImagePre[] = [];
@@ -101,6 +104,7 @@ export async function getStaticPaths() {
     })
   );
 
+  // now generate each storyFragment page payload
   const pathsPromises: Promise<{
     params: { slug: string };
     props: StoryFragmentProps;
@@ -198,12 +202,18 @@ const {
   created,
   contentMap,
 }: StoryFragmentProps = Astro.props;
-const current = {
+
+// id for this storyFragment
+const current: Current = {
   id,
   slug,
+  title,
   parentId: tractStackId,
   parentSlug: tractStackSlug,
+  parentTitle: tractStackTitle,
 };
+
+// per pane settings
 const hiddenPanes: { [key: string]: boolean } = panesPayload.reduce(function (
   acc,
   cur
@@ -240,8 +250,10 @@ export const prerender = true;
         </>
       ) : null
     }
-    <h2>Panes</h2>
-    <astro-storyfragment data-id={JSON.stringify(current)}>
+    <astro-storyfragment
+      data-id={JSON.stringify(current)}
+      data-map={JSON.stringify(contentMap)}
+    >
       <ul class={tailwindBgColour}>
         {
           panes.map((pane: PaneNode, idx: number) => (
@@ -265,8 +277,6 @@ export const prerender = true;
                   {idx <= 2 ? (
                     <PaneWrapper
                       client:load
-                      current={current}
-                      contentMap={contentMap}
                       payload={
                         panesPayload
                           .filter((p: PaneDatumProps) => p.id === pane.id)
@@ -276,8 +286,6 @@ export const prerender = true;
                   ) : (
                     <PaneWrapper
                       client:visible
-                      current={current}
-                      contentMap={contentMap}
                       payload={
                         panesPayload
                           .filter((p: PaneDatumProps) => p.id === pane.id)
@@ -292,7 +300,6 @@ export const prerender = true;
         }
       </ul>
     </astro-storyfragment>
-
     <div class="my-6">
       {
         contentMap
@@ -312,7 +319,7 @@ export const prerender = true;
   import { eventProcessQueue } from "../utils/events/eventProcessQueue";
   import { inView } from "../utils/events/inView";
   import { eventStream } from "../utils/events/eventStream";
-  import { handleResize } from "../utils/handleResize";
+  import { handleResize } from "../utils/helpers";
 
   window.addEventListener(`resize`, handleResize);
 

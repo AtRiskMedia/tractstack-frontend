@@ -234,7 +234,6 @@ export interface StoryFragmentProps {
 }
 
 // axios sync to concierge
-import type { IContentMapDict } from "@tractstack/types";
 
 export interface IEventStream {
   duration: number;
@@ -271,7 +270,7 @@ export interface IAxiosRegisterProps {
 
 export interface IAxiosPushProps {
   eventStream: IEventStreamDict;
-  contentMap: IContentMapDict;
+  contentMap: any;
   referrer?: IReferrer;
   tractStackId?: string;
 }
@@ -347,7 +346,7 @@ export interface PaneRenderProps {
   payload: PaneDatumProps;
 }
 
-export interface Beliefs {
+export interface BeliefDatum {
   [key: string]: string | string[];
 }
 
@@ -454,8 +453,8 @@ export interface PaneOptionsPayload {
   hiddenPane: boolean;
   overflowHidden: boolean;
   maxHScreen: boolean;
-  heldBeliefs: Beliefs[];
-  withheldBeliefs: Beliefs[];
+  heldBeliefs: BeliefDatum[];
+  withheldBeliefs: BeliefDatum[];
 }
 
 export interface ButtonData {
@@ -497,3 +496,51 @@ export interface OptimizedImage {
   id: string;
   src: string;
 }
+
+export interface BeliefOptionDatum {
+  id: number;
+  slug: string;
+  name: string;
+  color: string;
+}
+
+export type BeliefStore = {
+  id: string;
+  slug: string;
+  verb: string;
+  object?: string;
+};
+
+export interface Current {
+  id: string;
+  slug: string;
+  title: string;
+  parentId?: string;
+  parentSlug?: string;
+  parentTitle?: string;
+}
+
+export type EventStream = {
+  id: string;
+  type: string;
+  verb: string;
+  targetId?: string;
+  duration?: number;
+  score?: string;
+  title?: string;
+  targetSlug?: string;
+  isContextPane?: string;
+};
+
+export type ContentMapValue = {
+  id: string;
+  slug: string;
+  title: string;
+  parentId: string;
+  parentSlug: string;
+  parentTitle: string;
+};
+
+export type PanesVisible = {
+  [key: string]: number | null;
+};

@@ -1,5 +1,5 @@
 import { getTokens } from "../api/axiosClient";
-import { events, current } from "../store/events";
+import { events, current, contentMap } from "../store/events";
 
 export function init() {
   console.log(`init`);
@@ -26,6 +26,8 @@ export function init() {
       super();
       const id = this.dataset.id;
       if (id) current.set(JSON.parse(id));
+      const contentMapPayload = this.dataset.map;
+      if (contentMapPayload) contentMap.set([JSON.parse(contentMapPayload)]);
       this.querySelector("ul");
     }
   }

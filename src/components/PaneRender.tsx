@@ -1,11 +1,11 @@
-import { classNames } from "@tractstack/helpers";
+import { classNames } from "../utils/helpers";
+import { PaneCompositor } from "./PaneCompositor";
 import type {
   PaneRenderProps,
   BgColourDatum,
   BgPaneDatum,
   MarkdownPaneDatum,
 } from "../types";
-import { compositor } from "../utils/compositor";
 
 export default function PaneRender({ payload }: PaneRenderProps) {
   // returns a Rendered Pane as a div
@@ -83,14 +83,18 @@ export default function PaneRender({ payload }: PaneRenderProps) {
         (b.internal.type === `markdown` ? 1 : 0)
     )
     .map((f: BgPaneDatum | MarkdownPaneDatum) => {
-      const child = compositor(f, payload.markdown, payload.files, paneHeight);
       return (
         <div
           className="relative w-full h-full justify-self-start"
           style={paneFragmentStyle}
           key={f.id}
         >
-          {child}
+          <PaneCompositor
+            payload={f}
+            markdown={payload.markdown}
+            files={payload.files}
+            paneHeight={paneHeight}
+          />
         </div>
       );
     });

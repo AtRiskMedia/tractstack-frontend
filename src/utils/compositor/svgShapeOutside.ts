@@ -1,5 +1,5 @@
-import { SvgPanes } from "./shapes";
-import type { SvgPaneDatum } from "./shapes";
+import { SvgPanes } from "@assets/shapes";
+import type { SvgPaneDatum } from "@assets/shapes";
 
 export const svgShapeOutsidePayload = (
   shapeName: string,

@@ -1,16 +1,20 @@
-import PaneFromAst from "../../components/PaneFromAst";
-import { classNames } from "@tractstack/helpers";
+import PaneFromAst from "./PaneFromAst";
+import { classNames } from "../../utils/helpers";
 import type {
   FileNode,
   MarkdownPaneProps,
   MarkdownPaneDatum,
 } from "../../types";
 
-export function markdownPane(
-  payload: MarkdownPaneDatum,
-  markdown: MarkdownPaneProps[],
-  files: FileNode[]
-) {
+export function MarkdownPane({
+  payload,
+  markdown,
+  files,
+}: {
+  payload: MarkdownPaneDatum;
+  markdown: MarkdownPaneProps[];
+  files: FileNode[];
+}) {
   const hasHidden =
     payload.hiddenViewports.includes(`desktop`) ||
     payload.hiddenViewports.includes(`tablet`) ||

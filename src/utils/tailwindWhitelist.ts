@@ -1,4 +1,4 @@
-import { classNames } from "@tractstack/helpers";
+import { classNames } from "./helpers";
 import type { PaneDatumProps } from "../types";
 
 export function tailwindWhitelist(panes: PaneDatumProps[]) {

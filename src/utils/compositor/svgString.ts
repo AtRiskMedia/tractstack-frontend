@@ -1,5 +1,9 @@
-import { SvgPanes, SvgBreaks, SvgModals } from "./shapes";
-import type { SvgPaneDatum, SvgBreaksDatum, SvgModalDatum } from "./shapes";
+import { SvgPanes, SvgBreaks, SvgModals } from "@assets/shapes";
+import type {
+  SvgPaneDatum,
+  SvgBreaksDatum,
+  SvgModalDatum,
+} from "@assets/shapes";
 
 export const SvgString = (
   shapeName: string,

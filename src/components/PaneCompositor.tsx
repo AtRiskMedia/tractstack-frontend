@@ -1,22 +1,28 @@
-//import { markdownPane } from "./compositor/markdownPane";
-import { bgPane } from "./compositor/bgPane";
+import { BgPane } from "./panes/BgPane";
+import { MarkdownPane } from "./panes/MarkdownPane";
 import type {
   MarkdownPaneProps,
   MarkdownPaneDatum,
   FileNode,
   BgPaneDatum,
 } from "../types";
-import { markdownPane } from "./compositor/markdownPane";
 
-export function compositor(
-  payload: MarkdownPaneDatum | BgPaneDatum,
-  markdown: MarkdownPaneProps[],
-  files: FileNode[],
-  paneHeight: [number, number, number]
-) {
+export function PaneCompositor({
+  payload,
+  markdown,
+  files,
+  paneHeight,
+}: {
+  payload: MarkdownPaneDatum | BgPaneDatum;
+  markdown: MarkdownPaneProps[];
+  files: FileNode[];
+  paneHeight: [number, number, number];
+}) {
   switch (payload.internal.type) {
-    case `bgPane`:
-      return bgPane(payload as BgPaneDatum);
+    case `bgPane`: {
+      const thisPayload = payload as BgPaneDatum;
+      return <BgPane payload={thisPayload} />;
+    }
 
     case `markdown`: {
       const thisPayload = payload as MarkdownPaneDatum;
@@ -46,7 +52,9 @@ export function compositor(
       }
 
       // regular markdown
-      return markdownPane(thisPayload, markdown, files);
+      return (
+        <MarkdownPane payload={thisPayload} markdown={markdown} files={files} />
+      );
     }
   }
 }

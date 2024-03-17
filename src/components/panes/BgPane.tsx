@@ -1,8 +1,9 @@
-import { classNames, Svg } from "@tractstack/helpers";
-import { svgImageMask } from "./svgImageMask";
+import { Svg } from "@components/widgets/Svg";
+import { classNames } from "../../utils/helpers";
+import { svgImageMask } from "../../utils/compositor/svgImageMask";
 import type { BgPaneDatum } from "../../types";
 
-export function bgPane(payload: BgPaneDatum) {
+export function BgPane({ payload }: { payload: BgPaneDatum }) {
   const optionsPayload = payload.optionsPayload;
   const hasArtpack = optionsPayload?.artpack;
   const hasArtpackAll = hasArtpack?.all;
@@ -42,10 +43,6 @@ export function bgPane(payload: BgPaneDatum) {
               : payload.shape;
       const shapeName = thisShapeSelector !== `none` ? thisShapeSelector : null;
       const thisId = `${viewportKey}-${payload.id}-pane`;
-      const shape =
-        typeof shapeName === `string`
-          ? Svg(shapeName, viewportKey, thisId)
-          : null;
 
       // check for tailwind classes
       const hasClassNamesParent = optionsPayload?.classNamesParent;
@@ -66,22 +63,19 @@ export function bgPane(payload: BgPaneDatum) {
       //
       switch (artpackMode) {
         case `break`: {
-          const breakSvg =
-            typeof artpackImage === `string` &&
-            typeof artpackCollection === `string` ? (
-              Svg(`${artpackCollection}${artpackImage}`, thisId, viewportKey)
-            ) : (
-              <></>
-            );
-          const breakSvgFill = breakSvg && artpack ? artpack.svgFill : `none`;
-          const breakCss = breakSvg ? { fill: breakSvgFill } : {};
+          const breakSvgFill = artpack ? artpack.svgFill : `none`;
+          const breakCss = breakSvgFill ? { fill: breakSvgFill } : {};
           return (
             <div
               key={`${viewportKey}-${payload.id}`}
               className={baseClasses[viewportKey]}
               style={breakCss}
             >
-              {breakSvg}
+              <Svg
+                shapeName={`${artpackCollection}${artpackImage}`}
+                viewportKey={viewportKey}
+                id={thisId}
+              />
             </div>
           );
         }
@@ -125,14 +119,23 @@ export function bgPane(payload: BgPaneDatum) {
         }
 
         default:
-          return (
-            <div
-              key={`${viewportKey}-${payload.id}`}
-              className={classNames(baseClasses[viewportKey], classNamesParent)}
-            >
-              {shape}
-            </div>
-          );
+          if (shapeName)
+            return (
+              <div
+                key={`${viewportKey}-${payload.id}`}
+                className={classNames(
+                  baseClasses[viewportKey],
+                  classNamesParent
+                )}
+              >
+                <Svg
+                  shapeName={shapeName}
+                  viewportKey={viewportKey}
+                  id={thisId}
+                />
+              </div>
+            );
+          return <div key={`${viewportKey}-${payload.id}`} />;
       }
     })
     .filter(n => n);

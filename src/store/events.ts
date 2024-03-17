@@ -1,45 +1,22 @@
 import { map, atom } from "nanostores";
-
-export type Current = {
-  id: string;
-  type: string;
-  title: string;
-  parentId?: string;
-  parentType?: string;
-  parentTitle?: string;
-};
-
-export type EventStream = {
-  id: string;
-  type: string;
-  verb: string;
-  targetId?: string;
-  duration?: number;
-  score?: string;
-  title?: string;
-  targetSlug?: string;
-  isContextPane?: string;
-};
-//type ContentMapValue = {
-//  [key: string]: {
-//    title: string;
-//    type: `Pane` | `StoryFragment` | `TractStack`;
-//    slug: string;
-//    parentId?: string;
-//  };
-//};
-type PanesVisible = {
-  [key: string]: number | null;
-};
-
-//export const locked = atom<boolean>(false);
+import type {
+  Current,
+  EventStream,
+  ContentMapValue,
+  PanesVisible,
+} from "../types";
 
 export const events = atom<EventStream[]>([]);
 
+export const contentMap = atom<ContentMapValue[]>([]);
+
 export const current = atom<Current>({
   id: ``,
-  type: ``,
+  slug: ``,
   title: ``,
+  parentId: ``,
+  parentSlug: ``,
+  parentTitle: ``,
 });
 
 export const panesVisible = map<PanesVisible>({});

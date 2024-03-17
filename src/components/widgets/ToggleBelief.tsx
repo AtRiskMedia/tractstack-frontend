@@ -1,0 +1,60 @@
+import { Switch } from "@headlessui/react";
+import { classNames } from "../../utils/helpers";
+
+const ToggleBelief = ({
+  belief,
+  value,
+  prompt,
+  cssClasses,
+  storyFragmentId,
+}: any) => {
+  const enabled = !![
+    `BELIEVES_FALSE`,
+    `BELIEVES_NO`,
+    `NOT_INTERESTED`,
+    `DISAGREES`,
+    `STRONGLY_DISAGREES`,
+    `FALSE`,
+  ].includes(value);
+
+  const handleClick = () => {
+    //pushEvent(
+    //  {
+    //    verb: value,
+    //    id: belief,
+    //    title: belief,
+    //    type: `Belief`,
+    //  },
+    //  storyFragmentId
+    //);
+  };
+
+  return (
+    <Switch.Group
+      as="div"
+      className={classNames(`flex items-center mt-6`, cssClasses)}
+    >
+      <Switch
+        checked={enabled}
+        onChange={handleClick}
+        className={classNames(
+          enabled ? `bg-myorange` : `bg-slate-200`,
+          `relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-myorange focus:ring-offset-2`
+        )}
+      >
+        <span
+          aria-hidden="true"
+          className={classNames(
+            enabled ? `translate-x-5` : `translate-x-0`,
+            `pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`
+          )}
+        />
+      </Switch>
+      <Switch.Label as="span" className="ml-3 text-sm">
+        <span className="font-bold text-black">{prompt}</span>
+      </Switch.Label>
+    </Switch.Group>
+  );
+};
+
+export default ToggleBelief;

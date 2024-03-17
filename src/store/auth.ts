@@ -9,7 +9,7 @@ export type AuthSettings = {
   lastRun: string | undefined;
 };
 
-export const auth = persistentMap<AuthSettings>("settings:", {
+export const auth = persistentMap<AuthSettings>("auth:", {
   key: undefined,
   beliefs: undefined,
   encryptedEmail: undefined,

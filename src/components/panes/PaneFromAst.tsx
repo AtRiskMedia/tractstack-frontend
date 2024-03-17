@@ -1,10 +1,8 @@
-import {
-  //lispLexer,
-  //preParseConcierge,
-  //concierge,
-  classNames,
-} from "@tractstack/helpers";
-import type { PaneFromAstProps } from "../types";
+import Belief from "@components/widgets/Belief";
+import { classNames } from "../../utils/helpers";
+import LiteYouTubeEmbed from "react-lite-youtube-embed";
+import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
+import type { PaneFromAstProps } from "../../types";
 
 export default function PaneFromAst({
   payload,
@@ -231,16 +229,34 @@ export default function PaneFromAst({
             const value3 =
               thisHookValuesRaw && thisHookValuesRaw.length > 2
                 ? thisHookValuesRaw[2]
-                : null;
+                : ``;
             const value4 =
               thisHookValuesRaw && thisHookValuesRaw.length > 3
                 ? thisHookValuesRaw[3]
-                : null;
+                : ``;
+
+            if (hook === `youtube` && value1 && value2) {
+              return (
+                <div key={thisId} className={injectClassNames}>
+                  <LiteYouTubeEmbed key={thisId} id={value1} title={value2} />
+                </div>
+              );
+            } else if (hook === `belief` && value1 && value2) {
+              return (
+                <div key={thisId} className={injectClassNames}>
+                  <Belief
+                    value={{ slug: value1, scale: value2, extra: value3 }}
+                  />
+                </div>
+              );
+            }
+
             return (
               <div key={thisId}>
                 code hook inline: {hook} {value1} {value2} {value3} {value4}
               </div>
             );
+
             if (!hook) return <div key={thisId}>missing hook</div>;
             else if (hook === `belief` && value1 && value2) {
               /*
@@ -282,18 +298,6 @@ export default function PaneFromAst({
                 value={value3}
                 prompt={value4}
                 storyFragmentId={id}
-                cssClasses={injectClassNames}
-              />
-            );
-              */
-            } else if (hook === `youtube` && value1 && value2) {
-              /*
-            const YouTube = hooks?.youtube;
-            return (
-              <YouTube
-                key={thisId}
-                videoId={value1}
-                title={value2}
                 cssClasses={injectClassNames}
               />
             );
