@@ -20,14 +20,12 @@ export async function getStaticPaths() {
   });
   return Promise.all(pathsPromises);
 }
-const { title, id, slug, drupalNid }: any = Astro.props;
+const { title, id, slug }: any = Astro.props;
 const current = {
   id,
   slug,
+  title,
   type: `Pane`,
-  parentId: ``,
-  parentSlug: ``,
-  parentType: ``,
 };
 
 export const prerender = true;

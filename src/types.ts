@@ -94,6 +94,7 @@ export interface FileNode {
 export interface PaneNode {
   type: `node--pane`;
   id: string;
+  field_slug: string;
 }
 interface StoryFragmentNode {
   type: `node--story_fragment`;
@@ -208,18 +209,10 @@ export interface MenuDatum extends Menu {
   field_options: string;
 }
 
-export interface ContentMap {
-  id: string;
-  slug: string;
-  parentId: string;
-  parentSlug: string;
-}
-
 export interface StoryFragmentProps {
   title: string;
   id: string;
   slug: string;
-  drupalNid: number;
   socialImagePath: string | undefined;
   tailwindBgColour: string | undefined;
   menu: MenuDatum;
@@ -260,7 +253,7 @@ export interface IAxiosClientProps {
 }
 
 export interface IAxiosRegisterProps {
-  referrer: IReferrer;
+  referrer: Referrer;
   fingerprint?: string;
   codeword?: string | undefined;
   email?: string | undefined;
@@ -271,7 +264,7 @@ export interface IAxiosRegisterProps {
 export interface IAxiosPushProps {
   eventStream: IEventStreamDict;
   contentMap: any;
-  referrer?: IReferrer;
+  referrer?: Referrer;
   tractStackId?: string;
 }
 
@@ -315,7 +308,7 @@ export interface IAuthStoreLoginResponse {
   beliefs: object | null;
 }
 
-export interface IReferrer {
+export interface Referrer {
   httpReferrer?: string;
   utmSource?: string;
   utmMedium?: string;
@@ -515,6 +508,7 @@ export interface Current {
   id: string;
   slug: string;
   title: string;
+  type?: `StoryFragment` | `Pane`;
   parentId?: string;
   parentSlug?: string;
   parentTitle?: string;
@@ -532,13 +526,14 @@ export type EventStream = {
   isContextPane?: string;
 };
 
-export type ContentMapValue = {
+export type ContentMap = {
   id: string;
   slug: string;
   title: string;
-  parentId: string;
-  parentSlug: string;
-  parentTitle: string;
+  type: string;
+  parentId?: string;
+  parentSlug?: string;
+  parentTitle?: string;
 };
 
 export type PanesVisible = {

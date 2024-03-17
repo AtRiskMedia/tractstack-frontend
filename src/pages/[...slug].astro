@@ -8,14 +8,10 @@ import {
   getAllFiles,
 } from "../api/drupal";
 import type {
-  MenuDatum,
-  TractStack,
-  Pane,
   PaneDatum,
   PaneDatumProps,
   PaneNode,
   StoryFragmentDatum,
-  StoryFragment,
   StoryFragmentProps,
   ContentMap,
   MarkdownDatum,
@@ -46,18 +42,28 @@ export async function getStaticPaths() {
   const files = await getAllFiles();
   const panes = await getAllPaneDatum();
   const storyFragments: StoryFragmentDatum[] = await getAllStoryFragmentDatum();
-  const contentMap: ContentMap[] = storyFragments.map(
-    (s: StoryFragmentDatum) => {
+  const contentMap: ContentMap[] = storyFragments
+    .map((s: StoryFragmentDatum) => {
       return {
         id: s.id,
         slug: s.field_slug,
         title: s.title,
+        type: `StoryFragment`,
         parentId: s.field_tract_stack.id,
         parentSlug: s.field_tract_stack.field_slug,
         parentTitle: s.field_tract_stack.title,
-      };
-    }
-  );
+      } as ContentMap;
+    })
+    .concat(
+      panes.map((p: PaneDatum) => {
+        return {
+          id: p.id,
+          slug: p.field_slug,
+          title: p.title,
+          type: `Pane`,
+        } as ContentMap;
+      })
+    );
 
   // must intercept image|imageSvg from panes; then optimize
   const optimizedImagesPre: OptimizedImagePre[] = [];
@@ -167,7 +173,6 @@ export async function getStaticPaths() {
         title: storyFragment.title,
         id: storyFragment.id,
         slug: storyFragment.field_slug,
-        drupalNid: storyFragment.drupal_internal__nid,
         socialImagePath: storyFragment.field_social_image_path || undefined,
         tailwindBgColour:
           storyFragment.field_tailwind_background_colour || undefined,
@@ -189,7 +194,6 @@ const {
   title,
   id,
   slug,
-  drupalNid,
   socialImagePath,
   tailwindBgColour,
   menu,
@@ -208,6 +212,7 @@ const current: Current = {
   id,
   slug,
   title,
+  type: `StoryFragment`,
   parentId: tractStackId,
   parentSlug: tractStackSlug,
   parentTitle: tractStackTitle,
@@ -218,8 +223,7 @@ const hiddenPanes: { [key: string]: boolean } = panesPayload.reduce(function (
   acc,
   cur
 ) {
-  if (cur.id === `dd3569e6-0b60-4087-9cdf-108efec8f9db`)
-    if (cur.optionsPayload.hiddenPane) return { ...acc, [cur.id]: true };
+  if (cur.optionsPayload.hiddenPane) return { ...acc, [cur.id]: true };
   return acc;
 }, {});
 const overflowHidden: { [key: string]: boolean } = panesPayload.reduce(
@@ -240,7 +244,12 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
 export const prerender = true;
 ---
 
-<Layout title={title} pubDatetime={created} modDatetime={changed}>
+<Layout
+  title={title}
+  pubDatetime={created}
+  modDatetime={changed}
+  ogImage={socialImagePath}
+>
   <main id="main-content">
     {
       !!menu ? (
@@ -260,7 +269,7 @@ export const prerender = true;
             <>
               <astro-pane key={`pane-${pane.id}`}>
                 <li
-                  id={`pane-${pane.id}`}
+                  id={`${pane.field_slug}`}
                   class={classNames(
                     `pane`,
                     typeof overflowHidden[pane.id] === `boolean`
@@ -303,7 +312,7 @@ export const prerender = true;
     <div class="my-6">
       {
         contentMap
-          .filter(m => m.slug !== slug)
+          .filter(m => m.slug !== slug && m.type === `StoryFragment`)
           .map(m => (
             <a class="py-2 px-3 hover:text-blue-800" href={`/${m.slug}`}>
               {m.slug}

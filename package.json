@@ -28,6 +28,7 @@
     "@types/react": "^18.2.64",
     "astro": "^4.4.15",
     "axios": "^1.6.7",
+    "buffer": "^6.0.3",
     "drupal-jsonapi-params": "^2.3.1",
     "hast-util-to-mdast": "^10.1.0",
     "jsona": "^1.12.1",

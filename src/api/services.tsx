@@ -178,7 +178,6 @@ export async function pushPayload({
     return { success: true, data: response };
   } catch {
     return { error: true };
-    return null;
   }
 }
 

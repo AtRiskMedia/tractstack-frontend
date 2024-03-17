@@ -1,6 +1,6 @@
 import { createAxiosClient } from "./createAxiosClient";
 import { conciergeSync } from "../api/services";
-import type { IAuthStoreLoginResponse } from "../types";
+import type { Referrer, IAuthStoreLoginResponse } from "../types";
 
 function getCurrentAccessToken() {
   console.log(`needs token from nanostore`);
@@ -42,15 +42,19 @@ export const client = createAxiosClient({
   logout,
 });
 
-export const getTokens = async (
-  codeword?: string | null,
-  email?: string | null
-) => {
-  console.log(`get Tokens`);
+export const getTokens = async ({
+  fingerprint,
+  codeword,
+  email,
+  referrer,
+}: {
+  fingerprint?: string | undefined;
+  codeword?: string | undefined;
+  email?: string | undefined;
+  referrer: Referrer;
+}) => {
   const encryptedEmail = undefined;
   const encryptedCode = undefined;
-  const referrer = {};
-  const fingerprint = undefined;
   const params =
     codeword && email
       ? { codeword, email }
@@ -58,12 +62,12 @@ export const getTokens = async (
         ? { encryptedCode, encryptedEmail }
         : {};
   try {
-    console.log(`try`);
     const response = await conciergeSync({ referrer, ...params, fingerprint });
     const accessToken = response.data.jwt;
     const auth = response.data.auth;
     const knownLead = response.data.known_lead;
     const firstname = response.data.first_name;
+    const consent = response.data.consent;
     const newFingerprint = response.data.fingerprint;
     const encryptedEmail = response.data.encryptedEmail;
     const encryptedCode = response.data.encryptedCode;
@@ -71,17 +75,6 @@ export const getTokens = async (
       typeof response.data.beliefs === `string`
         ? JSON.parse(response?.data?.beliefs)
         : null;
-    console.log(`got`, {
-      tokens: accessToken,
-      auth,
-      firstname,
-      knownLead,
-      fingerprint: newFingerprint,
-      encryptedEmail,
-      encryptedCode,
-      beliefs,
-      error: null,
-    });
     return {
       tokens: accessToken,
       auth,
@@ -91,6 +84,7 @@ export const getTokens = async (
       encryptedEmail,
       encryptedCode,
       beliefs,
+      consent,
       error: null,
     };
     /* eslint-disable  @typescript-eslint/no-explicit-any */

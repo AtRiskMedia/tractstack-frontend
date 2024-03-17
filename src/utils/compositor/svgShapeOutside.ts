@@ -1,3 +1,4 @@
+import { Buffer } from "buffer";
 import { SvgPanes } from "@assets/shapes";
 import type { SvgPaneDatum } from "@assets/shapes";
 
@@ -90,8 +91,8 @@ export const svgShapeOutsidePayload = (
       ></rect>
     </svg>`;
 
-  const leftMask = btoa(unescape(encodeURIComponent(leftMaskSvg)));
-  const rightMask = btoa(unescape(encodeURIComponent(rightMaskSvg)));
+  const leftMask = Buffer.from(leftMaskSvg).toString(`base64`);
+  const rightMask = Buffer.from(rightMaskSvg).toString(`base64`);
   const leftSvg = `<svg
       id="svg__${thisId}--shape-outside-left"
       data-name="svg-shape-outside__${shapeName}--${viewportKey}"
@@ -117,8 +118,8 @@ export const svgShapeOutsidePayload = (
         <path d="${shapeData.path}" />
       </g>
     </svg>`;
-  const left = btoa(unescape(encodeURIComponent(leftSvg)));
-  const right = btoa(unescape(encodeURIComponent(rightSvg)));
+  const left = Buffer.from(leftSvg).toString(`base64`);
+  const right = Buffer.from(rightSvg).toString(`base64`);
   const isShapeOutside = `svg__shape-outside svg__shape-outside--${viewportKey}-${shapeName}`;
   const shapeSvg = `<svg
       id="svg__${thisId}"
@@ -132,7 +133,8 @@ export const svgShapeOutsidePayload = (
         <path d="${shapeData.path}" />
       </g>
     </svg>`;
-  const shape = btoa(unescape(encodeURIComponent(shapeSvg)));
+
+  const shape = Buffer.from(shapeSvg).toString(`base64`);
 
   const cssShapeOutside =
     `#svg__${thisId}--shape-outside-left { float:left; shape-outside: url(${leftMask}); } ` +

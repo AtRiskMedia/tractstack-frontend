@@ -41,9 +41,8 @@ export function inView() {
             verb: verb,
             duration: diff,
           };
-          console.log(`=event`, event);
+          //console.log(`=event`, event);
           events.set([...events.get(), event]);
-          console.log(`==events after panes visible change`, events.get());
         }
       }
     }

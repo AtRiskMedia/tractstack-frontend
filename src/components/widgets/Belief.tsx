@@ -6,11 +6,11 @@ import { heldBeliefsScales, heldBeliefsTitles } from "@assets/beliefs";
 import { classNames } from "../../utils/helpers";
 import { heldBeliefs } from "../../store/beliefs";
 import { events } from "../../store/events";
-import type { BeliefOptionDatum, BeliefDatum,EventStream} from "../../types";
+import type { BeliefOptionDatum, BeliefDatum, EventStream } from "../../types";
 
 // whitelist: bg-teal-400 bg-lime-400 bg-slate-200 bg-amber-400 bg-red-400 bg-lime-400 bg-amber-400 bg-lime-400 bg-amber-400 bg-lime-400 bg-amber-400 bg-lime-400 bg-amber-400
 
-const Belief = ({
+export const Belief = ({
   value,
 }: {
   value: { slug: string; scale: string; extra: string };
@@ -45,6 +45,7 @@ const Belief = ({
             .at(0)
         : false;
     if (knownOffset && knownOffset?.slug) setSelected(knownOffset);
+    else setSelected(start);
   }, [$heldBeliefsAll]);
 
   const handleClick = (e: BeliefOptionDatum) => {
@@ -52,7 +53,6 @@ const Belief = ({
       const event = {
         verb: e.slug,
         id: value.slug,
-        title: value.slug,
         type: `Belief`,
       };
       const belief = {
@@ -64,6 +64,22 @@ const Belief = ({
         (b: BeliefDatum) => b.slug !== value.slug
       );
       heldBeliefs.set([...prevBeliefs, belief]);
+      const prevEvents = events
+        .get()
+        .filter(
+          (e: EventStream) => !(e.type === `Belief` && e.id === value.slug)
+        );
+      events.set([...prevEvents, event]);
+    } else {
+      const event = {
+        verb: `UNSET`,
+        id: value.slug,
+        type: `Belief`,
+      };
+      const prevBeliefs = $heldBeliefsAll.filter(
+        (b: BeliefDatum) => b.slug !== value.slug
+      );
+      heldBeliefs.set([...prevBeliefs]);
       const prevEvents = events
         .get()
         .filter(
@@ -176,5 +192,3 @@ const Belief = ({
     </>
   );
 };
-
-export default Belief;

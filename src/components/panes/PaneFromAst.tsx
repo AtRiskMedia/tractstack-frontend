@@ -1,4 +1,6 @@
-import Belief from "@components/widgets/Belief";
+import { Belief } from "@components/widgets/Belief";
+import { IdentifyAs } from "@components/widgets/IdentifyAs";
+import { ToggleBelief } from "@components/widgets/ToggleBelief";
 import { classNames } from "../../utils/helpers";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
@@ -230,11 +232,10 @@ export default function PaneFromAst({
               thisHookValuesRaw && thisHookValuesRaw.length > 2
                 ? thisHookValuesRaw[2]
                 : ``;
-            const value4 =
-              thisHookValuesRaw && thisHookValuesRaw.length > 3
-                ? thisHookValuesRaw[3]
-                : ``;
-
+            //const value4 =
+            //  thisHookValuesRaw && thisHookValuesRaw.length > 3
+            //    ? thisHookValuesRaw[3]
+            //    : ``;
             if (hook === `youtube` && value1 && value2) {
               return (
                 <div key={thisId} className={injectClassNames}>
@@ -249,61 +250,37 @@ export default function PaneFromAst({
                   />
                 </div>
               );
+            } else if (hook === `identifyAs` && value1 && value2) {
+              return (
+                <div key={thisId} className={injectClassNames}>
+                  <IdentifyAs
+                    value={{ slug: value1, target: value2, extra: value3 }}
+                  />
+                </div>
+              );
+            } else if (hook === `toggle` && value1 && value2) {
+              return (
+                <div key={thisId} className={injectClassNames}>
+                  <ToggleBelief belief={value1} prompt={value2} />
+                </div>
+              );
             }
 
             return (
               <div key={thisId}>
-                code hook inline: {hook} {value1} {value2} {value3} {value4}
+                code hook inline: {hook} {value1} {value2} {value3}
               </div>
             );
 
-            if (!hook) return <div key={thisId}>missing hook</div>;
-            else if (hook === `belief` && value1 && value2) {
-              /*
-            const Belief = hooks.belief;
-            return (
-              <Belief
-                key={thisId}
-                value={{ slug: value1, scale: value2, extra: value3 }}
-                cssClasses={injectClassNames}
-                storyFragmentId={id}
-              />
-            );
-            */
-            } else if (hook === `identifyAs` && value1 && value2) {
-              /*
-            const IdentifyAs = hooks.identifyAs;
-            return (
-              <IdentifyAs
-                key={thisId}
-                value={{ slug: value1, target: value2, extra: value3 }}
-                cssClasses={injectClassNames}
-                storyFragmentId={id}
-              />
-            );
-              */
-            } else if (hook === `inject` && value1) {
-              /*
+            //if (!hook) return <div key={thisId}>missing hook</div>;
+            //else if (hook === `inject` && value1) {
+            /*
             const InjectComponent = hooks?.templates?.injectComponent;
             if (InjectComponent)
               return <InjectComponent key={thisId} target={value1} />;
             */
-            } else if (hook === `toggle` && value1 && value3 && value4) {
-              /*
-            const ToggleBelief = hooks?.toggle;
-            return (
-              <ToggleBelief
-                key={thisId}
-                belief={value1}
-                value={value3}
-                prompt={value4}
-                storyFragmentId={id}
-                cssClasses={injectClassNames}
-              />
-            );
-              */
-            } else if (hook === `resource` && value1 && value2) {
-              /*
+            //} else if (hook === `resource` && value1 && value2) {
+            /*
             //const values =
             //  value1[0] === `*` ? value1.substring(1) : value1.split(/[,]+/);
             //const resources =
@@ -331,8 +308,8 @@ export default function PaneFromAst({
             //  );
             return <div key={thisId} />;
               */
-            }
-            break;
+            //}
+            //break;
           }
 
           case `ul`:
@@ -380,8 +357,8 @@ export default function PaneFromAst({
             if (typeof e?.children[0]?.value === `string`) {
               return <em key={thisId}>{e?.children[0]?.value}</em>;
             }
-            break;
             return <div key={`${id}-${idx}-${thisIdx}`} />;
+            break;
 
           case `strong`:
             if (typeof e?.children[0]?.value === `string`) {

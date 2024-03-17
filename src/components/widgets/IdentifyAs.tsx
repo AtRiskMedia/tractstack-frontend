@@ -1,55 +1,107 @@
-import { useMemo } from "react";
+import { useState, useEffect } from "react";
+import { useStore } from "@nanostores/react";
 import { heldBeliefsScales } from "@assets/beliefs";
 import { classNames } from "../../utils/helpers";
 import { heldBeliefs } from "../../store/beliefs";
+import { events } from "../../store/events";
+import type { BeliefDatum, BeliefOptionDatum, EventStream } from "../../types";
 
-const IdentifyAs = ({ value, cssClasses = ``, storyFragmentId }: any) => {
-  const identifyAsSlug = value.slug;
-  const identifyAsObject = value.target;
+export const IdentifyAs = ({
+  value,
+}: {
+  value: { slug: string; target: string; extra: string };
+}) => {
+  const $heldBeliefsAll = useStore(heldBeliefs);
   const thisTitle = `Tell me more!`;
   const extra = value && typeof value.extra === `string` ? value.extra : null;
   const thisScale = heldBeliefsScales.agreement;
-  const selected = useMemo(() => {
-    //const hasMatchingBelief = beliefs[value.slug];
-    //if (
-    //  typeof hasMatchingBelief === `string` &&
-    //  hasMatchingBelief === identifyAsObject
-    //)
-    //  return thisScale.filter((e: any) => e.slug === `AGREES`)[0];
-    return { id: 0, slug: `0`, name: `0`, color: `` };
-  }, [thisScale, identifyAsObject, value.slug]);
+  const start = { id: 0, slug: `0`, name: `0`, color: `` };
+  const [selected, setSelected] = useState(start);
+
+  useEffect(() => {
+    const hasMatchingBelief = $heldBeliefsAll
+      .filter((e: BeliefDatum) => e.slug === value.slug)
+      .at(0);
+    const knownOffset =
+      thisScale && typeof hasMatchingBelief?.verb === `string`
+        ? thisScale
+            .filter((e: BeliefOptionDatum) => e.slug === hasMatchingBelief.verb)
+            .at(0)
+        : false;
+    if (knownOffset && knownOffset?.slug) setSelected(knownOffset);
+  }, [$heldBeliefsAll]);
 
   const handleClick = () => {
-    //if (identifyAsObject && identifyAsSlug) {
-    //  updateBeliefs(identifyAsSlug, identifyAsObject.toUpperCase());
-    //  pushEvent(
-    //    {
-    //      verb: `IDENTIFY_AS`,
-    //      id: identifyAsSlug,
-    //      title: identifyAsSlug,
-    //      object: identifyAsObject.toUpperCase(),
-    //      type: `Belief`,
-    //    },
-    //    storyFragmentId
-    //  );
-    //}
+    // toggle ON
+    if (selected.id === 0) {
+      const newScale = thisScale.at(0)!;
+      setSelected(newScale);
+      const event = {
+        id: value.slug,
+        verb: `IDENTIFY_AS`,
+        object: value.target.toUpperCase(),
+        type: `Belief`,
+      };
+      const belief = {
+        id: value.slug,
+        verb: `IDENTIFY_AS`,
+        slug: value.slug,
+        object: value.target.toUpperCase(),
+      };
+      const prevBeliefs = $heldBeliefsAll.filter(
+        (b: BeliefDatum) => b.slug !== value.slug
+      );
+      heldBeliefs.set([...prevBeliefs, belief]);
+      const prevEvents = events
+        .get()
+        .filter(
+          (e: EventStream) => !(e.type === `Belief` && e.id === value.slug)
+        );
+      events.set([...prevEvents, event]);
+
+      // toggle OFF
+    } else {
+      setSelected(start);
+      const event = {
+        id: value.slug,
+        // this removes the identifyAs from the db and graph
+        verb: `UNSET`,
+        object: true,
+        type: `Belief`,
+      };
+      const prevBeliefs = $heldBeliefsAll.filter(
+        (b: BeliefDatum) => b.slug !== value.slug
+      );
+      heldBeliefs.set([...prevBeliefs]);
+      const prevEvents = events
+        .get()
+        .filter(
+          (e: EventStream) => !(e.type === `Belief` && e.id === value.slug)
+        );
+      events.set([...prevEvents, event]);
+    }
   };
 
   return (
-    <div className={cssClasses}>
+    <>
       {extra ? <span className="mr-2">{extra}</span> : null}
       <div className="block mt-3 w-fit">
         <button
           type="button"
           onClick={handleClick}
-          className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          className={classNames(
+            selected.id === 0
+              ? `bg-white hover:bg-myorange/5 ring-myorange/50`
+              : `bg-white hover:bg-myorange/5 ring-mygreen/5`,
+            `rounded-md px-3 py-2 text-sm font-bold text-black shadow-sm ring-1 ring-inset`
+          )}
         >
           <div className="flex items-center">
             <span
               aria-label="Color swatch for belief"
               className={classNames(
                 `motion-safe:animate-pulse`,
-                selected && selected?.color ? selected.color : `bg-myorange`,
+                selected.color || `bg-myorange`,
                 `inline-block h-2 w-2 flex-shrink-0 rounded-full`
               )}
             />
@@ -57,8 +109,6 @@ const IdentifyAs = ({ value, cssClasses = ``, storyFragmentId }: any) => {
           </div>
         </button>
       </div>
-    </div>
+    </>
   );
 };
-
-export default IdentifyAs;

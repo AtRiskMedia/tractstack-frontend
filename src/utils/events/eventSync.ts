@@ -1,8 +1,8 @@
 import type { Event } from "../../types";
-import { auth } from "../../store/auth";
+//import { events } from "../../store/auth";
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export async function eventSync(payload: Event[]) {
-  console.log(`events`,payload);
-  auth.setKey("lastRun", Date.now().toString());
+  //console.log(`events`, payload);
   return true;
 }
