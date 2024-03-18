@@ -1,6 +1,9 @@
 import { BgPane } from "./panes/BgPane";
 import { MarkdownPane } from "./panes/MarkdownPane";
 import { MarkdownInsidePane } from "./panes/MarkdownInsidePane";
+import { Modal } from "./panes/Modal";
+import { MarkdownInsideModal } from "./panes/MarkdownInsideModal";
+import { classNames } from "../utils/helpers";
 import type {
   MarkdownPaneProps,
   MarkdownPaneDatum,
@@ -29,8 +32,57 @@ export function PaneCompositor({
       const thisPayload = payload as MarkdownPaneDatum;
 
       // has modal shape?
-      if (thisPayload.isModal) {
-        return <p>modal markdown</p>;
+      console.log(thisPayload.optionsPayload);
+      const thisModalPayload =
+        thisPayload.isModal &&
+        typeof thisPayload?.optionsPayload?.modal !== `undefined`
+          ? thisPayload.optionsPayload.modal
+          : null;
+      if (thisPayload.isModal && thisModalPayload) {
+        const hasHidden =
+          payload.hiddenViewports.includes(`desktop`) ||
+          payload.hiddenViewports.includes(`tablet`) ||
+          payload.hiddenViewports.includes(`mobile`);
+        const hidden = hasHidden
+          ? ``.concat(
+              payload.hiddenViewports.includes(`desktop`)
+                ? `xl:hidden`
+                : `xl:grid`,
+              payload.hiddenViewports.includes(`tablet`)
+                ? `md:hidden`
+                : `md:grid`,
+              payload.hiddenViewports.includes(`mobile`) ? `hidden` : `grid`
+            )
+          : `grid`;
+        const paneFragmentStyle = {
+          gridArea: "1/1/1/1",
+        };
+        return (
+          <div
+            className={classNames(hidden, `h-fit-contents`)}
+            id={`t8k-${thisPayload.id}-modal-container`}
+            key={`t8k-${thisPayload.id}-modal-container`}
+          >
+            <div
+              className="relative w-full h-full justify-self-start"
+              style={paneFragmentStyle}
+            >
+              <Modal payload={thisPayload} modalPayload={thisModalPayload} />
+            </div>
+            <div
+              className="relative w-full h-full justify-self-start"
+              style={paneFragmentStyle}
+            >
+              <MarkdownInsideModal
+                payload={thisPayload}
+                markdown={markdown}
+                files={files}
+                paneHeight={paneHeight}
+                modalPayload={thisModalPayload}
+              />
+            </div>
+          </div>
+        );
       }
 
       // uses textShapeOutside?

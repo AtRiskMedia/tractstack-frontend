@@ -432,6 +432,13 @@ export interface MarkdownPaneDatum extends PaneFragmentDatum {
         };
       };
     };
+    modal?: {
+      [key: string]: {
+        zoomFactor: number;
+        paddingLeft: number;
+        paddingTop: number;
+      };
+    };
   };
   isModal: boolean;
   markdownId?: string;

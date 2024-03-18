@@ -1,6 +1,6 @@
 import PaneFromAst from "./PaneFromAst";
-import { SvgInsideLeft } from "../widgets/SvgInsideLeft";
-import { SvgInsideRight } from "../widgets/SvgInsideRight";
+import { SvgInsideLeftModal } from "../widgets/SvgInsideLeftModal";
+import { SvgInsideRightModal } from "../widgets/SvgInsideRightModal";
 import { classNames } from "../../utils/helpers";
 import type {
   FileNode,
@@ -8,16 +8,24 @@ import type {
   MarkdownPaneDatum,
 } from "../../types";
 
-export function MarkdownInsidePane({
+export function MarkdownInsideModal({
   payload,
   markdown,
   files,
   paneHeight,
+  modalPayload,
 }: {
   payload: MarkdownPaneDatum;
   markdown: MarkdownPaneProps[];
   files: FileNode[];
   paneHeight: [number, number, number];
+  modalPayload: {
+    [key: string]: {
+      zoomFactor: number;
+      paddingLeft: number;
+      paddingTop: number;
+    };
+  };
 }) {
   const thisMarkdown = markdown
     .filter((m: MarkdownPaneProps) => m.id === payload.markdownId)
@@ -74,7 +82,7 @@ export function MarkdownInsidePane({
               className="relative w-full h-full justify-self-start"
               style={paneFragmentStyle}
             >
-              <SvgInsideLeft
+              <SvgInsideLeftModal
                 shapeName={shapeName}
                 viewportKey={viewportKey}
                 id={thisMarkdown.id}
@@ -87,8 +95,9 @@ export function MarkdownInsidePane({
                         : 0
                   ]
                 }
+                modalPayload={modalPayload[viewportKey]}
               />
-              <SvgInsideRight
+              <SvgInsideRightModal
                 shapeName={shapeName}
                 viewportKey={viewportKey}
                 id={thisMarkdown.id}
@@ -101,6 +110,7 @@ export function MarkdownInsidePane({
                         : 0
                   ]
                 }
+                modalPayload={modalPayload[viewportKey]}
               />
               <PaneFromAst
                 payload={astPayload}
@@ -126,7 +136,7 @@ export function MarkdownInsidePane({
                 className="relative w-full h-full justify-self-start"
                 style={paneFragmentStyle}
               >
-                <SvgInsideLeft
+                <SvgInsideLeftModal
                   shapeName={shapeName}
                   viewportKey={viewportKey}
                   id={thisMarkdown.id}
@@ -139,8 +149,9 @@ export function MarkdownInsidePane({
                           : 0
                     ]
                   }
+                  modalPayload={modalPayload[viewportKey]}
                 />
-                <SvgInsideRight
+                <SvgInsideRightModal
                   shapeName={shapeName}
                   viewportKey={viewportKey}
                   id={thisMarkdown.id}
@@ -153,6 +164,7 @@ export function MarkdownInsidePane({
                           : 0
                     ]
                   }
+                  modalPayload={modalPayload[viewportKey]}
                 />
                 <PaneFromAst
                   payload={astPayload}

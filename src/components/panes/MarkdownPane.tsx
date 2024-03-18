@@ -21,11 +21,9 @@ export function MarkdownPane({
     payload.hiddenViewports.includes(`mobile`);
   const hidden = hasHidden
     ? ``.concat(
-        payload.hiddenViewports.includes(`desktop`)
-          ? `xl:hidden`
-          : `xl:visible`,
-        payload.hiddenViewports.includes(`tablet`) ? `md:hidden` : `md:visible`,
-        payload.hiddenViewports.includes(`mobile`) ? `hidden` : `visible`
+        payload.hiddenViewports.includes(`desktop`) ? `xl:hidden` : `xl:grid`,
+        payload.hiddenViewports.includes(`tablet`) ? `md:hidden` : `md:grid`,
+        payload.hiddenViewports.includes(`mobile`) ? `hidden` : `grid`
       )
     : ``;
   const thisMarkdown = markdown

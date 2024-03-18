@@ -1,4 +1,4 @@
-import { SvgPanes, SvgBreaks, SvgModals } from "@assets/shapes";
+import { SvgPanes, SvgBreaks } from "@assets/shapes";
 
 export const Svg = ({
   shapeName,
@@ -15,9 +15,7 @@ export const Svg = ({
       ? SvgPanes[shapeName][viewportKey]
       : typeof SvgBreaks[shapeName] !== `undefined`
         ? SvgBreaks[shapeName]
-        : typeof SvgModals[shapeName] !== `undefined`
-          ? SvgModals[shapeName]
-          : null;
+        : null;
   if (!shapeData) return <></>;
   return (
     <svg
