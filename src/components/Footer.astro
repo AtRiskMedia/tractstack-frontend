@@ -1,3 +1,65 @@
 ---
+import Socials from "./other/Socials.astro";
+import Link from "./other/Link.astro";
 
+export interface Props {
+  created?: Date;
+}
+
+const slogan = import.meta.env.PUBLIC_FOOTER || ``;
+const { created = new Date() } = Astro.props;
 ---
+
+<footer class="w-full">
+  <div class="flex justify-end px-6">
+    <button
+      id="top"
+      title="Back to top"
+      class="text-black/50 hover:text-black text-3xl"
+    >
+      ↑
+    </button>
+  </div>
+  <div class="pb-6">
+    <Socials />
+    <div
+      class="my-2 flex flex-col items-center justify-center whitespace-nowrap xs:flex-row"
+    >
+      <span>Copyright &#169; {created.getFullYear()}</span>
+      <span class="hidden xs:inline">&nbsp;|&nbsp;</span>
+      <span>{slogan}</span>
+    </div>
+    <div
+      class="text-mydarkgrey my-2 flex flex-col items-center justify-center whitespace-nowrap xs:flex-row"
+    >
+      Pressed with&nbsp;
+      <Link
+        href="https://tractstack.com"
+        className="hover:underline text-myblue"
+        target="_blank"
+        title="Tract Stack by At Risk Media"
+      >
+        Tract Stack</Link
+      >: Story Keeper Analyltics + Web Press
+    </div>
+  </div>
+</footer>
+
+<style>
+  .link-button {
+    @apply my-1 p-2 hover:rotate-6;
+  }
+  .link-button svg {
+    @apply scale-125;
+  }
+</style>
+
+<script>
+  const button = document.querySelector("button#top");
+  button?.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: `smooth`,
+    });
+  });
+</script>

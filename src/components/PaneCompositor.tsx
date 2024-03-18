@@ -32,7 +32,6 @@ export function PaneCompositor({
       const thisPayload = payload as MarkdownPaneDatum;
 
       // has modal shape?
-      console.log(thisPayload.optionsPayload);
       const thisModalPayload =
         thisPayload.isModal &&
         typeof thisPayload?.optionsPayload?.modal !== `undefined`
