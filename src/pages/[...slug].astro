@@ -268,3 +268,23 @@ export const prerender = true;
   </main>
   <Footer created={created} />
 </Layout>
+
+<script>
+  import { handleResize } from "../utils/helpers";
+  import { eventStream } from "../utils/events/eventStream";
+  import { inView } from "../utils/events/inView";
+  import { scrollToTop } from "../utils/scrollToTop";
+  import { eventProcessQueue } from "../utils/events/eventProcessQueue";
+  import { init } from "../utils/init";
+
+  window.addEventListener(`resize`, handleResize);
+
+  document.addEventListener("astro:page-load", () => {
+    handleResize();
+    eventStream();
+    inView();
+    scrollToTop();
+    init();
+  });
+  document.addEventListener("astro:before-swap", () => eventProcessQueue());
+</script>

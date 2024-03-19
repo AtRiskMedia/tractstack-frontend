@@ -5,6 +5,10 @@ import { auth } from "../store/auth";
 export async function init() {
   if (!import.meta.env.PROD) return null;
 
+  // must pass utmSource and fingerprint if avail with consent
+  const authPayload = auth.get();
+
+  if(!authPayload?.token) {
   // check for utmParams
   const urlSearchParams = new URLSearchParams(window.location.search);
   const params = Object.fromEntries(urlSearchParams.entries());
@@ -18,9 +22,6 @@ export async function init() {
     console.log(
       `params: source=${utmSource} medium=${utmMedium} campaign=${utmCampaign} term=${utmTerm} content=${utmContent} referrer=${httpReferrer}`
     );
-
-  // must pass utmSource and fingerprint if avail with consent
-  const authPayload = auth.get();
   const referrer = {
     httpReferrer,
     utmSource,
@@ -38,6 +39,7 @@ export async function init() {
           referrer,
         }
       : { referrer };
+  console.log(`go get tokens`)
   const conciergeSync = await getTokens(settings);
   if (conciergeSync?.tokens) auth.setKey(`token`, conciergeSync.tokens);
   if (conciergeSync?.fingerprint) auth.setKey(`key`, conciergeSync.fingerprint);
@@ -54,6 +56,7 @@ export async function init() {
     document.referrer.indexOf(location.protocol + "//" + location.host) === 0;
   if (!internal) {
     console.log(`entered from external link`, document.referrer);
+      console.log(typeof document.referrer)
     const event = {
       id: current.get().id,
       parentId: current.get().parentId,
@@ -61,5 +64,6 @@ export async function init() {
       verb: `ENTERED`,
     };
     events.set([...events.get(), event]);
+  }
   }
 }
