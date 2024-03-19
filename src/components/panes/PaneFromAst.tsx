@@ -2,6 +2,8 @@ import { Belief } from "@components/widgets/Belief";
 import { IdentifyAs } from "@components/widgets/IdentifyAs";
 import { ToggleBelief } from "@components/widgets/ToggleBelief";
 import { classNames } from "../../utils/helpers";
+import { lispLexer } from "../../utils/concierge/lispLexar";
+import { preParseAction } from "../../utils/concierge/preParseAction";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 import type { PaneFromAstProps } from "../../types";
@@ -74,74 +76,62 @@ export default function PaneFromAst({
             );
 
           case `a`: {
-            if (
+            // check for buttons action payload
+            // requires match on button's urlTarget === link's href
+            const buttonPayload =
               typeof e?.properties?.href === `string` &&
               e?.children[0]?.type === `text` &&
-              typeof e?.children[0]?.value === `string`
-            ) {
-              // check for buttons action payload
-              // requires match on button's urlTarget === link's href
-              const isButton =
-                typeof payload?.buttonData === `object` &&
-                Object.keys(payload?.buttonData).length &&
-                e?.properties?.href &&
-                typeof payload?.buttonData[e.properties.href] !== `undefined`
-                  ? payload.buttonData[e.properties.href]
-                  : undefined;
+              typeof e?.children[0]?.value === `string` &&
+              typeof payload?.buttonData === `object` &&
+              Object.keys(payload?.buttonData).length &&
+              e?.properties?.href &&
+              typeof payload?.buttonData[e.properties.href] !== `undefined`
+                ? payload.buttonData[e.properties.href]
+                : undefined;
+            const isExternalUrl =
+              typeof e?.properties?.href === `string` &&
+              e.properties.href.substring(0, 8) === `https://`;
 
-              const isExternalUrl =
-                typeof e?.properties?.href === `string` &&
-                e.properties.href.substring(0, 8) === `https://`;
+            if (isExternalUrl) {
+              return (
+                <a
+                  target="_blank"
+                  rel="noreferrer"
+                  className={buttonPayload?.className || injectClassNames}
+                  key={thisId}
+                  href={e.properties.href}
+                >
+                  {e?.children[0].value}
+                </a>
+              );
+            }
 
-              if (isExternalUrl) {
+            if (buttonPayload) {
+              // inject button with callback function, add css className
+              const callbackPayload = lispLexer(buttonPayload?.callbackPayload);
+              const pre = preParseAction(callbackPayload);
+              const internal = typeof pre === `string`;
+              const targetUrl = internal
+                ? pre
+                : pre && pre?.length === 1
+                  ? pre[0]
+                  : null;
+              if (targetUrl)
                 return (
                   <a
-                    target="_blank"
-                    rel="noreferrer"
-                    className={isButton?.className || injectClassNames}
+                    type="button"
+                    className={buttonPayload.className}
                     key={thisId}
-                    href={e.properties.href}
+                    href={targetUrl}
+                    title={targetUrl}
                   >
                     {e?.children[0].value}
                   </a>
                 );
-              } else if (isButton) {
-                // inject button with callback function, add css className
-                //const thisButtonPayload = lispLexer(isButton?.callbackPayload);
-                //const pre = preParseConcierge(thisButtonPayload, id, hooks);
-                //const internal = typeof pre === `string`;
-                //const targetUrl = internal
-                //  ? pre
-                //  : pre && pre?.length === 1
-                //    ? pre[0]
-                //    : null;
-                const injectPayload = function (): void {
-                  console.log(`injected payload`);
-                  //concierge(thisButtonPayload, hooks, id, payload.parent);
-                };
-                return (
-                  <button
-                    type="button"
-                    className={isButton.className}
-                    key={thisId}
-                    onClick={injectPayload}
-                  >
-                    {e?.children[0].value}
-                  </button>
-                );
-              }
-              // else, treat at internal link to a storyfragment
-              //const thisPayload = lispLexer(
-              //  `(hookGotoStoryFragment (${e?.properties?.href}))`
-              //);
-              // onClick={() => concierge(thisPayload, hooks, id)}
-              return (
-                <button className={injectClassNames} key={thisId}>
-                  {e?.children[0].value}
-                </button>
-              );
             }
-            break;
+
+            // should not happen
+            return <span key={thisId}>Missed on a href</span>;
           }
 
           case `img`: {
