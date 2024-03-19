@@ -7,9 +7,8 @@ import type {
   MarkdownPaneDatum,
 } from "../types";
 
+// returns a Rendered Pane as a div
 export default function PaneRender({ payload }: PaneRenderProps) {
-  // returns a Rendered Pane as a div
-
   // - if paneHeightRatio[Desktop|Tablet|Mobile], calculate height and inject
   const paneHeightRatioDesktop =
     Number(payload.heightRatioDesktop) == 0
