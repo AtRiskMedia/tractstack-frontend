@@ -53,13 +53,3 @@ const { created = new Date() } = Astro.props;
     @apply scale-125;
   }
 </style>
-
-<script>
-  const button = document.querySelector("button#top");
-  button?.addEventListener("click", () => {
-    window.scrollTo({
-      top: 0,
-      behavior: `smooth`,
-    });
-  });
-</script>

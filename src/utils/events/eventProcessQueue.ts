@@ -1,5 +1,4 @@
 import { events, panesVisible, current } from "../../store/events";
-import { eventSync } from "./eventSync";
 import { THRESHOLD_READ, THRESHOLD_GLOSSED } from "../../constants";
 
 export async function eventProcessQueue() {
@@ -23,15 +22,10 @@ export async function eventProcessQueue() {
           verb: verb,
           duration: diff,
         };
-        //console.log(`=force-event`, event);
+        console.log(`=force-event`, event);
         events.set([...events.get(), event]);
       }
     }
   });
-  const payload = events.get();
-  if (payload.length) {
-    events.set([]);
-    eventSync(payload);
-  }
   return true;
 }

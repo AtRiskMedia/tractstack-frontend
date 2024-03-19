@@ -11,4 +11,5 @@ export const current = atom<Current>({
   title: ``,
 });
 
+export const loaded = atom<boolean>(false);
 export const panesVisible = map<PanesVisible>({});

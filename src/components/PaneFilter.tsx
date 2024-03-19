@@ -24,14 +24,19 @@ const PaneFilter = (props: {
           const thisMatchingBelief = $heldBeliefsAll
             .filter(
               (m: BeliefStore) =>
-                m.slug === key && (m.verb === value || m.verb === `*`)
+                m.slug === key &&
+                (m.verb === value || m.verb === `*` || m?.object === value)
             )
             .at(0);
           if (thisMatchingBelief) match = true;
         } else {
           Object.values(value).forEach(v => {
             const thisMatchingBelief = $heldBeliefsAll
-              .filter((m: BeliefStore) => m.slug === key && m.verb === v)
+              .filter(
+                (m: BeliefStore) =>
+                  (m.slug === key && m.verb === v) ||
+                  (m.slug === key && m?.object === v)
+              )
               .at(0);
             if (thisMatchingBelief) match = true;
           });
@@ -50,14 +55,19 @@ const PaneFilter = (props: {
           const thisMatchingBelief = $heldBeliefsAll
             .filter(
               (m: BeliefStore) =>
-                m.slug === key && (m.verb === value || m.verb === `*`)
+                m.slug === key &&
+                (m.verb === value || m.verb === `*` || m?.object === value)
             )
             .at(0);
           if (thisMatchingBelief) override = true;
         } else {
           Object.values(value).forEach(v => {
             const thisMatchingBelief = $heldBeliefsAll
-              .filter((m: BeliefStore) => m.slug === key && m.verb === v)
+              .filter(
+                (m: BeliefStore) =>
+                  (m.slug === key && m.verb === v) ||
+                  (m.slug === key && m?.object === v)
+              )
               .at(0);
             if (thisMatchingBelief) override = true;
           });

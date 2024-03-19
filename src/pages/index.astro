@@ -1,9 +1,245 @@
 ---
+import StoryFragmentWrapper from "@components/StoryFragmentWrapper.astro";
 import Layout from "@layouts/Layout.astro";
+import Footer from "@components/Footer.astro";
+import {
+  getStoryFragmentDatum,
+  getAllStoryFragments,
+  getAllPaneDatum,
+  getAllFiles,
+} from "../api/drupal";
+import type {
+  PaneDatum,
+  PaneDatumProps,
+  PaneNode,
+  StoryFragment,
+  StoryFragmentDatum,
+  ContentMap,
+  MarkdownDatum,
+  FileNode,
+  DrupalFile,
+  PaneFileNode,
+  OptimizedImagePre,
+  OptimizedImage,
+  Current,
+} from "../types";
+import { cleanPaneDatum } from "../utils/compositor/cleanPaneDatum";
+import { cleanFileDatum } from "../utils/compositor/cleanFileDatum";
+import { getImage } from "astro:assets";
+
+export async function getOptimizedImage(src: string) {
+  try {
+    const img = await getImage({
+      src,
+      inferSize: true,
+    });
+    return img.src;
+  } catch {
+    console.log(`error`);
+  }
+}
+
+const id = import.meta.env.PUBLIC_HOME_ID;
+const slug = import.meta.env.PUBLIC_HOME;
+const files = await getAllFiles();
+const allPanes = await getAllPaneDatum();
+const storyFragments: StoryFragment[] = await getAllStoryFragments();
+const storyFragmentPayload: StoryFragmentDatum[] =
+  await getStoryFragmentDatum(id);
+const storyFragment = storyFragmentPayload?.at(0);
+
+// fail if PUBLIC_HOME, PUBLIC_HOME_ID not set
+if (!storyFragment) {
+  Astro.response.status = 404;
+  Astro.response.statusText = "Story Keep is not configured.";
+}
+
+const title = storyFragment?.title;
+const socialImagePath = storyFragment?.field_social_image_path || undefined;
+const tailwindBgColour =
+  storyFragment?.field_tailwind_background_colour || undefined;
+const menu = storyFragment?.field_menu;
+const panes = storyFragment?.field_panes;
+const tractStackId = storyFragment?.field_tract_stack.id;
+const tractStackTitle = storyFragment?.field_tract_stack.title;
+const tractStackSlug = storyFragment?.field_tract_stack.field_slug;
+const changed = storyFragment?.created ? new Date(storyFragment.created) : null;
+const created = storyFragment?.changed
+  ? new Date(storyFragment?.changed)
+  : null;
+const thisPanes = storyFragment?.field_panes.map((p: PaneNode) => p.id);
+
+// id for this storyFragment
+const current: Current = {
+  id: id || ``,
+  slug: slug || ``,
+  title: title || ``,
+  type: `StoryFragment`,
+  parentId: tractStackId || ``,
+  parentSlug: tractStackSlug || ``,
+  parentTitle: tractStackTitle || ``,
+};
+
+const contentMap: ContentMap[] = storyFragments
+  .map((s: StoryFragment) => {
+    return {
+      id: s.id,
+      slug: s.field_slug,
+      title: s.title,
+      type: `StoryFragment`,
+      parentId: s.field_tract_stack.id,
+      parentSlug: s.field_tract_stack.field_slug,
+      parentTitle: s.field_tract_stack.title,
+    } as ContentMap;
+  })
+  .concat(
+    allPanes.map((p: PaneDatum) => {
+      return {
+        id: p.id,
+        slug: p.field_slug,
+        title: p.title,
+        type: `Pane`,
+      } as ContentMap;
+    })
+  );
+
+// must intercept image|imageSvg from panes; then optimize
+const optimizedImagesPre: OptimizedImagePre[] = [];
+allPanes
+  .filter((payload: PaneDatum) => thisPanes?.includes(payload.id))
+  .forEach((p: PaneDatum) => {
+    const markdownFiles =
+      p?.field_markdown
+        .map((m: MarkdownDatum) => {
+          let val: DrupalFile[] = [];
+          if (typeof m.field_image === `object`)
+            val = val.concat(m.field_image);
+          if (typeof m.field_image_svg === `object`)
+            val = val.concat(m.field_image_svg);
+          return val;
+        })
+        .at(0) || [];
+    let paneFiles: DrupalFile[] = [];
+    if (typeof p.field_image === `object`)
+      paneFiles = paneFiles.concat(p.field_image);
+    if (typeof p.field_image_svg === `object`)
+      paneFiles = paneFiles.concat(p.field_image_svg);
+    const allFiles = [...markdownFiles, ...paneFiles];
+    allFiles?.forEach((f: DrupalFile) => {
+      const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
+      const thisFile = thisFiles.at(0);
+      if (
+        thisFile &&
+        !optimizedImagesPre.filter(
+          (i: OptimizedImagePre) => i.id === thisFile.id
+        ).length
+      )
+        optimizedImagesPre.push({
+          id: thisFile.id,
+          filename: thisFile.filename,
+          url: thisFile.uri.url,
+        });
+    });
+  });
+const optimizedImages = await Promise.all(
+  optimizedImagesPre.map(async (i: OptimizedImagePre) => {
+    const src = `${import.meta.env.PUBLIC_IMAGE_URL}${i.url}`;
+    const optimized = await getOptimizedImage(src);
+    const val = { id: i.id, src: optimized };
+    return val as OptimizedImage;
+  })
+);
+
+const paneFileNodes: PaneFileNode[] = [];
+allPanes
+  .filter((payload: PaneDatum) => thisPanes?.includes(payload.id))
+  .forEach((payload: PaneDatum) => {
+    const thisFilesPayload: FileNode[] = [];
+    const markdownFiles =
+      payload?.field_markdown
+        .map((m: MarkdownDatum) => {
+          let val: DrupalFile[] = [];
+          if (typeof m.field_image === `object`) {
+            val = val.concat(m.field_image);
+          }
+          if (typeof m.field_image_svg === `object`)
+            val = val.concat(m.field_image_svg);
+          return val;
+        })
+        .at(0) || [];
+    let paneFiles: DrupalFile[] = [];
+    if (typeof payload.field_image === `object`)
+      paneFiles = paneFiles.concat(payload.field_image);
+    if (typeof payload.field_image_svg === `object`)
+      paneFiles = paneFiles.concat(payload.field_image_svg);
+    const allFiles = [...markdownFiles, ...paneFiles];
+    allFiles?.forEach((f: DrupalFile) => {
+      const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
+      const thisFile = thisFiles.at(0);
+      if (thisFile) {
+        const optimizedSrcRaw = optimizedImages.filter(
+          (i: OptimizedImage) => i.id === thisFile.id
+        );
+        const optimizedSrc = optimizedSrcRaw.at(0);
+        thisFilesPayload.push(cleanFileDatum(thisFile, optimizedSrc?.src));
+      }
+    });
+    if (thisFilesPayload.length)
+      paneFileNodes.push({
+        id: payload.id,
+        files: thisFilesPayload,
+      });
+  });
+const panesPayload: PaneDatumProps[] = allPanes
+  .filter((payload: PaneDatum) => thisPanes?.includes(payload.id))
+  .map((payload: PaneDatum) => {
+    const thisFilesArray = paneFileNodes
+      .filter((f: PaneFileNode) => f.id === payload.id)
+      .at(0);
+    return cleanPaneDatum(payload, thisFilesArray);
+  });
+
+export const prerender = true;
 ---
 
-<Layout>
+<Layout
+  title={title}
+  pubDatetime={created || new Date()}
+  modDatetime={changed || new Date()}
+  ogImage={socialImagePath}
+>
   <main id="main-content">
-    <h1>it all starts now</h1>
+    {
+      !!menu ? (
+        <>
+          <h2>Menu</h2>
+          <p>{JSON.stringify(menu)}</p>
+        </>
+      ) : null
+    }
+
+    <StoryFragmentWrapper
+      tailwindBgColour={tailwindBgColour}
+      panes={panes || []}
+      panesPayload={panesPayload}
+      contentMap={contentMap}
+      current={current}
+    />
+
+    <div class="my-6">
+      {
+        contentMap
+          .filter(m => m.slug !== slug && m.type === `StoryFragment`)
+          .map(m => (
+            <a
+              class="py-2 px-3 hover:text-blue-800"
+              href={m.slug === import.meta.env.PUBLIC_HOME ? `/` : `/${m.slug}`}
+            >
+              {m.slug}
+            </a>
+          ))
+      }
+    </div>
   </main>
+  <Footer created={created || new Date()} />
 </Layout>

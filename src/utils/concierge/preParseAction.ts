@@ -7,7 +7,6 @@ export const preParseAction = (payload: any) => {
   const parameterOne = (parameters && parameters[0]) || null;
   const parameterTwo = (parameters && parameters[1]) || null;
   const parameterThree = (parameters && parameters[2]) || null;
-  console.log(thisPayload, command, parameterOne, parameterTwo, parameterThree);
 
   switch (command) {
     case `goto`:
@@ -18,7 +17,6 @@ export const preParseAction = (payload: any) => {
           return `/concierge/${parameterTwo}`;
         case `context`:
           return `/context/${parameterTwo}`;
-          break;
         case `product`:
           return `/products/${parameterTwo}`;
         case `storyFragment`:

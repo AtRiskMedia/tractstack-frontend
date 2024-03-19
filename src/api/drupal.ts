@@ -54,7 +54,7 @@ export const getAllFiles = async (): Promise<DrupalFile[]> => {
   return await fetchUrl(baseUrl + "/jsonapi/file/file?" + path);
 };
 
-export const getStoryFragment = async (
+export const getStoryFragmentDatum = async (
   id: string
 ): Promise<StoryFragmentDatum[]> => {
   const params: DrupalJsonApiParams = new DrupalJsonApiParams();
@@ -70,9 +70,22 @@ export const getStoryFragment = async (
       "field_tract_stack",
       "field_panes",
       "field_menu",
+      "changed",
+      "created",
     ])
-    .addFields("node--tractstack", ["title", "field_slug"])
     .addInclude(["field_tract_stack"])
+    .addFields("node--tractstack", ["title", "field_slug"])
+    .addInclude(["field_panes"])
+    .addFields("node--pane", ["field_slug"])
+    .addInclude(["field_menu"])
+    .addFields("node--menu", [
+      "type",
+      "id",
+      "drupal_internal__nid",
+      "title",
+      "field_theme",
+      "field_options",
+    ])
     .addFilter("status", "1");
   const path: string = params.getQueryString();
   return await fetchUrl(

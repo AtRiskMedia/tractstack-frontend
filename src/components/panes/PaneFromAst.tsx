@@ -348,7 +348,6 @@ export default function PaneFromAst({
               return <em key={thisId}>{e?.children[0]?.value}</em>;
             }
             return <div key={`${id}-${idx}-${thisIdx}`} />;
-            break;
 
           case `strong`:
             if (typeof e?.children[0]?.value === `string`) {

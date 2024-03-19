@@ -118,6 +118,7 @@ interface T8kNode {
 }
 export interface StoryFragment extends T8kNode {
   field_slug: string;
+  field_tract_stack: TractStackNode;
 }
 export interface TractStack extends T8kNode {
   field_slug: string;

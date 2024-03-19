@@ -4,7 +4,7 @@ import { heldBeliefsScales } from "@assets/beliefs";
 import { classNames } from "../../utils/helpers";
 import { heldBeliefs } from "../../store/beliefs";
 import { events } from "../../store/events";
-import type { BeliefDatum, BeliefOptionDatum, EventStream } from "../../types";
+import type { BeliefDatum, EventStream } from "../../types";
 
 export const IdentifyAs = ({
   value,
@@ -22,13 +22,9 @@ export const IdentifyAs = ({
     const hasMatchingBelief = $heldBeliefsAll
       .filter((e: BeliefDatum) => e.slug === value.slug)
       .at(0);
-    const knownOffset =
-      thisScale && typeof hasMatchingBelief?.verb === `string`
-        ? thisScale
-            .filter((e: BeliefOptionDatum) => e.slug === hasMatchingBelief.verb)
-            .at(0)
-        : false;
-    if (knownOffset && knownOffset?.slug) setSelected(knownOffset);
+    if (hasMatchingBelief && hasMatchingBelief.object === value.target)
+      setSelected(thisScale[0]);
+    else setSelected(start);
   }, [$heldBeliefsAll]);
 
   const handleClick = () => {
