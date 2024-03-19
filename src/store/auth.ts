@@ -1,4 +1,5 @@
 import { persistentMap } from "@nanostores/persistent";
+import { atom } from "nanostores";
 
 export type AuthSettings = {
   key: string | undefined;
@@ -19,3 +20,5 @@ export const auth = persistentMap<AuthSettings>("auth:", {
   consent: undefined,
   firstname: undefined,
 });
+
+export const entered = atom<boolean>(false);
