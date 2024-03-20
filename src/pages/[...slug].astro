@@ -2,6 +2,7 @@
 import Layout from "@layouts/Layout.astro";
 import Footer from "@components/Footer.astro";
 import StoryFragmentWrapper from "@components/StoryFragmentWrapper.astro";
+import ImpressionWrapper from "@components/ImpressionWrapper";
 import {
   getAllStoryFragmentDatum,
   getAllPaneDatum,
@@ -21,9 +22,11 @@ import type {
   OptimizedImagePre,
   OptimizedImage,
   Current,
+  ImpressionDatum,
 } from "../types";
 import { cleanPaneDatum } from "../utils/compositor/cleanPaneDatum";
 import { cleanFileDatum } from "../utils/compositor/cleanFileDatum";
+import { cleanImpressionsDatum } from "../utils/compositor/cleanImpressionsDatum";
 import { getImage } from "astro:assets";
 
 export async function getOptimizedImage(src: string) {
@@ -166,10 +169,17 @@ export async function getStaticPaths() {
           .at(0);
         return cleanPaneDatum(payload, thisFilesArray);
       });
+    const impressionsRaw = panesPayload
+      .map((payload: PaneDatumProps) => {
+        return cleanImpressionsDatum(payload.optionsPayload?.impressions);
+      })
+      .filter((e: ImpressionDatum | null) => e);
+    const impressions = impressionsRaw as ImpressionDatum[];
 
     return {
       params: { slug: storyFragment.field_slug },
       props: {
+        impressions,
         title: storyFragment.title,
         id: storyFragment.id,
         slug: storyFragment.field_slug,
@@ -199,6 +209,7 @@ const {
   menu,
   panes,
   panesPayload,
+  impressions,
   tractStackId,
   tractStackTitle,
   tractStackSlug,
@@ -266,6 +277,11 @@ export const prerender = true;
       }
     </div>
   </main>
+  {
+    Object.keys(impressions).length ? (
+      <ImpressionWrapper payload={impressions} client:visible />
+    ) : null
+  }
   <Footer created={created} />
 </Layout>
 

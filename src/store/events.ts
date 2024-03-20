@@ -12,4 +12,5 @@ export const current = atom<Current>({
 });
 
 export const loaded = atom<boolean>(false);
+export const showImpressions = atom<boolean>(false);
 export const panesVisible = map<PanesVisible>({});

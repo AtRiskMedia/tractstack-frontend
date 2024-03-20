@@ -109,13 +109,7 @@ export default function PaneFromAst({
             if (buttonPayload) {
               // inject button with callback function, add css className
               const callbackPayload = lispLexer(buttonPayload?.callbackPayload);
-              const pre = preParseAction(callbackPayload);
-              const internal = typeof pre === `string`;
-              const targetUrl = internal
-                ? pre
-                : pre && pre?.length === 1
-                  ? pre[0]
-                  : null;
+              const targetUrl = preParseAction(callbackPayload);
               if (targetUrl)
                 return (
                   <a

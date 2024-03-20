@@ -14,8 +14,6 @@ export async function eventStream() {
     } catch (e) {
       console.log(`error establishing concierge eventStream`, e);
     } finally {
-      console.log(`cycle`, Date.now());
-      console.log(events.get());
       setTimeout(init, CONCIERGE_SYNC_INTERVAL);
     }
   }

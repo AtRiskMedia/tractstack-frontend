@@ -32,7 +32,7 @@ export const preParseAction = (payload: any) => {
           console.log(`LispActionPayload preParse misfire on goto`, parameters);
           break;
         case `url`:
-          return [parameterTwo];
+          return parameterTwo;
         default:
           console.log(`LispActionPayload preParse misfire on goto`, parameters);
       }
@@ -41,4 +41,5 @@ export const preParseAction = (payload: any) => {
       console.log(`LispActionPayload preParse misfire`, command, parameters);
       break;
   }
+  return ``;
 };

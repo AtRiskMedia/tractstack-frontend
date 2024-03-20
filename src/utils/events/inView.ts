@@ -1,6 +1,6 @@
 import InView from "@opuu/inview";
 import type { InViewEvent } from "@opuu/inview";
-import { events, current, panesVisible } from "../../store/events.ts";
+import { events, current, panesVisible } from "../../store/events";
 import { THRESHOLD_READ, THRESHOLD_GLOSSED } from "../../constants";
 
 export function inView() {
@@ -41,7 +41,7 @@ export function inView() {
             verb: verb,
             duration: diff,
           };
-          console.log(`=event`, event);
+          //console.log(`=event`, event);
           events.set([...events.get(), event]);
         }
       }

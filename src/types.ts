@@ -200,6 +200,7 @@ export interface MenuDatum extends Menu {
 }
 
 export interface StoryFragmentProps {
+  impressions: ImpressionDatum[];
   title: string;
   id: string;
   slug: string;
@@ -307,15 +308,16 @@ export interface Referrer {
   utmContent?: string;
 }
 
-export interface Impression {
-  [key: string]: {
-    id: string;
-    title: string;
-    body: string;
-    buttonText: string;
-    actionsLisp: string;
-    parentId: string;
-  };
+export interface ImpressionsDatum {
+  [key: string]: ImpressionDatum;
+}
+export interface ImpressionDatum {
+  id: string;
+  title: string;
+  body: string;
+  buttonText: string;
+  actionsLisp: string;
+  parentId: string;
 }
 
 export interface CodeHook {
@@ -438,7 +440,7 @@ export interface MarkdownPaneDatum extends PaneFragmentDatum {
 export interface PaneOptionsPayload {
   id: string;
   paneFragmentsPayload: BgPaneDatum[] | BgColourDatum[] | MarkdownPaneDatum[];
-  impressions: Impression[];
+  impressions: ImpressionsDatum;
   codeHook: CodeHook;
   hiddenPane: boolean;
   overflowHidden: boolean;
