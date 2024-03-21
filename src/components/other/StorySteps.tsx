@@ -13,5 +13,5 @@ export const StorySteps = () => {
   }, [$steps]);
   if (hidden) return <div />;
 
-  return <MapIcon className="h-6 w-6" />;
+  return <MapIcon className="h-6 w-6 mx-2" />;
 };

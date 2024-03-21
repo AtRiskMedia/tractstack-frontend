@@ -46,16 +46,16 @@ px-4 md:px-8 bg-mywhite shadow-inner"
         !isHome ? (
           <a
             href="/"
-            class="mx-2 hover:text-blue hover:rotate-6"
+            class="text-myblue/80 hover:text-myblue hover:rotate-6"
             title="Go to home page"
           >
-            <Home classes="w-6 h-6" client:load />
+            <Home classes="w-6 h-6 mx-2" client:load />
           </a>
         ) : null
       }
       <a
         href="/breadcrumbs"
-        class="mx-2 hover:text-blue hover:rotate-6"
+        class="text-myblue/80 hover:text-myblue hover:rotate-6"
         title="Your Content Journey"
       >
         <StorySteps client:load />

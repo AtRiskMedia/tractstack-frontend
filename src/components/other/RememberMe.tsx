@@ -19,13 +19,19 @@ export const RememberMe = () => {
 
   if (!consent)
     return (
-      <button onClick={injectPayload}
-    className="hover:text-myblue hover:rotate-6">
-        <BoltSlashIcon className="h-6 w-6"
-      title="Remember your Session" />
+      <button
+        onClick={injectPayload}
+        className="hover:text-myblue hover:rotate-6"
+      >
+        <BoltSlashIcon className="h-6 w-6 mx-2" title="Remember your Session" />
       </button>
     );
-  return <BoltIcon className="h-6 w-6 text-myblue/50"
-title="You are connected to Tract Stack."
-  />;
+  return (
+    <a href="/profile" className="hover:text-myblue hover:rotate-6">
+      <BoltIcon
+        className="h-6 w-6 mx-2 text-myblue/80"
+        title="Configure your Session"
+      />
+    </a>
+  );
 };
