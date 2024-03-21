@@ -1,0 +1,69 @@
+---
+import { classNames } from "../utils/helpers";
+import Pane from "@components/Pane";
+import type { Current, ContentMap, PaneDatumProps, PaneNode } from "../types";
+
+export interface Props {
+  pane: PaneDatumProps;
+  contentMap: ContentMap[];
+  current: Current;
+}
+const { pane, contentMap, current } = Astro.props;
+---
+
+<astro-context-pane-wrapper
+  data-id={JSON.stringify(current)}
+  data-map={JSON.stringify(contentMap)}
+>
+  <ul class="py-16">
+    <astro-context-pane key={`pane-${pane.id}`}>
+      <li id={`pane-${pane.id}`} class="pane">
+        <div id={`${pane.slug}`}>
+          <Pane client:load payload={pane} />
+        </div>
+      </li>
+    </astro-context-pane>
+    <li class="text-center py-4">
+      <button
+        id="close-main"
+        class="rounded-md bg-myorange/20 hover:bg-black hover:text-white px-3.5 py-1.5 text-base leading-7 text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-myorange"
+      >
+        Close
+      </button>
+    </li>
+  </ul>
+</astro-context-pane-wrapper>
+
+<script>
+  import { storySteps, current, contentMap } from "../store/events";
+
+  class ContextPaneWrap extends HTMLElement {
+    constructor() {
+      super();
+      const id = this.dataset.id;
+      const thisId = id ? JSON.parse(id) : null;
+      if (thisId) {
+        current.set(thisId);
+        const storyStep = {
+          id: thisId.id,
+          slug: thisId.slug,
+          title: thisId.title,
+          type: `ContextPane`,
+        };
+        storySteps.set([...storySteps.get(), storyStep]);
+      }
+      const contentMapPayload = this.dataset.map;
+      if (contentMapPayload) contentMap.set([JSON.parse(contentMapPayload)]);
+      this.querySelector("ul");
+    }
+  }
+  customElements.define("astro-context-pane-wrapper", ContextPaneWrap);
+
+  class ContextPane extends HTMLElement {
+    constructor() {
+      super();
+      this.querySelector("li");
+    }
+  }
+  customElements.define("astro-context-pane", ContextPane);
+</script>

@@ -31,3 +31,28 @@ export function handleResize() {
         : (thisWidth - scrollBarOffset) / 1921;
   document.documentElement.style.setProperty(`--scale`, thisScale.toString());
 }
+
+export function scrollToTop() {
+  const button = document.querySelector("button#top");
+  button?.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: `smooth`,
+    });
+  });
+}
+
+export function closeContextPane() {
+  const button = document.querySelector("button#close");
+  button?.setAttribute("href", document.referrer);
+  button?.addEventListener("click", () => {
+    history.back();
+    return false;
+  });
+  const button2 = document.querySelector("button#close-main");
+  button2?.setAttribute("href", document.referrer);
+  button2?.addEventListener("click", () => {
+    history.back();
+    return false;
+  });
+}

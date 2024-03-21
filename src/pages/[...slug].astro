@@ -1,4 +1,5 @@
 ---
+import { getImage } from "astro:assets";
 import Layout from "@layouts/Layout.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
@@ -9,6 +10,9 @@ import {
   getAllPaneDatum,
   getAllFiles,
 } from "../api/drupal";
+import { cleanPaneDatum } from "../utils/compositor/cleanPaneDatum";
+import { cleanFileDatum } from "../utils/compositor/cleanFileDatum";
+import { cleanImpressionsDatum } from "../utils/compositor/cleanImpressionsDatum";
 import type {
   PaneDatum,
   PaneDatumProps,
@@ -25,10 +29,6 @@ import type {
   Current,
   ImpressionDatum,
 } from "../types";
-import { cleanPaneDatum } from "../utils/compositor/cleanPaneDatum";
-import { cleanFileDatum } from "../utils/compositor/cleanFileDatum";
-import { cleanImpressionsDatum } from "../utils/compositor/cleanImpressionsDatum";
-import { getImage } from "astro:assets";
 
 export async function getOptimizedImage(src: string) {
   try {
@@ -180,7 +180,6 @@ export async function getStaticPaths() {
     return {
       params: { slug: storyFragment.field_slug },
       props: {
-        impressions,
         title: storyFragment.title,
         id: storyFragment.id,
         slug: storyFragment.field_slug,
@@ -190,6 +189,7 @@ export async function getStaticPaths() {
         menu: storyFragment.field_menu,
         panes: storyFragment.field_panes,
         panesPayload,
+        impressions,
         tractStackId: storyFragment.field_tract_stack.id,
         tractStackTitle: storyFragment.field_tract_stack.title,
         tractStackSlug: storyFragment.field_tract_stack.field_slug,
@@ -230,7 +230,6 @@ const current: Current = {
   id,
   slug,
   title,
-  type: `StoryFragment`,
   parentId: tractStackId,
   parentSlug: tractStackSlug,
   parentTitle: tractStackTitle,
@@ -254,21 +253,6 @@ export const prerender = true;
       contentMap={contentMap}
       current={current}
     />
-
-    <div class="my-6">
-      {
-        contentMap
-          .filter(m => m.slug !== slug && m.type === `StoryFragment`)
-          .map(m => (
-            <a
-              class="py-2 px-3 hover:text-blue-800"
-              href={m.slug === import.meta.env.PUBLIC_HOME ? `/` : `/${m.slug}`}
-            >
-              {m.slug}
-            </a>
-          ))
-      }
-    </div>
   </main>
   {
     Object.keys(impressions).length ? (
@@ -282,7 +266,7 @@ export const prerender = true;
   import { handleResize } from "../utils/helpers";
   import { eventStream } from "../utils/events/eventStream";
   import { inView } from "../utils/events/inView";
-  import { scrollToTop } from "../utils/scrollToTop";
+  import { scrollToTop } from "../utils/helpers";
   import { eventProcessQueue } from "../utils/events/eventProcessQueue";
   import { init } from "../utils/init";
 

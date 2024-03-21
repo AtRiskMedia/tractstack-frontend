@@ -1,28 +1,35 @@
 ---
 import Socials from "./other/Socials.astro";
+import FooterMenu from "./FooterMenu";
 import Link from "./other/Link.astro";
 import type { MenuDatum } from "../types";
 
 export interface Props {
   created?: Date;
   menu?: MenuDatum;
+  context?: boolean;
 }
 
 const slogan = import.meta.env.PUBLIC_FOOTER || ``;
-const { created = new Date() } = Astro.props;
+const { created = new Date(), context = false, menu } = Astro.props;
 ---
 
 <footer class="w-full">
   <div class="flex justify-end px-6">
-    <button
-      id="top"
-      title="Back to top"
-      class="text-black/50 hover:text-black text-3xl"
-    >
-      ↑
-    </button>
+    {
+      !context ? (
+        <button
+          id="top"
+          title="Back to top"
+          class="text-black/50 hover:text-black text-3xl"
+        >
+          ↑
+        </button>
+      ) : null
+    }
   </div>
   <div class="pb-6">
+    {menu ? <FooterMenu payload={menu} /> : null}
     <Socials />
     <div
       class="my-2 flex flex-col items-center justify-center whitespace-nowrap xs:flex-row"

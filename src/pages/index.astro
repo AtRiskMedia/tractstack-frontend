@@ -78,7 +78,6 @@ const current: Current = {
   id: id || ``,
   slug: slug || ``,
   title: title || ``,
-  type: `StoryFragment`,
   parentId: tractStackId || ``,
   parentSlug: tractStackSlug || ``,
   parentTitle: tractStackTitle || ``,
@@ -227,21 +226,6 @@ export const prerender = true;
       contentMap={contentMap}
       current={current}
     />
-
-    <div class="my-6">
-      {
-        contentMap
-          .filter(m => m.slug !== slug && m.type === `StoryFragment`)
-          .map(m => (
-            <a
-              class="py-2 px-3 hover:text-blue-800"
-              href={m.slug === import.meta.env.PUBLIC_HOME ? `/` : `/${m.slug}`}
-            >
-              {m.slug}
-            </a>
-          ))
-      }
-    </div>
   </main>
   {
     Object.keys(impressions).length ? (
@@ -255,7 +239,7 @@ export const prerender = true;
   import { handleResize } from "../utils/helpers";
   import { eventStream } from "../utils/events/eventStream";
   import { inView } from "../utils/events/inView";
-  import { scrollToTop } from "../utils/scrollToTop";
+  import { scrollToTop } from "../utils/helpers";
   import { eventProcessQueue } from "../utils/events/eventProcessQueue";
   import { init } from "../utils/init";
 

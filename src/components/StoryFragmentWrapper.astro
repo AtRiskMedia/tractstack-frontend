@@ -103,6 +103,7 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
           id: thisId.id,
           slug: thisId.slug,
           title: thisId.title,
+          type: `StoryFragment`,
         };
         storySteps.set([...storySteps.get(), storyStep]);
       }

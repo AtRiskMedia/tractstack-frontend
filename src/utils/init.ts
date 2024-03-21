@@ -10,7 +10,8 @@ export async function init() {
 
   if (
     !authPayload?.token ||
-    (authPayload?.active && authPayload.active < Date.now() - 60 * 15 * 1000)
+    (authPayload?.active &&
+      parseInt(authPayload.active) < Date.now() - 60 * 15 * 1000)
   ) {
     // check for utmParams
     const urlSearchParams = new URLSearchParams(window.location.search);
@@ -35,8 +36,9 @@ export async function init() {
     };
     // remembers session for 15 minutes across tabs;
     // or when consent has been given
+    const lastActive = authPayload?.active ? parseInt(authPayload.active) : 0;
     const settings =
-      (authPayload?.active > Date.now() - 60 * 15 * 1000 ||
+      (lastActive > Date.now() - 60 * 15 * 1000 ||
         authPayload?.consent === "1") &&
       authPayload?.key
         ? {
@@ -58,7 +60,7 @@ export async function init() {
       auth.setKey(`consent`, undefined);
       auth.setKey(`firstname`, undefined);
     }
-    auth.setKey(`active`, Date.now());
+    auth.setKey(`active`, Date.now().toString());
   }
 
   // flag on first visit from external

@@ -1,49 +1,243 @@
 ---
+import { getImage } from "astro:assets";
+import ContextPaneWrapper from "@components/ContextPaneWrapper.astro";
+import ImpressionWrapper from "@components/ImpressionWrapper";
 import Layout from "@layouts/Layout.astro";
-import { getAllContextPanes } from "../../api/drupal";
-import type { Pane } from "../../types";
+import Header from "@components/Header.astro";
+import Footer from "@components/Footer.astro";
+import {
+  getAllFiles,
+  getAllPaneDatum,
+  getAllStoryFragmentDatum,
+  getAllContextPaneDatum,
+} from "../../api/drupal";
+import { cleanPaneDatum } from "../../utils/compositor/cleanPaneDatum";
+import { cleanFileDatum } from "../../utils/compositor/cleanFileDatum";
+import { cleanImpressionsDatum } from "../../utils/compositor/cleanImpressionsDatum";
+import type {
+  OptimizedImagePre,
+  OptimizedImage,
+  FileNode,
+  PaneDatum,
+  ContextPaneDatum,
+  PaneDatumProps,
+  ImpressionDatum,
+  PaneFileNode,
+  StoryFragmentDatum,
+  ContentMap,
+  MarkdownDatum,
+  DrupalFile,
+  ContextPaneProps,
+} from "../../types";
+
+export async function getOptimizedImage(src: string) {
+  try {
+    const img = await getImage({
+      src,
+      inferSize: true,
+    });
+    return img.src;
+  } catch {
+    console.log(`error`);
+  }
+}
 
 export async function getStaticPaths() {
-  const contextPanes: Pane[] = await getAllContextPanes();
+  const files = await getAllFiles();
+  const panes = await getAllPaneDatum();
+  const storyFragments: StoryFragmentDatum[] = await getAllStoryFragmentDatum();
+  const contentMap: ContentMap[] = storyFragments
+    .map((s: StoryFragmentDatum) => {
+      return {
+        id: s.id,
+        slug: s.field_slug,
+        title: s.title,
+        type: `StoryFragment`,
+        parentId: s.field_tract_stack.id,
+        parentSlug: s.field_tract_stack.field_slug,
+        parentTitle: s.field_tract_stack.title,
+      } as ContentMap;
+    })
+    .concat(
+      panes.map((p: PaneDatum) => {
+        return {
+          id: p.id,
+          slug: p.field_slug,
+          title: p.title,
+          type: `Pane`,
+        } as ContentMap;
+      })
+    );
+
+  // must intercept image|imageSvg from panes; then optimize
+  const optimizedImagesPre: OptimizedImagePre[] = [];
+  panes.forEach((p: PaneDatum) => {
+    const markdownFiles =
+      p?.field_markdown
+        .map((m: MarkdownDatum) => {
+          let val: DrupalFile[] = [];
+          if (typeof m.field_image === `object`)
+            val = val.concat(m.field_image);
+          if (typeof m.field_image_svg === `object`)
+            val = val.concat(m.field_image_svg);
+          return val;
+        })
+        .at(0) || [];
+    let paneFiles: DrupalFile[] = [];
+    if (typeof p.field_image === `object`)
+      paneFiles = paneFiles.concat(p.field_image);
+    if (typeof p.field_image_svg === `object`)
+      paneFiles = paneFiles.concat(p.field_image_svg);
+    const allFiles = [...markdownFiles, ...paneFiles];
+    allFiles?.forEach((f: DrupalFile) => {
+      const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
+      const thisFile = thisFiles.at(0);
+      if (
+        thisFile &&
+        !optimizedImagesPre.filter(
+          (i: OptimizedImagePre) => i.id === thisFile.id
+        ).length
+      )
+        optimizedImagesPre.push({
+          id: thisFile.id,
+          filename: thisFile.filename,
+          url: thisFile.uri.url,
+        });
+    });
+  });
+  const optimizedImages = await Promise.all(
+    optimizedImagesPre.map(async (i: OptimizedImagePre) => {
+      const src = `${import.meta.env.PUBLIC_IMAGE_URL}${i.url}`;
+      const optimized = await getOptimizedImage(src);
+      const val = { id: i.id, src: optimized };
+      return val as OptimizedImage;
+    })
+  );
+
+  const contextPanes: ContextPaneDatum[] = await getAllContextPaneDatum();
   const pathsPromises: Promise<{
     params: { slug: string };
-    props: any;
-  }>[] = contextPanes.map(async (pane: Pane) => {
+    props: ContextPaneProps;
+  }>[] = contextPanes.map(async (pane: ContextPaneDatum) => {
+    const dateCreated = new Date(pane.created);
+    const dateChanged = new Date(pane.changed);
+    const paneFileNodes: PaneFileNode[] = [];
+    const thisFilesPayload: FileNode[] = [];
+    const markdownFiles =
+      pane?.field_markdown
+        .map((m: MarkdownDatum) => {
+          let val: DrupalFile[] = [];
+          if (typeof m.field_image === `object`) {
+            val = val.concat(m.field_image);
+          }
+          if (typeof m.field_image_svg === `object`)
+            val = val.concat(m.field_image_svg);
+          return val;
+        })
+        .at(0) || [];
+    let paneFiles: DrupalFile[] = [];
+    if (typeof pane.field_image === `object`)
+      paneFiles = paneFiles.concat(pane.field_image);
+    if (typeof pane.field_image_svg === `object`)
+      paneFiles = paneFiles.concat(pane.field_image_svg);
+    const allFiles = [...markdownFiles, ...paneFiles];
+    allFiles?.forEach((f: DrupalFile) => {
+      const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
+      const thisFile = thisFiles.at(0);
+      if (thisFile) {
+        const optimizedSrcRaw = optimizedImages.filter(
+          (i: OptimizedImage) => i.id === thisFile.id
+        );
+        const optimizedSrc = optimizedSrcRaw.at(0);
+        thisFilesPayload.push(cleanFileDatum(thisFile, optimizedSrc?.src));
+      }
+    });
+    if (thisFilesPayload.length)
+      paneFileNodes.push({
+        id: pane.id,
+        files: thisFilesPayload,
+      });
+    const thisFilesArray = paneFileNodes
+      .filter((f: PaneFileNode) => f.id === pane.id)
+      .at(0);
+    const panePayload: PaneDatumProps = cleanPaneDatum(pane, thisFilesArray);
+    const impressionsRaw = panePayload
+      ? [cleanImpressionsDatum(panePayload.optionsPayload?.impressions)]
+      : [];
+    const impressions = impressionsRaw as ImpressionDatum[];
+
     return {
       params: { slug: pane.field_slug },
       props: {
         title: pane.title,
         id: pane.id,
         slug: pane.field_slug,
+        panePayload,
+        impressions,
+        changed: dateChanged,
+        created: dateCreated,
+        contentMap,
       },
     };
   });
   return Promise.all(pathsPromises);
 }
-const { title, id, slug }: any = Astro.props;
+const {
+  title,
+  id,
+  slug,
+  panePayload,
+  impressions,
+  changed,
+  created,
+  contentMap,
+}: any = Astro.props;
 const current = {
   id,
   slug,
   title,
-  type: `Pane`,
 };
 
 export const prerender = true;
 ---
 
-<h1>{title}</h1>
-<h2>Context Panes</h2>
-<p><strong>slug:</strong> {slug}</p>
-<p><strong>id:</strong> {id}</p>
-<astro-storyfragment data-id={JSON.stringify(current)}>
-  <ul>
-    <astro-pane key={`pane-${id}`}>
-      <li id={`pane-${id}`} class="pane"></li>
-    </astro-pane>
-  </ul>
-</astro-storyfragment>
+<Layout
+  title={title}
+  pubDatetime={created || new Date()}
+  modDatetime={changed || new Date()}
+>
+  <Header title={title || ``} slug="context" context={true} />
+  <main id="main-content">
+    <ContextPaneWrapper
+      pane={panePayload}
+      contentMap={contentMap}
+      current={current}
+    />
+  </main>
+  {
+    Object.keys(impressions).length ? (
+      <ImpressionWrapper payload={impressions} />
+    ) : null
+  }
+  <Footer created={created || new Date()} context={true} />
+</Layout>
 
 <script>
+  import { handleResize } from "../../utils/helpers";
+  import { eventStream } from "../../utils/events/eventStream";
+  import { inView } from "../../utils/events/inView";
+  import { closeContextPane } from "../../utils/helpers";
+  import { eventProcessQueue } from "../../utils/events/eventProcessQueue";
   import { init } from "../../utils/init";
-  init();
+
+  window.addEventListener(`resize`, handleResize);
+
+  document.addEventListener("astro:page-load", () => {
+    handleResize();
+    eventStream();
+    inView();
+    closeContextPane();
+    init();
+  });
+  document.addEventListener("astro:before-swap", () => eventProcessQueue());
 </script>

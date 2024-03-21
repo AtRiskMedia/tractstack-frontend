@@ -3,11 +3,15 @@ import type {
   FileNode,
   PaneDatum,
   MarkdownDatum,
+  ContextPaneDatum,
 } from "../../types";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { toHast } from "mdast-util-to-hast";
 
-export function cleanPaneDatum(pane: PaneDatum, files?: PaneFileNode) {
+export function cleanPaneDatum(
+  pane: PaneDatum | ContextPaneDatum,
+  files?: PaneFileNode
+) {
   const thisFiles = files?.files?.map((f: FileNode, idx: number) => {
     let altText = ``;
     pane.field_markdown.forEach((m: MarkdownDatum) => {

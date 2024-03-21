@@ -9,7 +9,7 @@ export type AuthSettings = {
   encryptedCode: string | undefined;
   consent: string | undefined;
   firstname: string | undefined;
-  active: number | undefined;
+  active: string | undefined;
 };
 
 export const auth = persistentMap<AuthSettings>("auth:", {

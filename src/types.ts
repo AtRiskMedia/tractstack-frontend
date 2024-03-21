@@ -182,6 +182,10 @@ export interface PaneDatum extends Pane {
   field_image: DrupalFile[];
   field_image_svg: DrupalFile[];
 }
+export interface ContextPaneDatum extends PaneDatum {
+  changed: string;
+  created: string;
+}
 export interface MarkdownDatum extends Markdown {
   drupal_internal__nid: number;
   field_markdown_body: string;
@@ -200,7 +204,6 @@ export interface MenuDatum extends Menu {
 }
 
 export interface StoryFragmentProps {
-  impressions: ImpressionDatum[];
   title: string;
   id: string;
   slug: string;
@@ -209,9 +212,21 @@ export interface StoryFragmentProps {
   menu: MenuDatum;
   panes: PaneNode[];
   panesPayload: PaneDatumProps[];
+  impressions: ImpressionDatum[];
   tractStackId: string;
   tractStackTitle: string;
   tractStackSlug: string;
+  changed: Date;
+  created: Date;
+  contentMap: ContentMap[];
+}
+
+export interface ContextPaneProps {
+  title: string;
+  id: string;
+  slug: string;
+  panePayload: PaneDatumProps;
+  impressions: ImpressionDatum[];
   changed: Date;
   created: Date;
   contentMap: ContentMap[];
@@ -507,7 +522,6 @@ export interface Current {
   id: string;
   slug: string;
   title: string;
-  type?: `StoryFragment` | `Pane`;
   parentId?: string;
   parentSlug?: string;
   parentTitle?: string;
@@ -517,6 +531,7 @@ export interface StoryStep {
   id: string;
   slug: string;
   title: string;
+  type: string;
 }
 
 export type EventStream = {
