@@ -559,3 +559,12 @@ export interface ICodeHook {
   name: string;
   target: string;
 }
+
+export interface MenuLink {
+  name: string;
+  description: string;
+  featured: boolean;
+  actionLisp: string;
+  to: string;
+  internal: boolean;
+}

@@ -8,7 +8,10 @@ export async function init() {
   // must pass utmSource and fingerprint if avail with consent
   const authPayload = auth.get();
 
-  if (!authPayload?.token) {
+  if (
+    !authPayload?.token ||
+    (authPayload?.active && authPayload.active < Date.now() - 60 * 15 * 1000)
+  ) {
     // check for utmParams
     const urlSearchParams = new URLSearchParams(window.location.search);
     const params = Object.fromEntries(urlSearchParams.entries());
@@ -30,8 +33,12 @@ export async function init() {
       utmTerm,
       utmContent,
     };
+    // remembers session for 15 minutes across tabs;
+    // or when consent has been given
     const settings =
-      authPayload?.consent === "1" && authPayload?.key
+      (authPayload?.active > Date.now() - 60 * 15 * 1000 ||
+        authPayload?.consent === "1") &&
+      authPayload?.key
         ? {
             fingerprint: authPayload.key,
             codeword: authPayload?.encryptedCode,
@@ -51,6 +58,7 @@ export async function init() {
       auth.setKey(`consent`, undefined);
       auth.setKey(`firstname`, undefined);
     }
+    auth.setKey(`active`, Date.now());
   }
 
   // flag on first visit from external

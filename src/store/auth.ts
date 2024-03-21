@@ -9,6 +9,7 @@ export type AuthSettings = {
   encryptedCode: string | undefined;
   consent: string | undefined;
   firstname: string | undefined;
+  active: number | undefined;
 };
 
 export const auth = persistentMap<AuthSettings>("auth:", {
@@ -19,6 +20,7 @@ export const auth = persistentMap<AuthSettings>("auth:", {
   encryptedCode: undefined,
   consent: undefined,
   firstname: undefined,
+  active: undefined,
 });
 
 export const entered = atom<boolean>(false);
