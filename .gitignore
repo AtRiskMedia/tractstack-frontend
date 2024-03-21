@@ -56,4 +56,4 @@ src/custom
 !src/custom/codehooks.tsx.example
 
 # custom assets
-src/assets/custom
+public/custom
