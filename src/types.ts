@@ -538,3 +538,18 @@ export type ContentMap = {
 export type PanesVisible = {
   [key: string]: number | null;
 };
+
+export interface ICodeHookIframe {
+  target: string;
+  url: string;
+  height?: number;
+  width?: number;
+}
+export interface ICodeHookShopify {
+  id: string;
+  target: string;
+}
+export interface ICodeHook {
+  name: string;
+  target: string;
+}

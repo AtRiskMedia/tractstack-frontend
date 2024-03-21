@@ -1,5 +1,6 @@
 import PaneRender from "@components/PaneRender";
 import PaneFilter from "@components/PaneFilter";
+import CodeHook from "../custom/codehooks";
 import type { PaneDatumProps } from "../types";
 
 const PaneWrapper = (props: { payload: PaneDatumProps }) => {
@@ -22,12 +23,11 @@ const PaneWrapper = (props: { payload: PaneDatumProps }) => {
         </div>
       </PaneFilter>
     );
-  } else if (hasCodeHook)
-    return (
-      <div className="bg-yellow-300">
-        <p>codehook here {props.payload.optionsPayload.codeHook.target}</p>
-      </div>
-    );
+  } else if (hasCodeHook) {
+    const target = props.payload.optionsPayload.codeHook.target;
+    if (target) return <CodeHook target={target} />;
+    else return <div />
+  }
 
   // else render as Pane
   if (filterBeliefs) {

@@ -1,8 +1,14 @@
 import { classNames } from "./helpers";
-import type { PaneDatumProps } from "../types";
+import type { PaneDatumProps,StoryFragmentDatum } from "../types";
 
-export function tailwindWhitelist(panes: PaneDatumProps[]) {
+export function tailwindWhitelist(panes: PaneDatumProps[],storyFragments:StoryFragmentDatum[]) {
   let whitelistString = ``;
+  storyFragments
+    .map((s:StoryFragmentDatum)=>s.field_tailwind_background_colour)
+    .filter((s:StoryFragmentDatum|null)=>s)
+    .forEach((s:string)=>{
+    whitelistString = `${whitelistString} ${s} `
+  })
   panes.forEach((pane: PaneDatumProps) => {
     const paneHeightRatioDesktop =
       Number(pane.heightRatioDesktop) === 0

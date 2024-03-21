@@ -50,3 +50,10 @@ public/fonts
 
 # custom css
 public/styles
+
+# custom codehooks
+src/custom
+!src/custom/codehooks.tsx.example
+
+# custom assets
+src/assets/custom

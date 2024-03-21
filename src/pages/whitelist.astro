@@ -1,13 +1,16 @@
 ---
 import { tailwindWhitelist } from "../utils/tailwindWhitelist";
-import { getAllPaneDatum } from "../api/drupal";
+import { getAllPaneDatum,
+  getAllStoryFragmentDatum,
+} from "../api/drupal";
 import { cleanPaneDatum } from "../utils/compositor/cleanPaneDatum";
-import type { PaneDatum } from "../types";
+import type {StoryFragmentDatum, PaneDatum } from "../types";
 
 const panes: PaneDatum[] = await getAllPaneDatum();
+const storyFragments: StoryFragmentDatum[] = await getAllStoryFragmentDatum();
 const whitelist = tailwindWhitelist(
   panes.map((pane: PaneDatum) => cleanPaneDatum(pane))
-);
+,storyFragments);
 ---
 
 <ul>

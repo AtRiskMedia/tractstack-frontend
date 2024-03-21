@@ -30,9 +30,11 @@ const { created = new Date() } = Astro.props;
       <span>{slogan}</span>
     </div>
     <div
-      class="text-mydarkgrey my-2 flex flex-col items-center justify-center whitespace-nowrap xs:flex-row"
+      class="my-2 flex flex-col items-center justify-center whitespace-nowrap xs:flex-row"
     >
+    <span class="text-mydarkgrey/80">
       Pressed with&nbsp;
+      </span>
       <Link
         href="https://tractstack.com"
         className="hover:underline text-myblue"
@@ -40,7 +42,7 @@ const { created = new Date() } = Astro.props;
         title="Tract Stack by At Risk Media"
       >
         Tract Stack</Link
-      >: Story Keeper Analytics
+      ><span class="text-myblue/80">: Insights learned from traction and churn</span>
     </div>
   </div>
 </footer>
