@@ -3,7 +3,7 @@ import PaneFilter from "@components/PaneFilter";
 import CodeHook from "../custom/codehooks";
 import type { PaneDatumProps } from "../types";
 
-const PaneWrapper = (props: { payload: PaneDatumProps }) => {
+const Pane = (props: { payload: PaneDatumProps }) => {
   // intercept any held or withheld beliefs
   const filterBeliefs =
     typeof props?.payload?.optionsPayload?.heldBeliefs === `object` ||
@@ -26,7 +26,7 @@ const PaneWrapper = (props: { payload: PaneDatumProps }) => {
   } else if (hasCodeHook) {
     const target = props.payload.optionsPayload.codeHook.target;
     if (target) return <CodeHook target={target} />;
-    else return <div />
+    else return <div />;
   }
 
   // else render as Pane
@@ -44,4 +44,4 @@ const PaneWrapper = (props: { payload: PaneDatumProps }) => {
   return <PaneRender payload={props.payload} />;
 };
 
-export default PaneWrapper;
+export default Pane;

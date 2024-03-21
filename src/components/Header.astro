@@ -1,3 +1,63 @@
 ---
+import { Home } from "./icons/Home";
+import { StorySteps } from "./other/StorySteps";
+import type { MenuDatum } from "../types";
 
+export interface Props {
+  title: string;
+  slug: string;
+  menu?: MenuDatum;
+}
+
+const { title, slug, menu } = Astro.props;
+const isHome = slug === import.meta.env.PUBLIC_HOME;
+
+// this may include:
+// - Menu
+// - shopify cart
+// - go home
+// - breadcrumbs map
 ---
+
+<header class="relative bg-white shadow-inner">
+  <div
+    class="flex flex-row flex-nowrap items-center justify-betwe
+en py-3 px-4 md:px-8 bg-mygreen/10"
+  >
+    <div class="flex flex-row flex-nowrap items-center">
+      <object type="image/svg+xml" data="/custom/logo.svg" class="h-5 w-auto"
+      ></object>
+      <span class="w-2"></span>
+      <object
+        type="image/svg+xml"
+        data="/custom/wordmark.svg"
+        class="h-5 w-auto"></object>
+    </div>
+  </div>
+  <div
+    class="flex flex-row flex-nowrap justify-between pt-4 pb-3
+px-4 md:px-8 bg-mywhite shadow-inner"
+  >
+    <h1 class="text-myblack truncate">{title}</h1>
+    <div class="flex flex-row flex-nowrap">
+      {
+        !isHome ? (
+          <a
+            href="/"
+            class="mx-2 hover:text-blue hover:rotate-6"
+            title="Go to home page"
+          >
+            <Home classes="w-6 h-6" client:load />
+          </a>
+        ) : null
+      }
+      <a
+        href="/breadcrumbs"
+        class="mx-2 hover:text-blue hover:rotate-6"
+        title="Your Content Journey"
+      >
+        <StorySteps client:load />
+      </a>
+    </div>
+  </div>
+</header>

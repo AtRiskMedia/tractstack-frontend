@@ -2,6 +2,7 @@
 import StoryFragmentWrapper from "@components/StoryFragmentWrapper.astro";
 import ImpressionWrapper from "@components/ImpressionWrapper";
 import Layout from "@layouts/Layout.astro";
+import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
 import {
   getStoryFragmentDatum,
@@ -217,16 +218,8 @@ export const prerender = true;
   modDatetime={changed || new Date()}
   ogImage={socialImagePath}
 >
+  <Header title={title || ``} menu={menu} slug={slug} />
   <main id="main-content">
-    {
-      !!menu ? (
-        <>
-          <h2>Menu</h2>
-          <p>{JSON.stringify(menu)}</p>
-        </>
-      ) : null
-    }
-
     <StoryFragmentWrapper
       tailwindBgColour={tailwindBgColour}
       panes={panes || []}
@@ -255,7 +248,7 @@ export const prerender = true;
       <ImpressionWrapper payload={impressions} />
     ) : null
   }
-  <Footer created={created || new Date()} />
+  <Footer created={created || new Date()} menu={menu} />
 </Layout>
 
 <script>

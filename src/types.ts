@@ -513,6 +513,12 @@ export interface Current {
   parentTitle?: string;
 }
 
+export interface StoryStep {
+  id: string;
+  slug: string;
+  title: string;
+}
+
 export type EventStream = {
   id: string;
   type: string;

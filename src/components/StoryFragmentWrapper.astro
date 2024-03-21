@@ -1,6 +1,6 @@
 ---
 import { classNames } from "../utils/helpers";
-import PaneWrapper from "@components/PaneWrapper";
+import Pane from "@components/Pane";
 import type { Current, ContentMap, PaneDatumProps, PaneNode } from "../types";
 
 export interface Props {
@@ -62,7 +62,7 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
             >
               <div id={`${pane.field_slug}`}>
                 {idx <= 2 ? (
-                  <PaneWrapper
+                  <Pane
                     client:load
                     payload={
                       panesPayload
@@ -71,7 +71,7 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
                     }
                   />
                 ) : (
-                  <PaneWrapper
+                  <Pane
                     client:visible
                     payload={
                       panesPayload
@@ -90,13 +90,22 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
 </astro-storyfragment>
 
 <script>
-  import { current, contentMap } from "../store/events";
+  import { storySteps, current, contentMap } from "../store/events";
 
   class StoryFragment extends HTMLElement {
     constructor() {
       super();
       const id = this.dataset.id;
-      if (id) current.set(JSON.parse(id));
+      const thisId = id ? JSON.parse(id) : null;
+      if (thisId) {
+        current.set(thisId);
+        const storyStep = {
+          id: thisId.id,
+          slug: thisId.slug,
+          title: thisId.title,
+        };
+        storySteps.set([...storySteps.get(), storyStep]);
+      }
       const contentMapPayload = this.dataset.map;
       if (contentMapPayload) contentMap.set([JSON.parse(contentMapPayload)]);
       this.querySelector("ul");

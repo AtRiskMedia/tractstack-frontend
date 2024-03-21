@@ -1,5 +1,6 @@
 ---
 import Layout from "@layouts/Layout.astro";
+import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
 import StoryFragmentWrapper from "@components/StoryFragmentWrapper.astro";
 import ImpressionWrapper from "@components/ImpressionWrapper";
@@ -244,16 +245,8 @@ export const prerender = true;
   modDatetime={changed}
   ogImage={socialImagePath}
 >
+  <Header title={title} menu={menu} slug={slug} />
   <main id="main-content">
-    {
-      !!menu ? (
-        <>
-          <h2>Menu</h2>
-          <p>{JSON.stringify(menu)}</p>
-        </>
-      ) : null
-    }
-
     <StoryFragmentWrapper
       tailwindBgColour={tailwindBgColour}
       panes={panes}
@@ -282,7 +275,7 @@ export const prerender = true;
       <ImpressionWrapper payload={impressions} client:visible />
     ) : null
   }
-  <Footer created={created} />
+  <Footer created={created} menu={menu} />
 </Layout>
 
 <script>
