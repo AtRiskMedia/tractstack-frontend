@@ -4,14 +4,17 @@ import { auth, entered } from "../store/auth";
 
 export async function init() {
   if (!import.meta.env.PROD) return null;
+  console.log(`init`);
 
   // must pass utmSource and fingerprint if avail with consent
   const authPayload = auth.get();
 
   if (
     !authPayload?.token ||
-    (authPayload?.active &&
-      parseInt(authPayload.active) < Date.now() - 60 * 15 * 1000)
+    !(
+      authPayload?.active &&
+      parseInt(authPayload.active) < Date.now() - 60 * 15 * 1000
+    )
   ) {
     // check for utmParams
     const urlSearchParams = new URLSearchParams(window.location.search);

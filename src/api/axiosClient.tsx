@@ -1,10 +1,12 @@
 import { createAxiosClient } from "./createAxiosClient";
 import { conciergeSync } from "../api/services";
+import { auth } from "../store/auth";
+//import { useStore } from "@nanostores/react";
 import type { Referrer, IAuthStoreLoginResponse } from "../types";
 
 function getCurrentAccessToken() {
-  console.log(`needs token from nanostore`);
-  return null;
+  const authPayload = auth.get();
+  return authPayload?.token;
 }
 
 function setRefreshedTokens(response: IAuthStoreLoginResponse) {

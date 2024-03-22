@@ -13,7 +13,6 @@ export async function conciergeSync({
   referrer,
   fingerprint,
 }: IAxiosRegisterProps) {
-  console.log(`sync now`);
   const payload = {
     codeword,
     email,
