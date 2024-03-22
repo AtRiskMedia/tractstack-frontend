@@ -4,6 +4,7 @@ import { Close } from "./icons/Close";
 import Menu from "./Menu";
 import { StorySteps } from "./other/StorySteps";
 import { RememberMe } from "./other/RememberMe";
+import { CartIcon } from "./other/CartIcon";
 import type { MenuDatum } from "../types";
 
 export interface Props {
@@ -75,6 +76,7 @@ px-4 md:px-8 bg-mywhite shadow-inner"
           </button>
         ) : null
       }
+      <CartIcon client:load />
     </div>
   </div>
 </header>
