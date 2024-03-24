@@ -30,8 +30,8 @@ const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
             >
           </p>
           <p>
-            With your consent, Tract Stack can retain memory of your session and
-            preferences.
+            If you provide consent by clicking on this toggle, Tract Stack will
+            retain memory of your session and preferences.
           </p>
           <div>
             <RememberMeToggle client:load />
@@ -59,3 +59,15 @@ const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
   </main>
   <Footer created={new Date()} context={true} />
 </Layout>
+
+<script>
+  import { handleResize } from "../../utils/helpers";
+  import { init } from "../../utils/init";
+
+  window.addEventListener(`resize`, handleResize);
+
+  document.addEventListener("astro:page-load", () => {
+    handleResize();
+    init();
+  });
+</script>

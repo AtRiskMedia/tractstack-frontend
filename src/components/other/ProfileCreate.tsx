@@ -10,14 +10,44 @@ import {
   BoltIcon,
   ChatBubbleBottomCenterIcon,
 } from "@heroicons/react/24/outline";
-import { auth } from "../../store/auth";
+import { sync, auth, profile, error, success, loading } from "../../store/auth";
 import { loadProfile } from "../../api/services";
 import { contactPersona } from "../../assets/contactPersona";
 
 async function goLoadProfile() {
-  if (import.meta.env.PROD) {
+  console.log(`go load profile`);
+  try {
     const response = await loadProfile();
-    console.log(response);
+    console.log(`got`, response);
+    profile.set({
+      firstname: response?.data?.firstname || undefined,
+      contactPersona: response?.data?.contactPersona || undefined,
+      email: response?.data?.email || undefined,
+      shortBio: response?.data?.shortBio || undefined,
+      hasProfile:
+        typeof response?.data?.firstname !== `undefined` &&
+        typeof response?.data?.email !== `undefined`,
+      unlockedProfile:
+        typeof response?.data?.auth !== `undefined` && response.data.auth,
+    });
+    if (typeof response?.data?.auth !== `undefined` && response.data.auth)
+      auth.setKey(`consent`, `1`);
+    success.set(true);
+    loading.set(false);
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+  } catch (e: any) {
+    error.set(true);
+    success.set(false);
+    loading.set(undefined);
+    profile.set({
+      firstname: undefined,
+      contactPersona: undefined,
+      email: undefined,
+      shortBio: undefined,
+      hasProfile: undefined,
+      unlockedProfile: undefined,
+    });
+    console.log(`error`, e);
   }
 }
 
@@ -28,6 +58,13 @@ export const ProfileCreate = () => {
   const [bio, setBio] = useState(``);
   const [codeword, setCodeword] = useState(``);
   const [personaSelected, setPersonaSelected] = useState(contactPersona[0]);
+  const $authPayload = useStore(auth);
+  const $profile = useStore(profile);
+  const $error = useStore(error);
+  const $loading = useStore(loading);
+  const $success = useStore(success);
+  const $sync = useStore(sync);
+
   const Icon =
     personaSelected.title === `DMs open`
       ? ChatBubbleBottomCenterIcon
@@ -60,7 +97,6 @@ export const ProfileCreate = () => {
         : personaSelected.title === `Major Updates Only`
           ? `50%`
           : `2%`;
-  const $authPayload = useStore(auth);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -70,11 +106,87 @@ export const ProfileCreate = () => {
 
   useEffect(() => {
     // on init, load profile from concierge
-    if (typeof submitted === `undefined`) {
+    if (
+      $sync &&
+      typeof $success == `undefined` &&
+      typeof $error === `undefined` &&
+      typeof $loading === `undefined` &&
+      typeof submitted === `undefined` &&
+      import.meta.env.PROD &&
+      $authPayload?.token
+    ) {
+      console.log(`LOAD profile now`);
+      error.set(false);
+      loading.set(true);
       goLoadProfile();
+    } else if (
+      $sync &&
+      typeof $success == `boolean` &&
+      $success &&
+      typeof $error === `boolean` &&
+      !$error &&
+      typeof $loading === `boolean` &&
+      !$loading &&
+      typeof submitted === `undefined` &&
+      import.meta.env.PROD &&
+      typeof $profile.hasProfile !== `undefined`
+    ) {
+      console.log(`PROFILE LOADED`);
       setSubmitted(false);
+      error.set(undefined);
+      success.set(true);
+      loading.set(undefined);
+      //} else if (
+      //  $sync &&
+      //  typeof $success == `boolean` &&
+      //  !$success &&
+      //  $error &&
+      //  typeof submitted === `undefined` &&
+      //  import.meta.env.PROD &&
+      //  typeof $profile.hasProfile !== `undefined` &&
+      //  !$loading
+      //) {
+      //  console.log(`=1 !! ERROR loading profile. must retry.`);
+      //  error.set(undefined);
+      //  success.set(undefined);
+      //  loading.set(undefined);
+      //  setSubmitted(undefined);
+    } else if (
+      typeof submitted === `undefined` &&
+      $error &&
+      typeof $loading === `undefined` &&
+      !$success
+    ) {
+      console.log(`=2 !! ERROR loading profile. must retry.`);
+      error.set(undefined);
+      success.set(undefined);
+      //console.log(`-----$sync`, $sync, typeof $sync);
+      //console.log(`-----$error`, $error, typeof $error);
+      //console.log(`-----$loading`, $loading, typeof $loading);
+      //console.log(`-----$success`, $success, typeof $success);
+      //console.log(`-----submitted`, submitted, typeof submitted);
+      //console.log(
+      //  `-----token`,
+      //  $authPayload?.token,
+      //  typeof $authPayload?.token
+      //);
+      //console.log(
+      //  `-----profile`,
+      //  $profile?.hasProfile,
+      //  typeof $profile?.hasProfile
+      //);
+      //console.log(``);
+      if (!$sync) window.location.reload();
     }
-  }, [$authPayload]);
+  }, [
+    $sync,
+    $success,
+    $authPayload?.token,
+    $profile?.hasProfile,
+    $error,
+    submitted,
+    $loading,
+  ]);
 
   if (typeof submitted === `undefined`) return <div />;
   return (

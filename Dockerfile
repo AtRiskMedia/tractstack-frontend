@@ -12,8 +12,10 @@ RUN apt-get update && \
         -subj "/C=UK/ST=Ontario/L=Toronto/O=AtRiskMedia/OU=TractStack/CN=tractstack.com" && \
     openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
 
+RUN corepack enable
+RUN yarn set version stable
 RUN yarn install
-RUN yarn add sharp --ignore-engines
+#RUN yarn add sharp --ignore-engines
 RUN yarn run build
 
 ENV HOST=0.0.0.0

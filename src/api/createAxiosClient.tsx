@@ -54,6 +54,7 @@ export function createAxiosClient({
       originalRequest.headers = JSON.parse(
         JSON.stringify(originalRequest.headers || {})
       );
+      console.log(`had error`);
 
       const handleError = (error: AxiosError) => {
         processQueue(error);
@@ -80,18 +81,22 @@ export function createAxiosClient({
         isRefreshing = true;
         originalRequest._retry = true;
         const authPayload = getAuthData();
+        console.log(`ready for refresh?`);
         return client
           .post(refreshTokenUrl, authPayload)
           .then(response => {
+            console.log(`ok -- must store new tokens`);
             setRefreshedTokens(response.data);
             processQueue(null);
             return client(originalRequest);
           }, handleError)
           .catch(e => {
+            console.log(`bad`);
             logout(true);
             return handleError(e);
           })
           .finally(() => {
+            console.log(`done`);
             isRefreshing = false;
           });
       } else if (error.response?.status === 401) {

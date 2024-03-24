@@ -1,7 +1,6 @@
 import { createAxiosClient } from "./createAxiosClient";
 import { conciergeSync } from "../api/services";
-import { auth } from "../store/auth";
-//import { useStore } from "@nanostores/react";
+import { auth, profile, sync, locked } from "../store/auth";
 import type { Referrer, IAuthStoreLoginResponse } from "../types";
 
 function getCurrentAccessToken() {
@@ -11,10 +10,20 @@ function getCurrentAccessToken() {
 
 function setRefreshedTokens(response: IAuthStoreLoginResponse) {
   console.log(`login`, response);
+  const authPayload = auth.get();
+  const authProfile = profile.get();
+  console.log(`update`, authPayload, authProfile);
 }
 
 function logout(full: boolean = false) {
   console.log(`logout`, full);
+  sync.set(false);
+  locked.set(false);
+  if (full) {
+    auth.setKey(`token`, undefined);
+    console.log(`wiped token`);
+    //auth.setKey(`active`, "0");
+  }
 }
 
 function getAuthData() {
@@ -48,15 +57,17 @@ export const getTokens = async ({
   fingerprint,
   codeword,
   email,
+  encryptedCode,
+  encryptedEmail,
   referrer,
 }: {
   fingerprint?: string | undefined;
   codeword?: string | undefined;
   email?: string | undefined;
+  encryptedCode?: string | undefined;
+  encryptedEmail?: string | undefined;
   referrer: Referrer;
 }) => {
-  const encryptedEmail = undefined;
-  const encryptedCode = undefined;
   const params =
     codeword && email
       ? { codeword, email }
@@ -73,6 +84,7 @@ export const getTokens = async ({
     const newFingerprint = response.data.fingerprint;
     const encryptedEmail = response.data.encryptedEmail;
     const encryptedCode = response.data.encryptedCode;
+    const mode = response.data.mode;
     const beliefs =
       typeof response.data.beliefs === `string`
         ? JSON.parse(response?.data?.beliefs)
@@ -82,6 +94,7 @@ export const getTokens = async ({
       auth,
       firstname,
       knownLead,
+      mode,
       fingerprint: newFingerprint,
       encryptedEmail,
       encryptedCode,

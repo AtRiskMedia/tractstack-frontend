@@ -1,21 +1,33 @@
 import { getTokens } from "../api/axiosClient";
 import { events, current } from "../store/events";
-import { auth, entered } from "../store/auth";
+import {
+  auth,
+  sync,
+  locked,
+  entered,
+  error,
+  success,
+  loading,
+} from "../store/auth";
+import { JWT_LIFETIME } from "../constants";
 
 export async function init() {
-  if (!import.meta.env.PROD) return null;
-  console.log(`init`);
+  if (!import.meta.env.PROD || locked.get()) {
+    return null;
+  }
 
-  // must pass utmSource and fingerprint if avail with consent
   const authPayload = auth.get();
+  const lastActive = authPayload?.active ? parseInt(authPayload.active) : 0;
 
-  if (
-    !authPayload?.token ||
-    !(
-      authPayload?.active &&
-      parseInt(authPayload.active) < Date.now() - 60 * 15 * 1000
-    )
-  ) {
+  // only sync once; reset if soon inactive
+  if (lastActive > Date.now() - JWT_LIFETIME && sync.get()) {
+    return null;
+  }
+
+  locked.set(true);
+
+  // if no token, inactive, or soon inactive, get one
+  if (!authPayload?.token || !(lastActive > Date.now() - JWT_LIFETIME)) {
     // check for utmParams
     const urlSearchParams = new URLSearchParams(window.location.search);
     const params = Object.fromEntries(urlSearchParams.entries());
@@ -25,10 +37,6 @@ export async function init() {
     const utmCampaign = params[`utm_campaign`] || undefined;
     const utmTerm = params[`utm_term`] || undefined;
     const utmContent = params[`utm_content`] || undefined;
-    if (utmSource)
-      console.log(
-        `params: source=${utmSource} medium=${utmMedium} campaign=${utmCampaign} term=${utmTerm} content=${utmContent} referrer=${httpReferrer}`
-      );
     const referrer = {
       httpReferrer,
       utmSource,
@@ -37,34 +45,43 @@ export async function init() {
       utmTerm,
       utmContent,
     };
-    // remembers session for 15 minutes across tabs;
+
+    // remembers session for 75 minutes across tabs;
     // or when consent has been given
-    const lastActive = authPayload?.active ? parseInt(authPayload.active) : 0;
+    // must pass utmSource and fingerprint if avail with consent
     const settings =
-      (lastActive > Date.now() - 60 * 15 * 1000 ||
+      (lastActive > Date.now() - JWT_LIFETIME * 5 ||
         authPayload?.consent === "1") &&
       authPayload?.key
         ? {
             fingerprint: authPayload.key,
-            codeword: authPayload?.encryptedCode,
-            email: authPayload?.encryptedEmail,
+            encryptedCode: authPayload?.encryptedCode,
+            encryptedEmail: authPayload?.encryptedEmail,
             referrer,
           }
         : { referrer };
-    console.log(`go get tokens`);
     const conciergeSync = await getTokens(settings);
-    if (conciergeSync?.tokens) auth.setKey(`token`, conciergeSync.tokens);
-    if (conciergeSync?.fingerprint)
+    if (conciergeSync?.tokens) {
+      auth.setKey(`token`, conciergeSync.tokens);
+    }
+    if (conciergeSync?.fingerprint) {
       auth.setKey(`key`, conciergeSync.fingerprint);
-    if (conciergeSync?.firstname)
+    }
+    if (conciergeSync?.firstname) {
       auth.setKey(`firstname`, conciergeSync.firstname);
-    if (conciergeSync?.consent === "1") auth.setKey(`consent`, `1`);
-    else {
-      auth.setKey(`consent`, undefined);
-      auth.setKey(`firstname`, undefined);
+    }
+    if (conciergeSync?.consent === "1") {
+      auth.setKey(`consent`, `1`);
     }
     auth.setKey(`active`, Date.now().toString());
   }
+
+  // unlock; set sync
+  sync.set(true);
+  locked.set(false);
+  error.set(undefined);
+  success.set(undefined);
+  loading.set(undefined);
 
   // flag on first visit from external
   if (!entered.get()) {

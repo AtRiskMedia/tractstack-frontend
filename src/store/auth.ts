@@ -12,6 +12,15 @@ export type AuthSettings = {
   active: string | undefined;
 };
 
+export type AuthProfile = {
+  firstname: string | undefined;
+  contactPersona: string | undefined;
+  email: string | undefined;
+  shortBio: string | undefined;
+  hasProfile: boolean | undefined;
+  unlockedProfile: boolean | undefined;
+};
+
 export const auth = persistentMap<AuthSettings>("auth:", {
   key: undefined,
   token: undefined,
@@ -24,3 +33,16 @@ export const auth = persistentMap<AuthSettings>("auth:", {
 });
 
 export const entered = atom<boolean>(false);
+export const sync = atom<boolean>(false);
+export const locked = atom<boolean>(false);
+export const error = atom<boolean | undefined>(undefined);
+export const success = atom<boolean | undefined>(undefined);
+export const loading = atom<boolean | undefined>(undefined);
+export const profile = atom<AuthProfile>({
+  firstname: undefined,
+  contactPersona: undefined,
+  email: undefined,
+  shortBio: undefined,
+  hasProfile: undefined,
+  unlockedProfile: undefined,
+});

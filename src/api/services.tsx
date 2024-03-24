@@ -21,6 +21,7 @@ export async function conciergeSync({
     referrer,
     fingerprint,
   };
+  console.log(`conciergeSync`, payload);
   /* eslint-disable  @typescript-eslint/no-explicit-any */
   const options: any = { authorization: false };
   return client.post(`/auth/sync`, payload, options);
