@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useStore } from "@nanostores/react";
-import { initCart, cart, isCartDrawerOpen } from "../../store/cart";
+import { initCart, cart } from "../../store/cart";
 
 export const CartIcon = () => {
   const $cartPayload = useStore(cart);
@@ -11,16 +11,12 @@ export const CartIcon = () => {
     if ($cartPayload && $cartPayload.totalQuantity > 0) setShow(true);
   }, [$cartPayload]);
 
-  function openCart() {
-    isCartDrawerOpen.set(true);
-  }
-
   if (!show) return <div />;
   return (
     <div>
-      <button
+      <a
+        href="/cart"
         className="mx-2 relative text-myblue/80 hover:text-myblue hover:rotate-6"
-        onClick={() => openCart()}
       >
         <span className="sr-only">Open your cart</span>
         <svg
@@ -44,7 +40,7 @@ export const CartIcon = () => {
             </span>
           </div>
         ) : null}
-      </button>
+      </a>
     </div>
   );
 };

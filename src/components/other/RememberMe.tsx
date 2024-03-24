@@ -12,6 +12,7 @@ export const RememberMe = () => {
     else if (consent) setConsent(false);
   }, [$authPayload]);
 
+  if (!import.meta.env.PROD) return <div />;
   if (!consent)
     return (
       <a href="/concierge/profile" className="hover:text-myblue hover:rotate-6">

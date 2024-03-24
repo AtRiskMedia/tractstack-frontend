@@ -53,6 +53,7 @@ fragment productFragment on Product {
   id
   title
   handle
+  descriptionHtml
   images (first: 10) {
     nodes {
       url

@@ -66,6 +66,7 @@ export const ProductResult = z
   .object({
     id: z.string(),
     title: z.string(),
+    descriptionHtml: z.string(),
     handle: z.string(),
     images: z.object({
       nodes: z.array(ImageResult),
