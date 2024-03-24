@@ -15,6 +15,16 @@ export default defineConfig({
     domains: ["tractstack.com", "atriskmedia.com"],
   },
   site: SITE.website,
-  integrations: [tailwind(), react(), sitemap()],
+  integrations: [
+    tailwind(),
+    react(),
+    sitemap({
+      filter: page =>
+        !page.includes(`/products/`) &&
+        !page.includes(`/concierge/`) &&
+        !page.includes(`/whitelist`) &&
+        !page.includes(`/cart`),
+    }),
+  ],
   scopedStyleStrategy: "where",
 });

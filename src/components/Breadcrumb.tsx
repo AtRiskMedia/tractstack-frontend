@@ -3,7 +3,7 @@ import { storySteps } from "../store/events";
 import { useStore } from "@nanostores/react";
 import type { StoryStep } from "../types";
 
-export const Breadcrumbs = () => {
+export const Breadcrumb = () => {
   const [show, setShow] = useState(false);
   const $storySteps = useStore(storySteps);
   const home = import.meta.env.PUBLIC_HOME;

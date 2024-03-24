@@ -11,8 +11,7 @@ const { handle } = Astro.params;
 const ip = Astro.clientAddress;
 const product = await getProductByHandle({ handle: handle || "", buyerIP: ip });
 const firstVariant = product?.variants.nodes[0];
-console.log(product);
-console.log(firstVariant);
+
 if (!product) {
   Astro.response.status = 404;
 }
@@ -21,17 +20,17 @@ setCache.short(Astro);
 ---
 
 <Layout
-  title={`Product | ${product.title}`}
+  title={`Product | ${product?.title}`}
   pubDatetime={new Date()}
   modDatetime={new Date()}
 >
-  <Header title={`Product | ${product.title}`} slug={handle} />
+  <Header title={`Product | ${product?.title}`} slug={handle || `404`} />
   <main id="main-content">
     <div>
-      <p>{product.title}</p>
-      <p>{JSON.stringify(product.images)}</p>
+      <p>{product?.title}</p>
+      <p>{JSON.stringify(product?.images)}</p>
       <p>{JSON.stringify(firstVariant?.price)}</p>
-      <div set:html={product.descriptionHtml} />
+      <div set:html={product?.descriptionHtml} />
       <p>
         add to cart:
         {firstVariant?.id}

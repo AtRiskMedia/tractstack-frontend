@@ -2,7 +2,7 @@
 import Layout from "@layouts/Layout.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
-import { Breadcrumbs } from "@components/Breadcrumbs";
+import { Breadcrumb } from "@components/Breadcrumb";
 ---
 
 <Layout
@@ -12,7 +12,7 @@ import { Breadcrumbs } from "@components/Breadcrumbs";
 >
   <Header title="Your Content Journey | Breadcrumbs" slug="breadcrumbs" />
   <main id="main-content">
-    <Breadcrumbs client:load />
+    <Breadcrumb client:load />
   </main>
   <Footer created={new Date()} context={true} />
 </Layout>

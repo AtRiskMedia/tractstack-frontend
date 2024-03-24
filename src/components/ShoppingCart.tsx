@@ -1,8 +1,10 @@
 //import {useEffect, useState} from "react";
 import { useStore } from "@nanostores/react";
 import { cart, removeCartItems, isCartUpdating } from "../store/cart";
+import { Money } from "./other/Money";
+import { ShopifyImage } from "./other/ShopifyImage";
 
-export const Cart = () => {
+export const ShoppingCart = () => {
   const $isCartUpdating = useStore(isCartUpdating);
   const $cart = useStore(cart);
 
@@ -10,6 +12,10 @@ export const Cart = () => {
   //useEffect(()=>{
   //    if($storySteps.length && !show) setShow(true)
   //  },[$storySteps])
+
+ function removeItem(id: string) {
+    removeCartItems([id]);
+  }
 
   return (
     <div className="max-w-lg mx-auto pt-16 pb-32">
@@ -78,7 +84,6 @@ export const Cart = () => {
               <p className="text-mydarkgrey">Your cart is empty</p>
               <a href="/" className="text-black hover:text-myblue">
                 Continue Shopping
-                <span ariaHidden="true"> &rarr;</span>
               </a>
             </div>
           )}
