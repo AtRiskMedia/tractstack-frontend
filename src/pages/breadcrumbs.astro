@@ -2,6 +2,7 @@
 import Layout from "@layouts/Layout.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
+import {Breadcrumbs} from "@components/Breadcrumbs";
 ---
 
 <Layout
@@ -10,6 +11,8 @@ import Footer from "@components/Footer.astro";
   modDatetime={new Date()}
 >
   <Header title="Your Content Journey | Breadcrumbs" slug="breadcrumbs" />
-  <main id="main-content"></main>
+  <main id="main-content">
+    <Breadcrumbs client:load />
+  </main>
   <Footer created={new Date()} context={true} />
 </Layout>
