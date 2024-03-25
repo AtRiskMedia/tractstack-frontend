@@ -1,5 +1,6 @@
 import { persistentMap } from "@nanostores/persistent";
 import { atom } from "nanostores";
+import type { Referrer } from "../types";
 
 export type AuthSettings = {
   key: string | undefined;
@@ -46,3 +47,4 @@ export const profile = atom<AuthProfile>({
   hasProfile: undefined,
   unlockedProfile: undefined,
 });
+export const referrer = atom<Referrer>({});

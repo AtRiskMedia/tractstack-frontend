@@ -52,7 +52,7 @@ const { pane, contentMap, current } = Astro.props;
         storySteps.set([...storySteps.get(), storyStep]);
       }
       const contentMapPayload = this.dataset.map;
-      if (contentMapPayload) contentMap.set([JSON.parse(contentMapPayload)]);
+      if (contentMapPayload) contentMap.set(JSON.parse(contentMapPayload));
       this.querySelector("ul");
     }
   }

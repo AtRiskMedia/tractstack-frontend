@@ -1,0 +1,26 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Header from "@components/Header.astro";
+import Footer from "@components/Footer.astro";
+import { FastTravel } from "../../components/FastTravel";
+---
+
+<Layout title="Fast Travel" pubDatetime={new Date()} modDatetime={new Date()}>
+  <Header title="Fast Travel" slug="graph" />
+  <main id="main-content">
+    <div class="px-6 font-main text-xl py-24">
+      <div class="max-w-5xl mx-auto">
+        <FastTravel client:load />
+      </div>
+    </div>
+  </main>
+  <Footer created={new Date()} context={true} />
+</Layout>
+
+<script>
+  import { init } from "../../utils/init";
+
+  document.addEventListener("astro:page-load", () => {
+    init();
+  });
+</script>

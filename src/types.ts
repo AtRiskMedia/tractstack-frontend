@@ -15,6 +15,18 @@ export interface Event {
   score?: string;
   targetSlug?: string;
 }
+export interface Events {
+  [key: string]: Event;
+}
+export interface EventNodes {
+  [key: string]: EventNode;
+}
+export interface EventNode {
+  title: string;
+  slug: string;
+  type: string;
+  parentId?: string;
+}
 
 // for drupal
 
@@ -582,4 +594,51 @@ export interface MenuLink {
   actionLisp: string;
   to: string;
   internal: boolean;
+}
+
+export type GraphNode = {
+  id?: string;
+  startNodeId?: number;
+  endNodeId?: number;
+  labels?: string[];
+  type?: string;
+  properties?: {
+    name?: string;
+    created_at?: number;
+    visit_id?: string;
+    object_type?: string;
+    object_name?: string;
+    fingerprint_id?: string;
+    belief_id?: string;
+    pageRank?: number;
+  };
+};
+export interface GraphNodes {
+  [key: string]: GraphNode | null;
+}
+export type GraphNodeDatum = {
+  id: string;
+  title: string;
+  label: string;
+  color: string;
+  value?: number;
+};
+export type GraphRelationshipDatum = {
+  from?: number;
+  to?: number;
+  label: string;
+  font: { align: string; size: string };
+  arrows: {
+    to: {
+      enabled: boolean;
+      type: string;
+    };
+  };
+};
+
+export interface GraphPayload {
+  payload: {
+    nodes: GraphNodeDatum[];
+    edges: GraphRelationshipDatum[];
+  };
 }

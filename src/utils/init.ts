@@ -8,6 +8,7 @@ import {
   error,
   success,
   loading,
+  referrer,
 } from "../store/auth";
 import { JWT_LIFETIME } from "../constants";
 
@@ -37,7 +38,7 @@ export async function init() {
     const utmCampaign = params[`utm_campaign`] || undefined;
     const utmTerm = params[`utm_term`] || undefined;
     const utmContent = params[`utm_content`] || undefined;
-    const referrer = {
+    const ref = {
       httpReferrer,
       utmSource,
       utmMedium,
@@ -45,6 +46,7 @@ export async function init() {
       utmTerm,
       utmContent,
     };
+    referrer.set(ref);
 
     // remembers session for 75 minutes across tabs;
     // or when consent has been given
@@ -57,9 +59,9 @@ export async function init() {
             fingerprint: authPayload.key,
             encryptedCode: authPayload?.encryptedCode,
             encryptedEmail: authPayload?.encryptedEmail,
-            referrer,
+            referrer: ref,
           }
-        : { referrer };
+        : { referrer: ref };
     const conciergeSync = await getTokens(settings);
     if (conciergeSync?.tokens) {
       auth.setKey(`token`, conciergeSync.tokens);
@@ -86,11 +88,10 @@ export async function init() {
   // flag on first visit from external
   if (!entered.get()) {
     entered.set(true);
-    const referrer = document.referrer;
+    const ref = document.referrer;
     const internal =
-      referrer !== `` &&
-      referrer.indexOf(location.protocol + "//" + location.host) === 0;
-    if (!internal && referrer) {
+      ref !== `` && ref.indexOf(location.protocol + "//" + location.host) === 0;
+    if (!internal && ref) {
       const event = {
         id: current.get().id,
         parentId: current.get().parentId,
