@@ -1,4 +1,4 @@
-//import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { useStore } from "@nanostores/react";
 import { cart, removeCartItems, isCartUpdating } from "../store/cart";
 import { Money } from "./other/Money";
@@ -8,17 +8,18 @@ export const ShoppingCart = () => {
   const $isCartUpdating = useStore(isCartUpdating);
   const $cart = useStore(cart);
 
-  //const [show,setShow] = useState(false)
-  //useEffect(()=>{
-  //    if($storySteps.length && !show) setShow(true)
-  //  },[$storySteps])
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    setShow(true);
+  }, []);
 
- function removeItem(id: string) {
+  function removeItem(id: string) {
     removeCartItems([id]);
   }
 
+  if (!show) return <div />;
   return (
-    <div className="max-w-lg mx-auto pt-16 pb-32">
+    <div className="max-w-lg mx-auto py-16">
       <div className="flex-1">
         <div className="px-5">
           {$cart && $cart.lines?.nodes.length > 0 ? (
@@ -27,7 +28,7 @@ export const ShoppingCart = () => {
               className="divide-y divide-slate-100 {cartIsUpdatingClass}"
             >
               {$cart.lines?.nodes.map(item => (
-                <li className="grid py-8 grid-cols-12 gap-3">
+                <li className="grid py-8 grid-cols-12 gap-3" key={item.id}>
                   <div className="overflow-hidden rounded-lg col-span-3 lg:col-span-2">
                     <ShopifyImage
                       image={item.merchandise.image}
@@ -82,9 +83,6 @@ export const ShoppingCart = () => {
           ) : (
             <div className="text-center mt-20">
               <p className="text-mydarkgrey">Your cart is empty</p>
-              <a href="/" className="text-black hover:text-myblue">
-                Continue Shopping
-              </a>
             </div>
           )}
         </div>
@@ -102,9 +100,18 @@ export const ShoppingCart = () => {
             <p className="mt-0.5 text-sm text-mydarkgrey">
               Shipping and taxes calculated at checkout.
             </p>
-            <div className="mt-6">
-              <a href={$cart.checkoutUrl} className="button">
+            <div className="py-16 text-center">
+              <a
+                href={$cart.checkoutUrl}
+                className="button mt-10 w-full rounded-md bg-myorange/10 px-10 py-3 hover:bg-black hover:text-white"
+              >
                 Checkout
+              </a>
+            </div>
+
+            <div className="text-center">
+              <a href="/" className="text-xs text-black hover:text-myblue">
+                Continue Shopping
               </a>
             </div>
           </div>

@@ -20,6 +20,7 @@ export default defineConfig({
     react(),
     sitemap({
       filter: page =>
+        !page.includes(`/breadcrumbs/`) &&
         !page.includes(`/products/`) &&
         !page.includes(`/concierge/`) &&
         !page.includes(`/whitelist`) &&
