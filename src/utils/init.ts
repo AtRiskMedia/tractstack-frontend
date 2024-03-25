@@ -20,11 +20,23 @@ export async function init() {
   const authPayload = auth.get();
   const lastActive = authPayload?.active ? parseInt(authPayload.active) : 0;
 
-  // only sync once; reset if soon inactive
+  // delete any session storage after > 1 hr if no consent provided
+  if (
+    lastActive > Date.now() - JWT_LIFETIME * 5 &&
+    authPayload?.consent !== "1"
+  ) {
+    auth.setKey(`active`, undefined);
+    auth.setKey(`key`, undefined);
+    auth.setKey(`beliefs`, undefined);
+    auth.setKey(`firstname`, undefined);
+    auth.setKey(`encryptedCode`, undefined);
+    auth.setKey(`encryptedEmail`, undefined);
+  }
+
+  // sync once; unless soon inactive
   if (lastActive > Date.now() - JWT_LIFETIME && sync.get()) {
     return null;
   }
-
   locked.set(true);
 
   // if no token, inactive, or soon inactive, get one

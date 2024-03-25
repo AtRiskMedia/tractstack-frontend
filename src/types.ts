@@ -22,13 +22,11 @@ export interface EventNodes {
   [key: string]: EventNode;
 }
 export interface EventNode {
-  title: string;
-  slug: string;
   type: string;
+  slug?: string;
+  title?: string;
   parentId?: string;
 }
-
-// for drupal
 
 export interface Path {
   alias: string;
@@ -277,13 +275,6 @@ export interface IAxiosRegisterProps {
   email?: string | undefined;
   encryptedEmail?: string | undefined;
   encryptedCode?: string | undefined;
-}
-
-export interface IAxiosPushProps {
-  eventStream: IEventStreamDict;
-  contentMap: any;
-  referrer?: Referrer;
-  tractStackId?: string;
 }
 
 export interface IAxiosProfileProps {
@@ -551,6 +542,7 @@ export type EventStream = {
   type: string;
   verb: string;
   targetId?: string;
+  parentId?: string;
   duration?: number;
   score?: string;
   title?: string;

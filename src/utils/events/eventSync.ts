@@ -1,12 +1,9 @@
-import type {
-  Event,
-  Events,
-  EventNodes,
-} from "../../types";
+import type { ContentMap, Events, EventNodes, EventStream } from "../../types";
 import { contentMap } from "../../store/events";
 import { referrer } from "../../store/auth";
+import { pushPayload } from "../../api/services";
 
-export async function eventSync(payload: Event[]) {
+export async function eventSync(payload: EventStream[]) {
   console.log(`eventSync`, payload);
   const map = contentMap.get();
   console.log(`contentMap`, map);
@@ -14,132 +11,99 @@ export async function eventSync(payload: Event[]) {
   const nodes: EventNodes = {};
 
   // loop through events to generate nodes object
-  //Object.keys(payload).forEach(key => {
-  //  console.log(key,payload[key])
-    /*
-    const thisKey = payload[key].id;
-    events[thisKey] = { ...payload[key] };
-    const e = events[thisKey];
-    map
-      .filter((c: ContentMap) => c.slug === e.targetSlug)
-      .forEach((e: string) => {
-        e.parentId = e;
-      });
-    if (typeof e.title !== `undefined`) delete e.title;
-    if (typeof e.slug !== `undefined`) delete e.slug;
-    if (typeof e.targetSlug !== `undefined`) delete e.targetSlug;
+  payload.forEach((e: EventStream, idx: number) => {
+    // prepare event
+    const thisEvent = { ...e };
+    if (typeof thisEvent.title !== `undefined`) delete thisEvent.title;
+    //if (typeof thisEvent.slug !== `undefined`) delete thisEvent.slug;
+    if (typeof thisEvent.targetSlug !== `undefined`)
+      delete thisEvent.targetSlug;
 
-    console.log(e)
-    console.log(``)
-    // match from contentMap
+    // prepare nodes + push events
     switch (e.type) {
-      case `Impression`: // match "StoryFragment" on targetId
-        if (e?.id && typeof e.id === `string` && e?.targetId) {
-          nodes[e.id] = {
-            title: e?.title,
-            type: `Impression`,
-            parentId: e.targetId,
-          };
-          matchPane = e.targetId;
-        }
+      case `Pane`: {
+        const matchPane = map.filter((m: ContentMap) => m.id === e.id).at(0)!;
+        const matchStoryFragment = map
+          .filter((m: ContentMap) => m.id === e.parentId)
+          .at(0)!;
+        const matchTractStack = map
+          .filter((m: ContentMap) => m.id === e.parentId)
+          .at(0)!;
+        nodes[matchPane.id] = {
+          type: `Pane`,
+          title: matchPane.title,
+          slug: matchPane.slug,
+        };
+        nodes[matchStoryFragment.id] = {
+          type: `StoryFragment`,
+          title: matchStoryFragment.title,
+          slug: matchStoryFragment.slug,
+          parentId: matchStoryFragment.parentId,
+        };
+        nodes[matchTractStack.id] = {
+          type: `TractStack`,
+          title: matchTractStack.title,
+          slug: matchTractStack.slug,
+        };
+        events[idx] = thisEvent;
         break;
+      }
 
-      case `Pane`: // match "Pane" on id, then StoryFragment and TractStack
-      case `Context`: // match "Pane" on id, then StoryFragment and TractStack
-      case `StoryFragment`: // match StoryFragment on id
-        if (e.verb === `CONNECTED` && e.parentId)
-          nodes[e.parentId] = {
-            title: map[e.parentId].title,
-            slug: map[e.parentId].slug,
-            type: map[e.parentId].type,
-            parentId: map[e.parentId].parentId,
-          };
-        matchPane = e.id;
-        break;
-
-      case `MenuItem`: {
-        // match "StoryFragment" on targetSlug
-        let lookup: string = ``;
-        let k: keyof typeof map;
-        for (k in map) {
-          const thisSlug = map[k];
-          if (thisSlug === e?.targetSlug) lookup = key;
-        }
-        if (lookup && typeof lookup === `string`)
-          nodes[e.id] = {
-            title: e?.title,
-            type: `MenuItem`,
-            parentId: lookup,
-          };
-        matchStoryFragment = lookup;
+      case `Impression`: {
+        nodes[e.id] = {
+          type: `Impression`,
+          parentId: e.targetId,
+        };
+        const matchStoryFragment = map
+          .filter((m: ContentMap) => m.id === e.targetId)
+          .at(0)!;
+        nodes[matchStoryFragment.id] = {
+          type: `StoryFragment`,
+          title: matchStoryFragment.title,
+          slug: matchStoryFragment.slug,
+          parentId: matchStoryFragment.parentId,
+        };
+        const matchTractStack = map
+          .filter((m: ContentMap) => m.id === e.parentId)
+          .at(0)!;
+        nodes[matchTractStack.id] = {
+          type: `TractStack`,
+          title: matchTractStack.title,
+          slug: matchTractStack.slug,
+        };
+        events[idx] = thisEvent;
         break;
       }
 
       case `Belief`:
-        // do nothing
+        events[idx] = thisEvent;
+        nodes[e.id] = {
+          type: `Belief`,
+          title: e.id,
+        };
         break;
 
       default:
-        console.log(
-          `bad event handler type`,
-          key,
-          payload[key],
-          events[key],
-          map[e.id]
-        );
-        break;
+        console.log(`miss on eventNode:`, e.type);
     }
-
-    console.log(matchPane, matchStoryFragment, matchStoryFragment);
-
-    if (matchTractStack && !nodes?.matchTractStack) {
-      nodes[matchTractStack] = {
-        title: map[matchTractStack].title,
-        type: map[matchTractStack].type,
-        slug: map[matchTractStack].slug,
-      };
-    }
-    if (matchPane && !nodes?.matchPane) {
-      const thisPane = map.filter((m: ContentMap) => m.id === matchPane).at(0);
-      console.log(matchPane, thisPane);
-      matchStoryFragment = map[matchPane]?.parentId;
-      if (typeof map[matchPane] === `undefined`)
-        nodes[matchPane] = {
-          title: e.title,
-          slug: e.slug,
-          type: `Pane`,
-        };
-      else
-        nodes[matchPane] = {
-          title: map[matchPane].title,
-          slug: map[matchPane].slug,
-          type: map[matchPane].type,
-          parentId: map[matchPane].parentId,
-        };
-    }
-    if (matchStoryFragment && !nodes?.matchStoryFragment) {
-      nodes[matchStoryFragment] = {
-        title: map[matchStoryFragment].title,
-        slug: map[matchStoryFragment].slug,
-        type: map[matchStoryFragment].type,
-        parentId: map[matchStoryFragment].parentId,
-      };
-      matchTractStack = map[matchStoryFragment].parentId;
-      if (matchTractStack && !nodes?.matchTractStack) {
-        nodes[matchTractStack] = {
-          title: map[matchTractStack].title,
-          type: map[matchTractStack].type,
-          slug: map[matchTractStack].slug,
-        };
-      }
-    }
-*/
-  //});
+  });
 
   const ref = referrer.get();
   console.log(nodes);
   console.log(events);
   console.log(ref);
+  const options = {
+    nodes,
+    events,
+    referrer: ref,
+  };
+
+  if (!import.meta.env.PROD) {
+    console.log(`dev mode -- not pushing events`);
+    return false;
+  }
+  const response = await pushPayload(options);
+  console.log(response);
 
   return true;
 }
