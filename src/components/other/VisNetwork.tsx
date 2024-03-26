@@ -23,7 +23,6 @@ const VisNetwork = ({
   edges: GraphRelationshipDatum[];
   contentMap: ContentMap[];
 }) => {
-  /* eslint-disable @typescript-eslint/no-explicit-any */
   const [gotoMenu, setGotoMenu] = useState<FastTravelMenu | undefined>(
     undefined
   );
@@ -32,7 +31,6 @@ const VisNetwork = ({
   useEffect(() => {
     const goto = ({ title, type }: { title: string; type: string }) => {
       if ([`You`, `Visit`].includes(type)) return null;
-      console.log(`goto`, type, title);
 
       switch (type) {
         case `TractStack`: {

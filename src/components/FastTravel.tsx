@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
+import { useStore } from "@nanostores/react";
+import { sync } from "../store/auth";
 import { processGraphPayload } from "../utils/helpers";
 import { getGraph } from "../api/services";
 import VisNetwork from "./other/VisNetwork";
+import { classNames } from "../utils/helpers";
 import type {
   ContentMap,
   GraphRelationshipDatum,
@@ -33,33 +36,52 @@ export const FastTravel = ({ contentMap }: { contentMap: ContentMap[] }) => {
   const [graphNodes, setGraphNodes] = useState<GraphNodeDatum[]>([]);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [show, setShow] = useState(false);
+  const $sync = useStore(sync);
 
   useEffect(() => {
-    if (import.meta.env.PROD && !loading && !loaded) {
+    if (import.meta.env.PROD && $sync && !loading && !loaded) {
       setLoading(true);
       goGetGraph()
         .then((res: any) => {
           if (res?.graph) {
             setGraphNodes(res?.graph?.nodes);
             setGraphEdges(res?.graph?.edges);
+            if (res?.graph?.nodes?.length > 2) setShow(true);
           }
           setLoaded(true);
         })
-        .catch(e => {
-          console.log(`An error occurred.`, e);
-        })
+        .catch(e => console.log(`An error occurred.`, e))
         .finally(() => setLoading(false));
     }
-  }, [loaded, loading]);
+  }, [$sync, loaded, loading]);
 
   return (
-    <section className="xl:max-w-screen-2xl h-screen">
+    <section
+      className={classNames(
+        !show ? `h-fit-contents` : `h-screen`,
+        "xl:max-w-screen-2xl"
+      )}
+    >
       <div className="h-full shadow-sm bg-myoffwhite/20">
         {!loaded ? (
           <div className="flex items-center justify-center h-full">
-            <div className="max-w-xs leading-6 text-lg text-mydarkgrey">
-              <p>
-                <strong>LOADING</strong>
+            <div className="max-w-xs leading-6 text-lg text-mydarkgrey font-action">
+              <p className="py-16">
+                <strong>Loading</strong>
+              </p>
+            </div>
+          </div>
+        ) : !show ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="max-w-xs leading-6 text-lg">
+              <p className="py-16">
+                <span className="font-action text-myblue">
+                  Your content journey has just begun.
+                </span>
+                <span className="px-3 font-main text-mydarkgrey">
+                  Please come back after exploring the site more.
+                </span>
               </p>
             </div>
           </div>
