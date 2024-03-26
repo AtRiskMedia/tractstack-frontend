@@ -7,10 +7,11 @@ import type { GraphRelationshipDatum, GraphNodeDatum } from "../types";
 async function goGetGraph() {
   try {
     const response = await getGraph();
+    console.log(response?.data);
     const data =
       typeof response?.data !== `undefined` &&
       typeof response?.data?.at(0) !== `undefined`
-        ? processGraphPayload(response?.data?.at(0))
+        ? processGraphPayload(response?.data)
         : null;
     return { graph: data, error: null };
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -56,7 +57,7 @@ export const FastTravel = () => {
 
   return (
     <section className="xl:max-w-screen-2xl h-screen">
-      <div className="h-full shadow-sm bg-myoffwhite">
+      <div className="h-full shadow-sm bg-myoffwhite/20">
         {!loaded ? (
           <div className="flex items-center justify-center h-full">
             <div className="max-w-xs leading-6 text-lg text-mydarkgrey">

@@ -54,6 +54,14 @@ const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
             ) : null
           }
         </div>
+        <div class="text-center pt-16">
+          <button
+            id="close-main"
+            class="rounded-md bg-myorange/10 hover:bg-black hover:text-white px-3.5 py-1.5 text-base leading-7 text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-myorange"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   </main>
@@ -63,11 +71,13 @@ const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
 <script>
   import { handleResize } from "../../utils/helpers";
   import { init } from "../../utils/init";
+  import { closeContextPane } from "../../utils/helpers";
 
   window.addEventListener(`resize`, handleResize);
 
   document.addEventListener("astro:page-load", () => {
     handleResize();
+    closeContextPane();
     init();
   });
 </script>

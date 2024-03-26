@@ -64,71 +64,73 @@ export function closeContextPane() {
   });
 }
 
-export const processGraphPayload = (row: GraphNodes) => {
+export const processGraphPayload = (rows: GraphNodes[]) => {
   const graphNodes: GraphNode[] = [];
   const graphNodeIds: string[] = [];
   const graphRelationships: GraphNode[] = [];
   const graphRelationshipIds: string[] = [];
-  if (row?.v?.id && !graphNodeIds.includes(row.v.id)) {
-    graphNodes.push(row.v);
-    graphNodeIds.push(row.v.id);
-  }
-  if (row?.b?.id && !graphNodeIds.includes(row.b.id)) {
-    graphNodes.push(row.b);
-    graphNodeIds.push(row.b.id);
-  }
-  if (row?.c?.id && !graphNodeIds.includes(row.c.id)) {
-    graphNodes.push(row.c);
-    graphNodeIds.push(row.c.id);
-  }
-  if (row?.f?.id && !graphNodeIds.includes(row.f.id)) {
-    graphNodes.push(row.f);
-    graphNodeIds.push(row.f.id);
-  }
-  if (row?.s?.id && !graphNodeIds.includes(row.s.id)) {
-    graphNodes.push(row.s);
-    graphNodeIds.push(row.s.id);
-  }
-  if (row?.t?.id && !graphNodeIds.includes(row.t.id)) {
-    graphNodes.push(row.t);
-    graphNodeIds.push(row.t.id);
-  }
-  if (row?.a?.id && !graphRelationshipIds.includes(row.a.id)) {
-    graphRelationships.push(row.a);
-    graphRelationshipIds.push(row.a.id);
-  }
-  if (row?.bb?.id && !graphRelationshipIds.includes(row.bb.id)) {
-    graphRelationships.push(row.bb);
-    graphRelationshipIds.push(row.bb.id);
-  }
-  if (row?.cc?.id && !graphRelationshipIds.includes(row.cc.id)) {
-    graphRelationships.push(row.cc);
-    graphRelationshipIds.push(row.cc.id);
-  }
-  if (row?.d?.id && !graphRelationshipIds.includes(row.d.id)) {
-    graphRelationships.push(row.d);
-    graphRelationshipIds.push(row.d.id);
-  }
-  if (row?.r?.id && !graphRelationshipIds.includes(row.r.id)) {
-    graphRelationships.push(row.r);
-    graphRelationshipIds.push(row.r.id);
-  }
-  if (row?.rsf?.id && !graphRelationshipIds.includes(row.rsf.id)) {
-    graphRelationships.push(row.rsf);
-    graphRelationshipIds.push(row.rsf.id);
-  }
-  if (row?.ts1?.id && !graphRelationshipIds.includes(row.ts1.id)) {
-    graphRelationships.push(row.ts1);
-    graphRelationshipIds.push(row.ts1.id);
-  }
-  if (row?.ts2?.id && !graphRelationshipIds.includes(row.ts2.id)) {
-    graphRelationships.push(row.ts2);
-    graphRelationshipIds.push(row.ts2.id);
-  }
-  if (row?.rc?.id && !graphRelationshipIds.includes(row.rc.id)) {
-    graphRelationships.push(row.rc);
-    graphRelationshipIds.push(row.rc.id);
-  }
+  rows.forEach((row: GraphNodes) => {
+    if (row?.v?.id && !graphNodeIds.includes(row.v.id)) {
+      graphNodes.push(row.v);
+      graphNodeIds.push(row.v.id);
+    }
+    if (row?.b?.id && !graphNodeIds.includes(row.b.id)) {
+      graphNodes.push(row.b);
+      graphNodeIds.push(row.b.id);
+    }
+    if (row?.c?.id && !graphNodeIds.includes(row.c.id)) {
+      graphNodes.push(row.c);
+      graphNodeIds.push(row.c.id);
+    }
+    if (row?.f?.id && !graphNodeIds.includes(row.f.id)) {
+      graphNodes.push(row.f);
+      graphNodeIds.push(row.f.id);
+    }
+    if (row?.s?.id && !graphNodeIds.includes(row.s.id)) {
+      graphNodes.push(row.s);
+      graphNodeIds.push(row.s.id);
+    }
+    if (row?.t?.id && !graphNodeIds.includes(row.t.id)) {
+      graphNodes.push(row.t);
+      graphNodeIds.push(row.t.id);
+    }
+    if (row?.a?.id && !graphRelationshipIds.includes(row.a.id)) {
+      graphRelationships.push(row.a);
+      graphRelationshipIds.push(row.a.id);
+    }
+    if (row?.bb?.id && !graphRelationshipIds.includes(row.bb.id)) {
+      graphRelationships.push(row.bb);
+      graphRelationshipIds.push(row.bb.id);
+    }
+    if (row?.cc?.id && !graphRelationshipIds.includes(row.cc.id)) {
+      graphRelationships.push(row.cc);
+      graphRelationshipIds.push(row.cc.id);
+    }
+    if (row?.d?.id && !graphRelationshipIds.includes(row.d.id)) {
+      graphRelationships.push(row.d);
+      graphRelationshipIds.push(row.d.id);
+    }
+    if (row?.r?.id && !graphRelationshipIds.includes(row.r.id)) {
+      graphRelationships.push(row.r);
+      graphRelationshipIds.push(row.r.id);
+    }
+    if (row?.rsf?.id && !graphRelationshipIds.includes(row.rsf.id)) {
+      graphRelationships.push(row.rsf);
+      graphRelationshipIds.push(row.rsf.id);
+    }
+    if (row?.ts1?.id && !graphRelationshipIds.includes(row.ts1.id)) {
+      graphRelationships.push(row.ts1);
+      graphRelationshipIds.push(row.ts1.id);
+    }
+    if (row?.ts2?.id && !graphRelationshipIds.includes(row.ts2.id)) {
+      graphRelationships.push(row.ts2);
+      graphRelationshipIds.push(row.ts2.id);
+    }
+    if (row?.rc?.id && !graphRelationshipIds.includes(row.rc.id)) {
+      graphRelationships.push(row.rc);
+      graphRelationshipIds.push(row.rc.id);
+    }
+  });
 
   const nodes: GraphNodeDatum[] = [];
   graphNodes.forEach((e: GraphNode) => {

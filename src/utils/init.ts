@@ -19,10 +19,11 @@ export async function init() {
 
   const authPayload = auth.get();
   const lastActive = authPayload?.active ? parseInt(authPayload.active) : 0;
+  auth.setKey(`active`, Date.now().toString());
 
   // delete any session storage after > 1 hr if no consent provided
   if (
-    lastActive &&
+    lastActive > 0 &&
     authPayload?.consent !== "1" &&
     Date.now() > lastActive + JWT_LIFETIME * 5
   ) {
@@ -35,13 +36,16 @@ export async function init() {
   }
 
   // sync once; unless soon inactive
-  if (lastActive && lastActive > Date.now() - JWT_LIFETIME && sync.get()) {
+  if (lastActive > 0 && lastActive > Date.now() - JWT_LIFETIME && sync.get()) {
     return null;
   }
   locked.set(true);
 
   // if no token, inactive, or soon inactive, get one
-  if (!authPayload?.token || !(lastActive > Date.now() - JWT_LIFETIME)) {
+  if (
+    !authPayload?.token ||
+    !(lastActive > 0 && lastActive > Date.now() - JWT_LIFETIME)
+  ) {
     // check for utmParams
     const urlSearchParams = new URLSearchParams(window.location.search);
     const params = Object.fromEntries(urlSearchParams.entries());
