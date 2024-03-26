@@ -4,30 +4,27 @@ import { referrer } from "../../store/auth";
 import { pushPayload } from "../../api/services";
 
 export async function eventSync(payload: EventStream[]) {
-  console.log(`eventSync`, payload);
   const map = contentMap.get();
-  console.log(`contentMap`, map);
   const events: Events = {};
   const nodes: EventNodes = {};
 
   // loop through events to generate nodes object
   payload.forEach((e: EventStream, idx: number) => {
-    // prepare event
-    const thisEvent = { ...e };
-    if (typeof thisEvent.title !== `undefined`) delete thisEvent.title;
-    //if (typeof thisEvent.slug !== `undefined`) delete thisEvent.slug;
-    if (typeof thisEvent.targetSlug !== `undefined`)
-      delete thisEvent.targetSlug;
-
     // prepare nodes + push events
     switch (e.type) {
-      case `Pane`: {
+      case `PaneClicked`: {
+        const targetId = map
+          .filter((m: ContentMap) => m.slug === e.targetSlug)
+          .at(0)!.id;
+        const thisEvent = {
+          id: e.id,
+          type: `Pane`,
+          verb: `CLICKED`,
+          parentId: targetId,
+        };
         const matchPane = map.filter((m: ContentMap) => m.id === e.id).at(0)!;
         const matchStoryFragment = map
-          .filter((m: ContentMap) => m.id === e.parentId)
-          .at(0)!;
-        const matchTractStack = map
-          .filter((m: ContentMap) => m.id === e.parentId)
+          .filter((m: ContentMap) => m.slug === e.targetSlug)
           .at(0)!;
         nodes[matchPane.id] = {
           type: `Pane`,
@@ -40,48 +37,97 @@ export async function eventSync(payload: EventStream[]) {
           slug: matchStoryFragment.slug,
           parentId: matchStoryFragment.parentId,
         };
-        nodes[matchTractStack.id] = {
-          type: `TractStack`,
-          title: matchTractStack.title,
-          slug: matchTractStack.slug,
-        };
+        if (matchStoryFragment?.parentId)
+          nodes[matchStoryFragment.parentId] = {
+            type: `TractStack`,
+            title: matchStoryFragment.parentTitle,
+            slug: matchStoryFragment.parentSlug,
+          };
         events[idx] = thisEvent;
         break;
       }
 
-      case `Impression`: {
-        nodes[e.id] = {
-          type: `Impression`,
-          parentId: e.targetId,
-        };
+      case `Pane`: {
+        const thisEvent = { ...e };
+        const matchPane = map.filter((m: ContentMap) => m.id === e.id).at(0)!;
         const matchStoryFragment = map
-          .filter((m: ContentMap) => m.id === e.targetId)
+          .filter((m: ContentMap) => m.id === e.parentId)
           .at(0)!;
+        nodes[matchPane.id] = {
+          type: `Pane`,
+          title: matchPane.title,
+          slug: matchPane.slug,
+          parentId: matchStoryFragment.id,
+        };
         nodes[matchStoryFragment.id] = {
           type: `StoryFragment`,
           title: matchStoryFragment.title,
           slug: matchStoryFragment.slug,
           parentId: matchStoryFragment.parentId,
         };
-        const matchTractStack = map
-          .filter((m: ContentMap) => m.id === e.parentId)
-          .at(0)!;
-        nodes[matchTractStack.id] = {
-          type: `TractStack`,
-          title: matchTractStack.title,
-          slug: matchTractStack.slug,
-        };
+        if (matchStoryFragment?.parentId)
+          nodes[matchStoryFragment.parentId] = {
+            type: `TractStack`,
+            title: matchStoryFragment.parentTitle,
+            slug: matchStoryFragment.parentSlug,
+          };
         events[idx] = thisEvent;
         break;
       }
 
-      case `Belief`:
+      case `Impression`: {
+        const thisEvent = { ...e };
+        const matchStoryFragment = map
+          .filter((m: ContentMap) => m.id === e.parentId)
+          .at(0)!;
+        const matchStoryFragmentTarget = map
+          .filter((m: ContentMap) => m.slug === e.targetSlug)
+          .at(0)!;
+        nodes[e.id] = {
+          type: `Impression`,
+          parentId: matchStoryFragment.id,
+          title: e.title,
+        };
+        nodes[matchStoryFragment.id] = {
+          type: `StoryFragment`,
+          title: matchStoryFragment.title,
+          slug: matchStoryFragment.slug,
+          parentId: matchStoryFragment.parentId,
+        };
+        if (matchStoryFragment?.parentId)
+          nodes[matchStoryFragment.parentId] = {
+            type: `TractStack`,
+            title: matchStoryFragment.parentTitle,
+            slug: matchStoryFragment.parentSlug,
+          };
+        nodes[matchStoryFragmentTarget.id] = {
+          type: `StoryFragment`,
+          title: matchStoryFragmentTarget.title,
+          slug: matchStoryFragmentTarget.slug,
+          parentId: matchStoryFragmentTarget.parentId,
+        };
+        if (matchStoryFragmentTarget?.parentId)
+          nodes[matchStoryFragmentTarget.parentId] = {
+            type: `TractStack`,
+            title: matchStoryFragmentTarget.parentTitle,
+            slug: matchStoryFragmentTarget.parentSlug,
+          };
+        delete thisEvent.targetSlug;
+        delete thisEvent.title;
+        thisEvent.targetId = matchStoryFragmentTarget.id;
+        events[idx] = thisEvent;
+        break;
+      }
+
+      case `Belief`: {
+        const thisEvent = { ...e };
         events[idx] = thisEvent;
         nodes[e.id] = {
           type: `Belief`,
           title: e.id,
         };
         break;
+      }
 
       default:
         console.log(`miss on eventNode:`, e.type);
@@ -89,21 +135,15 @@ export async function eventSync(payload: EventStream[]) {
   });
 
   const ref = referrer.get();
-  console.log(nodes);
-  console.log(events);
-  console.log(ref);
+  const refPayload = ref.httpReferrer !== `` ? ref : {};
   const options = {
     nodes,
     events,
-    referrer: ref,
+    referrer: refPayload,
   };
 
-  if (!import.meta.env.PROD) {
-    console.log(`dev mode -- not pushing events`);
-    return false;
-  }
   const response = await pushPayload(options);
-  console.log(response);
+  if (response.status === 200) return true;
 
-  return true;
+  return false;
 }

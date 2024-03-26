@@ -103,6 +103,7 @@ export default function PaneRender({ payload }: PaneRenderProps) {
               markdown={payload.markdown}
               files={payload.files}
               paneHeight={paneHeight}
+              paneId={payload.id}
             />
           </div>
         ))}

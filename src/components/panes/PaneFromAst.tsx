@@ -1,11 +1,13 @@
+import LiteYouTubeEmbed from "react-lite-youtube-embed";
+import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 import { Belief } from "@components/widgets/Belief";
 import { IdentifyAs } from "@components/widgets/IdentifyAs";
 import { ToggleBelief } from "@components/widgets/ToggleBelief";
 import { classNames } from "../../utils/helpers";
 import { lispLexer } from "../../utils/concierge/lispLexar";
 import { preParseAction } from "../../utils/concierge/preParseAction";
-import LiteYouTubeEmbed from "react-lite-youtube-embed";
-import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
+import { preParseClicked } from "../../utils/concierge/preParseClicked";
+import { events } from "../../store/events";
 import type { PaneFromAstProps } from "../../types";
 
 export default function PaneFromAst({
@@ -13,6 +15,7 @@ export default function PaneFromAst({
   thisClassNames,
   memory,
   id,
+  paneId,
   idx,
 }: PaneFromAstProps) {
   return (
@@ -68,6 +71,7 @@ export default function PaneFromAst({
                       thisClassNames={thisClassNames}
                       memory={memory}
                       id={id}
+                      paneId={paneId}
                       idx={idx + 1}
                     />
                   </span>
@@ -110,11 +114,16 @@ export default function PaneFromAst({
               // inject button with callback function, add css className
               const callbackPayload = lispLexer(buttonPayload?.callbackPayload);
               const targetUrl = preParseAction(callbackPayload);
+              const event = preParseClicked(paneId, callbackPayload);
+              const pushEvent = function (): void {
+                if (event) events.set([...events.get(), event]);
+              };
               if (targetUrl)
                 return (
                   <a
                     type="button"
                     className={buttonPayload.className}
+                    onClick={() => pushEvent()}
                     key={thisId}
                     href={targetUrl}
                     title={targetUrl}
@@ -307,6 +316,7 @@ export default function PaneFromAst({
                 thisClassNames={thisClassNames}
                 memory={{ ...memory, parent: thisIdx }}
                 id={id}
+                paneId={paneId}
                 idx={idx + 1}
               />
             );
@@ -327,6 +337,7 @@ export default function PaneFromAst({
                       thisClassNames={thisClassNames}
                       memory={{ ...memory, child: thisIdx }}
                       id={id}
+                      paneId={paneId}
                       idx={idx + 1}
                     />
                   </span>

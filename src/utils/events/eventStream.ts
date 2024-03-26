@@ -8,8 +8,11 @@ export async function eventStream() {
       const payload = events.get();
       if (payload.length) {
         events.set([]);
-        console.log(`not clearing event queue`);
-        eventSync(payload);
+        const result = eventSync(payload);
+        if (!result) {
+          console.log(`sync failed; re-queue events`);
+          events.set([...events.get(), ...payload]);
+        } else console.log(`events sent`);
       }
     } catch (e) {
       console.log(`error establishing concierge eventStream`, e);

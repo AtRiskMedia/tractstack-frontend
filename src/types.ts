@@ -489,6 +489,7 @@ export interface PaneFromAstProps {
   thisClassNames: any;
   memory: any;
   id: string;
+  paneId: string;
   idx: number;
 }
 

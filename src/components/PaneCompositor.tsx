@@ -16,11 +16,13 @@ export function PaneCompositor({
   markdown,
   files,
   paneHeight,
+  paneId,
 }: {
   payload: MarkdownPaneDatum | BgPaneDatum;
   markdown: MarkdownPaneProps[];
   files: FileNode[];
   paneHeight: [number, number, number];
+  paneId: string;
 }) {
   switch (payload.internal.type) {
     case `bgPane`: {
@@ -78,6 +80,7 @@ export function PaneCompositor({
                 files={files}
                 paneHeight={paneHeight}
                 modalPayload={thisModalPayload}
+                paneId={paneId}
               />
             </div>
           </div>
@@ -96,13 +99,19 @@ export function PaneCompositor({
             markdown={markdown}
             files={files}
             paneHeight={paneHeight}
+            paneId={paneId}
           />
         );
       }
 
       // regular markdown
       return (
-        <MarkdownPane payload={thisPayload} markdown={markdown} files={files} />
+        <MarkdownPane
+          payload={thisPayload}
+          markdown={markdown}
+          files={files}
+          paneId={paneId}
+        />
       );
     }
   }

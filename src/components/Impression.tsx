@@ -1,22 +1,21 @@
 import { lispLexer } from "../utils/concierge/lispLexar";
 import { preParseAction } from "../utils/concierge/preParseAction";
-import { events } from "../store/events";
+import { preParseImpression } from "../utils/concierge/preParseImpression";
+import { current, events } from "../store/events";
 import type { ImpressionDatum } from "../types";
 
 export const Impression = ({ payload }: { payload: ImpressionDatum }) => {
   const thisButtonPayload = lispLexer(payload.actionsLisp);
   const actionPayload = preParseAction(thisButtonPayload);
-
-  function injectPayload() {
-    const event = {
-      id: payload.id,
-      title: payload.title,
-      type: `Impression`,
-      verb: `CLICKED`,
-      targetId: payload.parentId,
-    };
-    events.set([...events.get(), event]);
-  }
+  const event = preParseImpression(
+    payload.id,
+    payload.title,
+    current.get().id,
+    thisButtonPayload
+  );
+  const pushEvent = function (): void {
+    if (event) events.set([...events.get(), event]);
+  };
 
   if (typeof payload !== `object`) return <div className="hidden" />;
   return (
@@ -30,7 +29,7 @@ export const Impression = ({ payload }: { payload: ImpressionDatum }) => {
             {payload.body}
             {` `}
             <a
-              onClick={injectPayload}
+              onClick={() => pushEvent()}
               className="underline underline-offset-4 text-black hover:text-myorange"
               href={actionPayload}
             >
