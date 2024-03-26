@@ -50,27 +50,37 @@ export async function eventSync(payload: EventStream[]) {
       case `Pane`: {
         const thisEvent = { ...e };
         const matchPane = map.filter((m: ContentMap) => m.id === e.id).at(0)!;
-        const matchStoryFragment = map
-          .filter((m: ContentMap) => m.id === e.parentId)
-          .at(0)!;
-        nodes[matchPane.id] = {
-          type: `Pane`,
-          title: matchPane.title,
-          slug: matchPane.slug,
-          parentId: matchStoryFragment.id,
-        };
-        nodes[matchStoryFragment.id] = {
-          type: `StoryFragment`,
-          title: matchStoryFragment.title,
-          slug: matchStoryFragment.slug,
-          parentId: matchStoryFragment.parentId,
-        };
-        if (matchStoryFragment?.parentId)
-          nodes[matchStoryFragment.parentId] = {
-            type: `TractStack`,
-            title: matchStoryFragment.parentTitle,
-            slug: matchStoryFragment.parentSlug,
+        if (thisEvent.id === thisEvent.parentId) {
+          // context pane
+          nodes[matchPane.id] = {
+            type: `Pane`,
+            title: matchPane.title,
+            slug: matchPane.slug,
           };
+          delete thisEvent.parentId;
+        } else {
+          const matchStoryFragment = map
+            .filter((m: ContentMap) => m.id === e.parentId)
+            .at(0)!;
+          nodes[matchPane.id] = {
+            type: `Pane`,
+            title: matchPane.title,
+            slug: matchPane.slug,
+            parentId: matchStoryFragment.id,
+          };
+          nodes[matchStoryFragment.id] = {
+            type: `StoryFragment`,
+            title: matchStoryFragment.title,
+            slug: matchStoryFragment.slug,
+            parentId: matchStoryFragment.parentId,
+          };
+          if (matchStoryFragment?.parentId)
+            nodes[matchStoryFragment.parentId] = {
+              type: `TractStack`,
+              title: matchStoryFragment.parentTitle,
+              slug: matchStoryFragment.parentSlug,
+            };
+        }
         events[idx] = thisEvent;
         break;
       }

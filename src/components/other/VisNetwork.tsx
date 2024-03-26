@@ -32,7 +32,7 @@ const VisNetwork = ({
   useEffect(() => {
     const goto = ({ title, type }: { title: string; type: string }) => {
       if ([`You`, `Visit`].includes(type)) return null;
-      console.log(`goto`, title, type);
+      console.log(`goto`, type, title);
 
       switch (type) {
         case `TractStack`: {
@@ -65,62 +65,26 @@ const VisNetwork = ({
           const thisPane = contentMap
             .filter((m: ContentMap) => m.title === title)
             .at(0)!;
-          const gotoSlugs = contentMap
-            .filter(
-              (m: ContentMap) => m?.panes && m.panes.includes(thisPane.id)
-            )
-            .map((f: ContentMap) => {
+          const thisStoryFragment = contentMap.filter(
+            (m: ContentMap) => m?.panes && m.panes.includes(thisPane.id)
+          );
+          if (!thisStoryFragment.length) {
+            // context pane
+            window.location.href = `/context/${thisPane?.slug}`;
+          } else {
+            const gotoSlugs = thisStoryFragment.map((f: ContentMap) => {
               return [
                 f.slug !== import.meta.env.PUBLIC_HOME ? `/${f.slug}` : `/`,
                 f.slug,
                 f.title,
               ];
             });
-          setGotoMenu({ title: title, slugs: gotoSlugs, type });
-          setOpen(true);
+            setGotoMenu({ title: title, slugs: gotoSlugs, type });
+            setOpen(true);
+          }
           break;
         }
       }
-
-      //if (type === `Pane`) {
-      //  let found = false;
-      //  nodes.allNodeStoryFragment.edges.forEach((e: any) => {
-      //    e.node.relationships.panes.forEach((f: any) => {
-      //      console.log(3, f);
-      //      if (f.title === title) {
-      //        found = true;
-      //        gotoParentTitle = title;
-      //        gotoSlugs.push([
-      //          e.node.slug !== import.meta.env.PUBLIC_HOME
-      //            ? `/${e.node.slug}`
-      //            : `/`,
-      //          e.node.slug,
-      //          e.node.title,
-      //          f.id,
-      //        ]);
-      //      }
-      //    });
-      //    if (!found) {
-      //      e.node.relationships.contextPanes.forEach((f: any) => {
-      //        console.log(4, f);
-      //        if (f.title === title) {
-      //          found = true;
-      //          gotoContextSlug = `/context/${f.slug}`;
-      //        }
-      //      });
-      //    }
-      //  });
-      //  if (!found)
-      //    nodes.allNodeTractstack.edges.forEach((e: any) => {
-      //      e.node.relationships.contextPanes.forEach((f: any) => {
-      //        console.log(5, f);
-      //        if (f.title === title) {
-      //          found = true;
-      //          gotoContextSlug = `/context/${f.slug}`;
-      //        }
-      //      });
-      //    });
-      //}
     };
     const container = document.getElementById(`mynetwork`);
     const options = {

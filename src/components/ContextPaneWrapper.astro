@@ -16,7 +16,7 @@ const { pane, contentMap, current } = Astro.props;
 >
   <ul class="py-16">
     <astro-context-pane key={`pane-${pane.id}`}>
-      <li id={`pane-${pane.id}`} class="pane">
+      <li id={`pane-${pane.id}`} class="pane" data-hidden="false">
         <div id={`${pane.slug}`}>
           <Pane client:load payload={pane} />
         </div>

@@ -64,6 +64,33 @@ export function closeContextPane() {
   });
 }
 
+export function closeCart() {
+  const button = document.querySelector("button#close-cart");
+  button?.setAttribute("href", document.referrer);
+  button?.addEventListener("click", () => {
+    history.back();
+    return false;
+  });
+}
+
+export function closeGraph() {
+  const button = document.querySelector("button#close-graph");
+  button?.setAttribute("href", document.referrer);
+  button?.addEventListener("click", () => {
+    history.back();
+    return false;
+  });
+}
+
+export function closeProfile() {
+  const button = document.querySelector("button#close-profile");
+  button?.setAttribute("href", document.referrer);
+  button?.addEventListener("click", () => {
+    history.back();
+    return false;
+  });
+}
+
 export const processGraphPayload = (rows: GraphNodes[]) => {
   const graphNodes: GraphNode[] = [];
   const graphNodeIds: string[] = [];

@@ -47,7 +47,7 @@ const contentMap: ContentMap[] = storyFragments
       </div>
       <div class="text-center pt-16">
         <button
-          id="close-main"
+          id="close-graph"
           class="rounded-md bg-myorange/10 hover:bg-black hover:text-white px-3.5 py-1.5 text-base leading-7 text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-myorange"
         >
           Close
@@ -60,10 +60,10 @@ const contentMap: ContentMap[] = storyFragments
 
 <script>
   import { init } from "../../utils/init";
-  import { closeContextPane } from "../../utils/helpers";
+  import { closeGraph } from "../../utils/helpers";
 
   document.addEventListener("astro:page-load", () => {
     init();
-    closeContextPane();
+    closeGraph();
   });
 </script>
