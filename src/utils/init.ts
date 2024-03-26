@@ -22,8 +22,9 @@ export async function init() {
 
   // delete any session storage after > 1 hr if no consent provided
   if (
-    lastActive > Date.now() - JWT_LIFETIME * 5 &&
-    authPayload?.consent !== "1"
+    lastActive &&
+    authPayload?.consent !== "1" &&
+    Date.now() > lastActive + JWT_LIFETIME * 5
   ) {
     auth.setKey(`active`, undefined);
     auth.setKey(`key`, undefined);
@@ -34,7 +35,7 @@ export async function init() {
   }
 
   // sync once; unless soon inactive
-  if (lastActive > Date.now() - JWT_LIFETIME && sync.get()) {
+  if (lastActive && lastActive > Date.now() - JWT_LIFETIME && sync.get()) {
     return null;
   }
   locked.set(true);
