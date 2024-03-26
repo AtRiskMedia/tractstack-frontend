@@ -3,7 +3,6 @@ import { Switch } from "@headlessui/react";
 import { useStore } from "@nanostores/react";
 import { classNames } from "../../utils/helpers";
 import { auth } from "../../store/auth";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 export const RememberMeToggle = () => {
   const [consent, setConsent] = useState(false);
@@ -24,7 +23,7 @@ export const RememberMeToggle = () => {
   }, [$authPayload]);
 
   return (
-    <Switch.Group as="div" className={classNames(`flex items-center my-12`)}>
+    <Switch.Group as="div" className={classNames(`flex items-center my-6`)}>
       <Switch
         checked={consent}
         onChange={() => toggleConsent()}
@@ -45,12 +44,6 @@ export const RememberMeToggle = () => {
         <div className="flex flex-nowrap">
           <span className={consent ? `text-myorange` : `text-mydarkgrey`}>
             {consent ? `Memory activated!` : `Activate memory`}
-          </span>
-          <span
-            className="ml-2"
-            title="We will use a few kilobytes of localStorage in your browser."
-          >
-            <InformationCircleIcon className="w-5 h-5 text-mydarkgrey/50" />
           </span>
         </div>
       </Switch.Label>

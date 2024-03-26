@@ -2,6 +2,7 @@
 import Layout from "@layouts/Layout.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
+import { InformationCircle } from "../../components/icons/InformationCircle";
 import { RememberMeToggle } from "../../components/other/RememberMeToggle";
 import { ProfileSwitch } from "../../components/other/ProfileSwitch";
 
@@ -18,25 +19,29 @@ const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
     <div class="px-6 font-main text-xl py-24">
       <div class="max-w-3xl mx-auto">
         <div class="space-y-6">
-          <p>
-            This website has been &quot;pressed&quot; with Tract Stack. For your
-            improved reading experience this website will adapt for you based on
-            your interactions with each web page.
+          <p class="text-black">
+            This website has been &quot;pressed&quot; with Tract Stack. As you
+            read and click around, it will open up like a choose-your-own
+            adventure book.
           </p>
-          <p>
-            <strong
-              >Without your consent, no personal information will be collected
-              from your device.</strong
+          <p class="text-black">
+            Without your consent, no personal information will be collected from
+            your device.
+          </p>
+          <h3 class="pt-12 font-action text-mydarkgrey text-sm inline-flex">
+            Allow Tract Stack to retain memory of your session and preferences
+            <span
+              class="pl-2"
+              title="We will use a few kilobytes of localStorage in your browser."
             >
-          </p>
-          <p>
-            If you provide consent by clicking on this toggle, Tract Stack will
-            retain memory of your session and preferences.
-          </p>
-          <div>
-            <RememberMeToggle client:load />
-            <ProfileSwitch client:load />
-          </div>
+              <InformationCircle
+                classes="w-5 h-5 text-mydarkgrey/50"
+                client:load
+              />
+            </span>
+          </h3>
+          <RememberMeToggle client:load />
+          <ProfileSwitch client:load />
 
           {
             googleSiteVerification ? (
@@ -54,7 +59,7 @@ const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
             ) : null
           }
         </div>
-        <div class="text-center pt-16">
+        <div class="text-center pt-6">
           <button
             id="close-profile"
             class="rounded-md bg-myorange/10 hover:bg-black hover:text-white px-3.5 py-1.5 text-base leading-7 text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-myorange"

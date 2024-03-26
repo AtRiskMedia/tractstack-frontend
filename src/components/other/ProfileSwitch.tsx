@@ -35,7 +35,7 @@ export const ProfileSwitch = () => {
 
   if (mode === `unset`) return <div />;
   return (
-    <div className="py-6">
+    <div className="py-12">
       <div className="bg-mywhite border border-dashed border-myblue/20">
         <div className="p-6">
           {mode === `create` ? (
