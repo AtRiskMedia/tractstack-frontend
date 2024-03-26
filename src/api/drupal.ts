@@ -139,6 +139,7 @@ export const getAllStoryFragments = async (): Promise<StoryFragment[]> => {
       "id",
       "title",
       "field_slug",
+      "field_panes",
       "field_tract_stack",
     ])
     .addInclude(["field_tract_stack"])

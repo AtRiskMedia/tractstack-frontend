@@ -3,14 +3,47 @@ import Layout from "@layouts/Layout.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
 import { FastTravel } from "../../components/FastTravel";
+import { getAllStoryFragments, getAllPaneDatum } from "../../api/drupal";
+import type {
+  PaneDatum,
+  PaneNode,
+  StoryFragment,
+  ContentMap,
+} from "../../types";
+
+const allPanes = await getAllPaneDatum();
+const storyFragments: StoryFragment[] = await getAllStoryFragments();
+const contentMap: ContentMap[] = storyFragments
+  .map((s: StoryFragment) => {
+    return {
+      id: s.id,
+      slug: s.field_slug,
+      title: s.title,
+      type: `StoryFragment`,
+      parentId: s.field_tract_stack.id,
+      parentSlug: s.field_tract_stack.field_slug,
+      parentTitle: s.field_tract_stack.title,
+      panes: s.field_panes.map((p: PaneNode) => p.id),
+    } as ContentMap;
+  })
+  .concat(
+    allPanes.map((p: PaneDatum) => {
+      return {
+        id: p.id,
+        slug: p.field_slug,
+        title: p.title,
+        type: `Pane`,
+      } as ContentMap;
+    })
+  );
 ---
 
 <Layout title="Fast Travel" pubDatetime={new Date()} modDatetime={new Date()}>
   <Header title="Fast Travel" slug="graph" />
   <main id="main-content">
-    <div class="px-6 font-main text-xl py-24">
+    <div class="px-12 md:px-24 font-main text-xl py-24">
       <div class="max-w-5xl mx-auto">
-        <FastTravel client:load />
+        <FastTravel contentMap={contentMap} client:load />
       </div>
       <div class="text-center pt-16">
         <button

@@ -93,7 +93,7 @@ export interface FileNode {
 export interface PaneNode {
   type: `node--pane`;
   id: string;
-  field_slug: string;
+  field_slug?: string;
 }
 interface StoryFragmentNode {
   type: `node--story_fragment`;
@@ -128,6 +128,7 @@ interface T8kNode {
 }
 export interface StoryFragment extends T8kNode {
   field_slug: string;
+  field_panes: PaneNode[];
   field_tract_stack: TractStackNode;
 }
 export interface TractStack extends T8kNode {
@@ -559,6 +560,7 @@ export type ContentMap = {
   parentId?: string;
   parentSlug?: string;
   parentTitle?: string;
+  panes?: string[];
 };
 
 export type PanesVisible = {

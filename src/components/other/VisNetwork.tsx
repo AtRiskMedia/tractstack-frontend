@@ -2,54 +2,85 @@ import { Fragment, useEffect, useState } from "react";
 import { Network } from "vis-network";
 import { Dialog, Transition } from "@headlessui/react";
 import { BeakerIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import type { GraphNodeDatum, GraphRelationshipDatum } from "../../types";
+import type {
+  GraphNodeDatum,
+  GraphRelationshipDatum,
+  ContentMap,
+} from "../../types";
+
+export interface FastTravelMenu {
+  title: string;
+  slugs: string[][];
+  type: string;
+}
 
 const VisNetwork = ({
   nodes,
   edges,
+  contentMap,
 }: {
   nodes: GraphNodeDatum[];
   edges: GraphRelationshipDatum[];
+  contentMap: ContentMap[];
 }) => {
   /* eslint-disable @typescript-eslint/no-explicit-any */
-  const [gotoMenu /*, setGotoMenu */] = useState<any>({});
+  const [gotoMenu, setGotoMenu] = useState<FastTravelMenu | undefined>(
+    undefined
+  );
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const goto = ({ title, type }: { title: string; type: string }) => {
+      if ([`You`, `Visit`].includes(type)) return null;
       console.log(`goto`, title, type);
-      //let gotoSlug;
-      //let gotoContextSlug;
-      //let gotoSlugs: any[] = [];
-      //let gotoParentTitle;
 
-      //if (type === `TractStack`) {
-      //  nodes.allNodeTractstack.edges.forEach((e: any) => {
-      //    console.log(2, e);
-      //    if (e.node.title === title) {
-      //      gotoSlugs = e.node.relationships.storyFragments.map((f: any) => {
-      //        return [
-      //          f.slug !== import.meta.env.PUBLIC_HOME ? `/${f.slug}` : `/`,
-      //          f.slug,
-      //          f.title,
-      //        ];
-      //      });
-      //      gotoParentTitle = title;
-      //    }
-      //  });
-      //}
+      switch (type) {
+        case `TractStack`: {
+          const gotoSlugs = contentMap
+            .filter((m: ContentMap) => m.parentTitle === title)
+            .map((f: ContentMap) => {
+              return [
+                f.slug !== import.meta.env.PUBLIC_HOME ? `/${f.slug}` : `/`,
+                f.slug,
+                f.title,
+              ];
+            });
+          setGotoMenu({ title: title, slugs: gotoSlugs, type });
+          setOpen(true);
+          break;
+        }
 
-      //if (type === `StoryFragment`) {
-      //  nodes.allNodeStoryFragment.edges.forEach((e: any) => {
-      //    console.log(3, e);
-      //    if (e.node.title === title) {
-      //      gotoSlug =
-      //        e.node.slug !== import.meta.env.PUBLIC_HOME
-      //          ? `/${e.node.slug}`
-      //          : `/`;
-      //    }
-      //  });
-      //}
+        case `StoryFragment`: {
+          const lookup = contentMap
+            .filter((m: ContentMap) => m.title === title)
+            .at(0)!;
+          window.location.href =
+            lookup.slug !== import.meta.env.PUBLIC_HOME
+              ? `/${lookup.slug}`
+              : `/`;
+          break;
+        }
+
+        case `Pane`: {
+          const thisPane = contentMap
+            .filter((m: ContentMap) => m.title === title)
+            .at(0)!;
+          const gotoSlugs = contentMap
+            .filter(
+              (m: ContentMap) => m?.panes && m.panes.includes(thisPane.id)
+            )
+            .map((f: ContentMap) => {
+              return [
+                f.slug !== import.meta.env.PUBLIC_HOME ? `/${f.slug}` : `/`,
+                f.slug,
+                f.title,
+              ];
+            });
+          setGotoMenu({ title: title, slugs: gotoSlugs, type });
+          setOpen(true);
+          break;
+        }
+      }
 
       //if (type === `Pane`) {
       //  let found = false;
@@ -89,17 +120,6 @@ const VisNetwork = ({
       //        }
       //      });
       //    });
-      //}
-
-      //if (gotoSlug) console.log(`nav to`, gotoSlug);
-      //if (gotoContextSlug) console.log(`nav to`, gotoContextSlug);
-      //if (gotoSlugs.length === 1) {
-      //  if (type === `Pane`)
-      //    console.log(`set goto last`, [gotoSlugs[0][3], gotoSlugs[0][1]]);
-      //  console.log(`nav to`, gotoSlugs[0][0]);
-      //} else {
-      //  setGotoMenu({ title: gotoParentTitle, slugs: gotoSlugs, type });
-      //  setOpen(true);
       //}
     };
     const container = document.getElementById(`mynetwork`);
@@ -147,55 +167,56 @@ const VisNetwork = ({
             </Transition.Child>
 
             <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-              <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+              <div className="flex min-h-full items-end justify-center p-4 text-center md:items-center md:p-0">
                 <Transition.Child
                   as={Fragment}
                   enter="ease-out duration-300"
-                  enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                  enterTo="opacity-100 translate-y-0 sm:scale-100"
+                  enterFrom="opacity-0 translate-y-4 md:translate-y-0 md:scale-95"
+                  enterTo="opacity-100 translate-y-0 md:scale-100"
                   leave="ease-in duration-200"
-                  leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-                  leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                  leaveFrom="opacity-100 translate-y-0 md:scale-100"
+                  leaveTo="opacity-0 translate-y-4 md:translate-y-0 md:scale-95"
                 >
-                  <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
-                    <div className="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+                  <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all my-8 w-full md:max-w-lg p-12">
+                    <div className="absolute right-0 top-0 hidden pr-4 pt-4 md:block">
                       <button
                         type="button"
-                        className="rounded-md bg-white text-mydarkgrey hover:text-myblue focus:outline-none focus:ring-2 focus:ring-mygreen focus:ring-offset-2"
+                        className="rounded-md bg-white text-mydarkgrey hover:text-eyblue focus:outline-none focus:ring-2 focus:ring-myorange focus:ring-offset-2"
                         onClick={() => setOpen(false)}
                       >
                         <span className="sr-only">Close</span>
                         <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                       </button>
                     </div>
-                    <div className="sm:flex sm:items-start">
-                      <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-myorange/20 sm:mx-0 sm:h-10 sm:w-10">
+                    <div className="md:flex md:items-start">
+                      <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-myorange/10 md:mx-0 md:h-10 md:w-10">
                         <BeakerIcon
                           className="h-6 w-6 text-myorange"
                           aria-hidden="true"
                         />
                       </div>
-                      <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                      <div className="mt-3 text-center md:ml-4 md:mt-0 md:text-left">
                         <Dialog.Title
                           as="h3"
-                          className="text-base font-bold leading-6 text-myblack"
+                          className="text-xl font-action font-bold leading-6 text-myblack"
                         >
                           Fast Travel
                         </Dialog.Title>
                         <div className="mt-2">
-                          <p className="text-sm text-myblue">
-                            {gotoMenu.type === `TractStack`
+                          <p className="text-sm text-mydarkgrey pb-8">
+                            {gotoMenu?.type === `TractStack`
                               ? `This Tract Stack has the following Story Fragments:`
-                              : gotoMenu.type === `Pane`
+                              : gotoMenu?.type === `Pane`
                                 ? `This Pane is on the following pages:`
                                 : null}
                           </p>
-                          <ul className="py-3 text-md">
-                            {gotoMenu.slugs.map((e: string[]) => (
-                              <li className="py-2" key={e[1]}>
+                          <ul className="py-3 space-y-6 text-lg">
+                            {gotoMenu?.slugs?.map((e: string[]) => (
+                              <li key={e[1]}>
                                 <a
+                                  className="text-myblue hover:text-black hover:underline"
                                   onClick={() => {
-                                    if (gotoMenu.type === `Pane`)
+                                    if (gotoMenu?.type === `Pane`)
                                       console.log(`set goto last pane`, [
                                         e[3],
                                         e[1],

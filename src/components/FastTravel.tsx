@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import { processGraphPayload } from "../utils/helpers";
 import { getGraph } from "../api/services";
 import VisNetwork from "./other/VisNetwork";
-import type { GraphRelationshipDatum, GraphNodeDatum } from "../types";
+import type {
+  ContentMap,
+  GraphRelationshipDatum,
+  GraphNodeDatum,
+} from "../types";
 
 async function goGetGraph() {
   try {
     const response = await getGraph();
-    console.log(response?.data);
     const data =
       typeof response?.data !== `undefined` &&
       typeof response?.data?.at(0) !== `undefined`
@@ -25,20 +28,14 @@ async function goGetGraph() {
   }
 }
 
-export const FastTravel = () => {
+export const FastTravel = ({ contentMap }: { contentMap: ContentMap[] }) => {
   const [graphEdges, setGraphEdges] = useState<GraphRelationshipDatum[]>([]);
   const [graphNodes, setGraphNodes] = useState<GraphNodeDatum[]>([]);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (
-      import.meta.env.PROD &&
-      //graphData &&
-      //Object.keys(graphData).length === 0 &&
-      !loading &&
-      !loaded
-    ) {
+    if (import.meta.env.PROD && !loading && !loaded) {
       setLoading(true);
       goGetGraph()
         .then((res: any) => {
@@ -67,10 +64,13 @@ export const FastTravel = () => {
             </div>
           </div>
         ) : (
-          <VisNetwork nodes={graphNodes} edges={graphEdges} />
+          <VisNetwork
+            nodes={graphNodes}
+            edges={graphEdges}
+            contentMap={contentMap}
+          />
         )}
       </div>
     </section>
   );
 };
-//<VisNetwork nodes={data} payload={graphData} />

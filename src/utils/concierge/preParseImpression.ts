@@ -36,7 +36,6 @@ export const preParseImpression = (
             verb: `CLICKED`,
             targetSlug: parameterTwo,
           };
-          break;
 
         case `context`:
         case `concierge`:

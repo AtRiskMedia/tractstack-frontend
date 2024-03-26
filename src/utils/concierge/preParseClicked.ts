@@ -27,7 +27,6 @@ export const preParseClicked = (id: string, payload: any) => {
             verb: `CLICKED`,
             targetSlug: parameterTwo,
           };
-          break;
 
         case `context`:
         case `concierge`:
