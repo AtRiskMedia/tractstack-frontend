@@ -9,11 +9,15 @@ export const RememberMeToggle = () => {
   const $authPayload = useStore(auth);
 
   function toggleConsent() {
-    auth.setKey(`consent`, consent ? `0` : `1`);
+    auth.setKey(`consent`, consent ? undefined : `1`);
     if (consent) {
-      auth.setKey(`firstname`, undefined);
+      auth.setKey(`beliefs`, undefined);
       auth.setKey(`encryptedCode`, undefined);
       auth.setKey(`encryptedEmail`, undefined);
+      auth.setKey(`hasProfile`, undefined);
+      auth.setKey(`unlockedProfile`, undefined);
+      auth.setKey(`token`, undefined);
+      auth.setKey(`key`, undefined);
     }
     setConsent(!consent);
   }

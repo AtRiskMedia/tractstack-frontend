@@ -1,37 +1,43 @@
 import { useEffect, useState } from "react";
 import { useStore } from "@nanostores/react";
-import { success, loading, error, auth, profile } from "../../store/auth";
+import { success, loading, error, auth } from "../../store/auth";
 import { ProfileCreate } from "./ProfileCreate";
 import { ProfileEdit } from "./ProfileEdit";
-import { ProfileOpen } from "./ProfileOpen";
+import { ProfileUnlock } from "./ProfileUnlock";
 
 export const ProfileSwitch = () => {
   const $authPayload = useStore(auth);
-  const $profile = useStore(profile);
   const [mode, setMode] = useState(`unset`);
 
   useEffect(() => {
     if (
-      $authPayload.consent === `1` &&
-      !$profile.hasProfile &&
-      mode !== `create`
+      ($authPayload?.encryptedCode &&
+        $authPayload?.encryptedEmail &&
+        !$authPayload?.unlockedProfile) ||
+      ($authPayload?.hasProfile && !$authPayload?.unlockedProfile)
     ) {
       error.set(undefined);
       success.set(undefined);
       loading.set(undefined);
+      setMode(`unlock`);
+    } else if ($authPayload.consent === `1` && !$authPayload.hasProfile) {
+      error.set(undefined);
+      success.set(undefined);
+      loading.set(undefined);
       setMode(`create`);
-    } else if (
-      $authPayload.consent === `1` &&
-      $profile?.hasProfile &&
-      mode !== `open`
-    ) {
+    } else if ($authPayload?.unlockedProfile) {
       error.set(undefined);
-      setMode(`open`);
-    } else if (mode !== `unset` && $authPayload.consent !== `1`) {
-      setMode(`unset`);
-      error.set(undefined);
+      success.set(undefined);
+      loading.set(undefined);
+      setMode(`edit`);
     }
-  }, [mode, $profile.hasProfile, $authPayload.consent]);
+  }, [
+    $authPayload.encryptedCode,
+    $authPayload.encryptedEmail,
+    $authPayload.hasProfile,
+    $authPayload.consent,
+    $authPayload.unlockedProfile,
+  ]);
 
   if (mode === `unset`) return <div />;
   return (
@@ -40,8 +46,8 @@ export const ProfileSwitch = () => {
         <div className="p-6">
           {mode === `create` ? (
             <ProfileCreate />
-          ) : mode === `open` ? (
-            <ProfileOpen />
+          ) : mode === `unlock` ? (
+            <ProfileUnlock />
           ) : mode === `edit` ? (
             <ProfileEdit />
           ) : null}

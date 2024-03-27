@@ -11,27 +11,29 @@ import {
   ChatBubbleBottomCenterIcon,
 } from "@heroicons/react/24/outline";
 import { sync, auth, profile, error, success, loading } from "../../store/auth";
-import { loadProfile } from "../../api/services";
+import { loadProfile, saveProfile } from "../../api/services";
 import { contactPersona } from "../../assets/contactPersona";
 
-async function goLoadProfile() {
-  console.log(`go load profile`);
+async function goSaveProfile(payload: {
+  firstname: string;
+  email: string;
+  codeword: string;
+  persona: string;
+  bio: string;
+  init: boolean;
+}) {
   try {
-    const response = await loadProfile();
-    console.log(`got`, response);
+    const response = await saveProfile({ profile: payload });
     profile.set({
-      firstname: response?.data?.firstname || undefined,
-      contactPersona: response?.data?.contactPersona || undefined,
-      email: response?.data?.email || undefined,
-      shortBio: response?.data?.shortBio || undefined,
-      hasProfile:
-        typeof response?.data?.firstname !== `undefined` &&
-        typeof response?.data?.email !== `undefined`,
-      unlockedProfile:
-        typeof response?.data?.auth !== `undefined` && response.data.auth,
+      firstname: payload.firstname,
+      contactPersona: payload.persona,
+      email: payload.email,
+      shortBio: payload.bio,
     });
-    if (typeof response?.data?.auth !== `undefined` && response.data.auth)
+    if (response?.data?.knownLead) {
+      auth.setKey(`hasProfile`, `1`);
       auth.setKey(`consent`, `1`);
+    }
     success.set(true);
     loading.set(false);
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -44,9 +46,43 @@ async function goLoadProfile() {
       contactPersona: undefined,
       email: undefined,
       shortBio: undefined,
-      hasProfile: undefined,
-      unlockedProfile: undefined,
     });
+    auth.setKey(`unlockedProfile`, undefined);
+    auth.setKey(`hasProfile`, undefined);
+    console.log(`error`, e);
+  }
+}
+
+async function goLoadProfile() {
+  try {
+    const response = await loadProfile();
+    profile.set({
+      firstname: response?.data?.firstname || undefined,
+      contactPersona: response?.data?.contactPersona || undefined,
+      email: response?.data?.email || undefined,
+      shortBio: response?.data?.shortBio || undefined,
+    });
+    if (response?.data?.knownLead) {
+      auth.setKey(`hasProfile`, `1`);
+      auth.setKey(`consent`, `1`);
+    }
+    if (typeof response?.data?.auth !== `undefined` && response.data.auth)
+      auth.setKey(`unlockedProfile`, `1`);
+    success.set(true);
+    loading.set(false);
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+  } catch (e: any) {
+    error.set(true);
+    success.set(false);
+    loading.set(undefined);
+    profile.set({
+      firstname: undefined,
+      contactPersona: undefined,
+      email: undefined,
+      shortBio: undefined,
+    });
+    auth.setKey(`unlockedProfile`, undefined);
+    auth.setKey(`hasProfile`, undefined);
     console.log(`error`, e);
   }
 }
@@ -101,7 +137,17 @@ export const ProfileCreate = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitted(true);
-    console.log(`submit`);
+    if (firstname && codeword && email && bio && personaSelected.id) {
+      const payload = {
+        firstname,
+        email,
+        codeword,
+        bio,
+        persona: personaSelected.id,
+        init: true,
+      };
+      goSaveProfile(payload);
+    }
   };
 
   useEffect(() => {
@@ -115,7 +161,6 @@ export const ProfileCreate = () => {
       import.meta.env.PROD &&
       $authPayload?.token
     ) {
-      console.log(`LOAD profile now`);
       error.set(false);
       loading.set(true);
       goLoadProfile();
@@ -128,65 +173,23 @@ export const ProfileCreate = () => {
       typeof $loading === `boolean` &&
       !$loading &&
       typeof submitted === `undefined` &&
-      import.meta.env.PROD &&
-      typeof $profile.hasProfile !== `undefined`
+      import.meta.env.PROD
     ) {
-      console.log(`PROFILE LOADED`);
       setSubmitted(false);
       error.set(undefined);
       success.set(true);
       loading.set(undefined);
-      //} else if (
-      //  $sync &&
-      //  typeof $success == `boolean` &&
-      //  !$success &&
-      //  $error &&
-      //  typeof submitted === `undefined` &&
-      //  import.meta.env.PROD &&
-      //  typeof $profile.hasProfile !== `undefined` &&
-      //  !$loading
-      //) {
-      //  console.log(`=1 !! ERROR loading profile. must retry.`);
-      //  error.set(undefined);
-      //  success.set(undefined);
-      //  loading.set(undefined);
-      //  setSubmitted(undefined);
     } else if (
       typeof submitted === `undefined` &&
       $error &&
       typeof $loading === `undefined` &&
       !$success
     ) {
-      console.log(`=2 !! ERROR loading profile. must retry.`);
       error.set(undefined);
       success.set(undefined);
-      //console.log(`-----$sync`, $sync, typeof $sync);
-      //console.log(`-----$error`, $error, typeof $error);
-      //console.log(`-----$loading`, $loading, typeof $loading);
-      //console.log(`-----$success`, $success, typeof $success);
-      //console.log(`-----submitted`, submitted, typeof submitted);
-      //console.log(
-      //  `-----token`,
-      //  $authPayload?.token,
-      //  typeof $authPayload?.token
-      //);
-      //console.log(
-      //  `-----profile`,
-      //  $profile?.hasProfile,
-      //  typeof $profile?.hasProfile
-      //);
-      //console.log(``);
       if (!$sync) window.location.reload();
     }
-  }, [
-    $sync,
-    $success,
-    $authPayload?.token,
-    $profile?.hasProfile,
-    $error,
-    submitted,
-    $loading,
-  ]);
+  }, [$sync, $success, $authPayload?.token, $error, submitted, $loading]);
 
   if (typeof submitted === `undefined`) return <div />;
   return (
@@ -194,6 +197,16 @@ export const ProfileCreate = () => {
       <h3 className="font-action text-xl py-6 text-myblue">
         Feel free to introduce yourself
       </h3>
+      <p className="text-md pb-6">
+        Already connected?
+        <button
+          className="text-myblue hover:text-black underline ml-3"
+          onClick={() => auth.setKey(`hasProfile`, `1`)}
+        >
+          Unlock your profile
+        </button>
+        .
+      </p>
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-3 gap-4">
@@ -211,7 +224,7 @@ export const ProfileCreate = () => {
                   name="firstname"
                   id="firstname"
                   autoComplete="given-name"
-                  defaultValue={$authPayload.firstname || ``}
+                  defaultValue={$profile.firstname || ``}
                   onChange={e => setFirstname(e.target.value)}
                   className={classNames(
                     `text-md bg-white p-3 mt-2 block w-full rounded-md shadow-sm focus:border-myorange focus:ring-myorange`,
@@ -243,7 +256,7 @@ export const ProfileCreate = () => {
                   onChange={e => setEmail(e.target.value)}
                   className={classNames(
                     `text-md bg-white p-3 mt-2 block w-full rounded-md shadow-sm focus:border-myorange focus:ring-myorange`,
-                    submitted && firstname === ``
+                    submitted && email === ``
                       ? `border-red-500`
                       : `border-mydarkgrey`
                   )}
@@ -388,7 +401,7 @@ export const ProfileCreate = () => {
                   Enter your secret code word to protect your account:
                 </label>
                 <input
-                  type="text"
+                  type="password"
                   name="codeword"
                   id="codeword"
                   autoComplete="off"
@@ -396,7 +409,7 @@ export const ProfileCreate = () => {
                   onChange={e => setCodeword(e.target.value)}
                   className={classNames(
                     `text-md bg-white p-3 mt-2 block w-full rounded-md shadow-sm focus:border-myorange focus:ring-myorange`,
-                    submitted && firstname === ``
+                    submitted && codeword === ``
                       ? `border-red-500`
                       : `border-mydarkgrey`
                   )}

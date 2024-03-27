@@ -62,5 +62,6 @@ export async function loadProfile() {
 }
 
 export async function saveProfile({ profile }: IAxiosProfileProps) {
+  console.log(`post to axios`, profile);
   return client.post(`/users/profile`, profile);
 }

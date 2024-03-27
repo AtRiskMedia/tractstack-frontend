@@ -2,6 +2,7 @@ import { getTokens } from "../api/axiosClient";
 import { events, current } from "../store/events";
 import {
   auth,
+  profile,
   sync,
   locked,
   entered,
@@ -30,9 +31,12 @@ export async function init() {
     auth.setKey(`active`, undefined);
     auth.setKey(`key`, undefined);
     auth.setKey(`beliefs`, undefined);
-    auth.setKey(`firstname`, undefined);
     auth.setKey(`encryptedCode`, undefined);
     auth.setKey(`encryptedEmail`, undefined);
+    auth.setKey(`hasProfile`, undefined);
+    auth.setKey(`unlockedProfile`, undefined);
+    auth.setKey(`token`, undefined);
+    auth.setKey(`key`, undefined);
   }
 
   // sync once; unless soon inactive
@@ -87,11 +91,18 @@ export async function init() {
       auth.setKey(`key`, conciergeSync.fingerprint);
     }
     if (conciergeSync?.firstname) {
-      auth.setKey(`firstname`, conciergeSync.firstname);
+      profile.set({
+        ...profile.get(),
+        firstname: conciergeSync.firstname,
+      });
     }
-    if (conciergeSync?.consent === "1") {
+    if (conciergeSync?.knownLead) {
       auth.setKey(`consent`, `1`);
-    }
+      auth.setKey(`hasProfile`, `1`);
+    } else auth.setKey(`hasProfile`, undefined);
+    if (conciergeSync?.auth === "1") {
+      auth.setKey(`unlockedProfile`, `1`);
+    } else auth.setKey(`unlockedProfile`, undefined);
     auth.setKey(`active`, Date.now().toString());
   }
 

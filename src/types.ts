@@ -637,3 +637,10 @@ export interface GraphPayload {
     edges: GraphRelationshipDatum[];
   };
 }
+
+export interface ContactPersona {
+  id: string;
+  description: string;
+  title: string;
+  disabled?: boolean;
+}

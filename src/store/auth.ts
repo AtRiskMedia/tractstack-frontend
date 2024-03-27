@@ -9,8 +9,9 @@ export type AuthSettings = {
   encryptedEmail: string | undefined;
   encryptedCode: string | undefined;
   consent: string | undefined;
-  firstname: string | undefined;
   active: string | undefined;
+  hasProfile: string | undefined;
+  unlockedProfile: string | undefined;
 };
 
 export type AuthProfile = {
@@ -18,8 +19,6 @@ export type AuthProfile = {
   contactPersona: string | undefined;
   email: string | undefined;
   shortBio: string | undefined;
-  hasProfile: boolean | undefined;
-  unlockedProfile: boolean | undefined;
 };
 
 export const auth = persistentMap<AuthSettings>("auth:", {
@@ -29,8 +28,9 @@ export const auth = persistentMap<AuthSettings>("auth:", {
   encryptedEmail: undefined,
   encryptedCode: undefined,
   consent: undefined,
-  firstname: undefined,
   active: undefined,
+  hasProfile: undefined,
+  unlockedProfile: undefined,
 });
 
 export const entered = atom<boolean>(false);
@@ -44,7 +44,5 @@ export const profile = atom<AuthProfile>({
   contactPersona: undefined,
   email: undefined,
   shortBio: undefined,
-  hasProfile: undefined,
-  unlockedProfile: undefined,
 });
 export const referrer = atom<Referrer>({});
