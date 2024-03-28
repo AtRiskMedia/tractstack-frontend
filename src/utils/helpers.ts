@@ -1,4 +1,4 @@
-import {storySteps} from "../store/events";
+import { storySteps } from "../store/events";
 import type {
   GraphNodes,
   GraphNode,
@@ -51,18 +51,17 @@ export function scrollToTop() {
 }
 
 export function closeContextPane() {
-  console.log(storySteps.get().length,storySteps.get())
   const button = document.querySelector("button#close");
   button?.setAttribute("href", document.referrer);
   button?.addEventListener("click", () => {
-    history.back();
-    return false;
+    if (storySteps.get().length > 1) history.back();
+    else window.location.href = `/`;
   });
   const button2 = document.querySelector("button#close-main");
   button2?.setAttribute("href", document.referrer);
   button2?.addEventListener("click", () => {
-    history.back();
-    return false;
+    if (storySteps.get().length > 1) history.back();
+    else window.location.href = `/`;
   });
 }
 
@@ -70,8 +69,8 @@ export function closeCart() {
   const button = document.querySelector("button#close-cart");
   button?.setAttribute("href", document.referrer);
   button?.addEventListener("click", () => {
-    history.back();
-    return false;
+    if (storySteps.get().length > 1) history.back();
+    else window.location.href = `/`;
   });
 }
 
@@ -79,8 +78,8 @@ export function closeGraph() {
   const button = document.querySelector("button#close-graph");
   button?.setAttribute("href", document.referrer);
   button?.addEventListener("click", () => {
-    history.back();
-    return false;
+    if (storySteps.get().length > 1) history.back();
+    else window.location.href = `/`;
   });
 }
 
@@ -88,8 +87,8 @@ export function closeProfile() {
   const button = document.querySelector("button#close-profile");
   button?.setAttribute("href", document.referrer);
   button?.addEventListener("click", () => {
-    history.back();
-    return false;
+    if (storySteps.get().length > 1) history.back();
+    else window.location.href = `/`;
   });
 }
 
