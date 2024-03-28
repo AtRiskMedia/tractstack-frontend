@@ -85,6 +85,27 @@ export async function eventSync(payload: EventStream[]) {
         break;
       }
 
+      case `StoryFragment`: {
+        const thisEvent = { ...e };
+        const matchStoryFragment = map
+          .filter((m: ContentMap) => m.id === e.id)
+          .at(0)!;
+        nodes[matchStoryFragment.id] = {
+          type: `StoryFragment`,
+          title: matchStoryFragment.title,
+          slug: matchStoryFragment.slug,
+          parentId: matchStoryFragment.parentId,
+        };
+        if (matchStoryFragment?.parentId)
+          nodes[matchStoryFragment.parentId] = {
+            type: `TractStack`,
+            title: matchStoryFragment.parentTitle,
+            slug: matchStoryFragment.parentSlug,
+          };
+        events[idx] = thisEvent;
+        break;
+      }
+
       case `Impression`: {
         const thisEvent = { ...e };
         const matchStoryFragment = map
@@ -151,7 +172,9 @@ export async function eventSync(payload: EventStream[]) {
     events,
     referrer: refPayload,
   };
-
+  console.log(events);
+  console.log(nodes);
+  console.log(``);
   const response = await pushPayload(options);
   if (response.status === 200) return true;
 

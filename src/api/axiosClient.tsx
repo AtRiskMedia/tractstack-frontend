@@ -75,7 +75,15 @@ export const getTokens = async ({
         ? { encryptedCode, encryptedEmail }
         : {};
   try {
-    const response = await conciergeSync({ referrer, ...params, fingerprint });
+    const ref = { ...referrer };
+    if (!ref?.utmCampaign) delete ref.utmCampaign;
+    if (!ref?.utmContent) delete ref.utmContent;
+    if (!ref?.utmMedium) delete ref.utmMedium;
+    if (!ref?.utmSource) delete ref.utmSource;
+    if (!ref?.utmTerm) delete ref.utmTerm;
+    const options = { referrer: ref, ...params, fingerprint };
+    console.log(`getTokens`, options);
+    const response = await conciergeSync(options);
     const accessToken = response.data.jwt;
     const auth = response.data.auth;
     const knownLead = response.data.known_lead;

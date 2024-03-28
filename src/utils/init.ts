@@ -18,13 +18,23 @@ export async function init() {
     return null;
   }
 
+  let reset = false;
   const authPayload = auth.get();
   const lastActive = authPayload?.active ? parseInt(authPayload.active) : 0;
-  auth.setKey(`active`, Date.now().toString());
+  console.log(`has key`, !!authPayload?.key);
+  console.log(`has token`, !!authPayload?.token);
+  console.log(`lastActive`, lastActive);
+  console.log(`diff`, Date.now() - lastActive);
+  if (Date.now() - lastActive > JWT_LIFETIME)
+    console.log(`that's bigger than`, JWT_LIFETIME);
+  else console.log(`that's not bigger than`, JWT_LIFETIME);
+  console.log(`consent`, authPayload?.consent === "1");
+  const mustSync =
+    !authPayload?.token || Date.now() > lastActive + JWT_LIFETIME;
+  console.log(`mustSync`, mustSync);
 
   // delete any session storage after > 1 hr if no consent provided
   if (
-    lastActive > 0 &&
     authPayload?.consent !== "1" &&
     Date.now() > lastActive + JWT_LIFETIME * 5
   ) {
@@ -37,74 +47,76 @@ export async function init() {
     auth.setKey(`unlockedProfile`, undefined);
     auth.setKey(`token`, undefined);
     auth.setKey(`key`, undefined);
+    reset = true;
+    console.log(`reset`);
+    //window.location.reload();
   }
 
   // sync once; unless soon inactive
-  if (lastActive > 0 && lastActive > Date.now() - JWT_LIFETIME && sync.get()) {
+  if (!mustSync && !reset) {
+    sync.set(true);
     return null;
   }
+
+  auth.setKey(`active`, Date.now().toString());
   locked.set(true);
 
-  // if no token, inactive, or soon inactive, get one
-  if (
-    !authPayload?.token ||
-    !(lastActive > 0 && lastActive > Date.now() - JWT_LIFETIME)
-  ) {
-    // check for utmParams
-    const urlSearchParams = new URLSearchParams(window.location.search);
-    const params = Object.fromEntries(urlSearchParams.entries());
-    const httpReferrer = document.referrer;
-    const utmSource = params[`utm_source`] || undefined;
-    const utmMedium = params[`utm_medium`] || undefined;
-    const utmCampaign = params[`utm_campaign`] || undefined;
-    const utmTerm = params[`utm_term`] || undefined;
-    const utmContent = params[`utm_content`] || undefined;
-    const ref = {
-      httpReferrer,
-      utmSource,
-      utmMedium,
-      utmCampaign,
-      utmTerm,
-      utmContent,
-    };
-    referrer.set(ref);
+  // otherwise no token, inactive, or soon inactive, get one
+  // check for utmParams
+  const urlSearchParams = new URLSearchParams(window.location.search);
+  const params = Object.fromEntries(urlSearchParams.entries());
+  const httpReferrer = document.referrer;
+  const utmSource = params[`utm_source`] || undefined;
+  const utmMedium = params[`utm_medium`] || undefined;
+  const utmCampaign = params[`utm_campaign`] || undefined;
+  const utmTerm = params[`utm_term`] || undefined;
+  const utmContent = params[`utm_content`] || undefined;
+  const ref = {
+    httpReferrer,
+    utmSource,
+    utmMedium,
+    utmCampaign,
+    utmTerm,
+    utmContent,
+  };
+  referrer.set(ref);
 
-    // remembers session for 75 minutes across tabs;
-    // or when consent has been given
-    // must pass utmSource and fingerprint if avail with consent
-    const settings =
-      (lastActive > Date.now() - JWT_LIFETIME * 5 ||
-        authPayload?.consent === "1") &&
-      authPayload?.key
-        ? {
-            fingerprint: authPayload.key,
-            encryptedCode: authPayload?.encryptedCode,
-            encryptedEmail: authPayload?.encryptedEmail,
-            referrer: ref,
-          }
-        : { referrer: ref };
-    const conciergeSync = await getTokens(settings);
-    if (conciergeSync?.tokens) {
-      auth.setKey(`token`, conciergeSync.tokens);
-    }
-    if (conciergeSync?.fingerprint) {
-      auth.setKey(`key`, conciergeSync.fingerprint);
-    }
-    if (conciergeSync?.firstname) {
-      profile.set({
-        ...profile.get(),
-        firstname: conciergeSync.firstname,
-      });
-    }
-    if (conciergeSync?.knownLead) {
-      auth.setKey(`consent`, `1`);
-      auth.setKey(`hasProfile`, `1`);
-    } else auth.setKey(`hasProfile`, undefined);
-    if (conciergeSync?.auth === "1") {
-      auth.setKey(`unlockedProfile`, `1`);
-    } else auth.setKey(`unlockedProfile`, undefined);
-    auth.setKey(`active`, Date.now().toString());
+  // remembers session for 75 minutes across tabs;
+  // or when consent has been given
+  // must pass utmSource and fingerprint if avail with consent
+  const settings =
+    (lastActive > Date.now() - JWT_LIFETIME * 5 ||
+      authPayload?.consent === "1") &&
+    authPayload?.key
+      ? {
+          fingerprint: authPayload.key,
+          encryptedCode: authPayload?.encryptedCode,
+          encryptedEmail: authPayload?.encryptedEmail,
+          referrer: ref,
+        }
+      : { referrer: ref };
+  const conciergeSync = await getTokens(settings);
+  if (conciergeSync?.tokens) {
+    auth.setKey(`token`, conciergeSync.tokens);
   }
+  if (conciergeSync?.fingerprint) {
+    console.log(`fingerprint`, conciergeSync.fingerprint);
+    auth.setKey(`key`, conciergeSync.fingerprint);
+  }
+  if (conciergeSync?.firstname) {
+    profile.set({
+      ...profile.get(),
+      firstname: conciergeSync.firstname,
+    });
+  }
+  if (conciergeSync?.knownLead) {
+    auth.setKey(`consent`, `1`);
+    auth.setKey(`hasProfile`, `1`);
+  } else auth.setKey(`hasProfile`, undefined);
+  if (conciergeSync?.auth === "1") {
+    auth.setKey(`unlockedProfile`, `1`);
+  } else auth.setKey(`unlockedProfile`, undefined);
+  auth.setKey(`active`, Date.now().toString());
 
   // unlock; set sync
   sync.set(true);
@@ -119,10 +131,11 @@ export async function init() {
     const ref = document.referrer;
     const internal =
       ref !== `` && ref.indexOf(location.protocol + "//" + location.host) === 0;
-    if (!internal && ref) {
+    const cur = current.get();
+    if (!internal && ref && cur?.id && cur?.parentId) {
       const event = {
-        id: current.get().id,
-        parentId: current.get().parentId,
+        id: cur.id,
+        parentId: cur.parentId,
         type: `StoryFragment`,
         verb: `ENTERED`,
       };

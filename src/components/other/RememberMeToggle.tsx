@@ -18,6 +18,8 @@ export const RememberMeToggle = () => {
       auth.setKey(`unlockedProfile`, undefined);
       auth.setKey(`token`, undefined);
       auth.setKey(`key`, undefined);
+      // toggle re-load to resync with new fingerprint
+      window.location.reload();
     }
     setConsent(!consent);
   }
