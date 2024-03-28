@@ -1,3 +1,4 @@
+import {storySteps} from "../store/events";
 import type {
   GraphNodes,
   GraphNode,
@@ -50,6 +51,7 @@ export function scrollToTop() {
 }
 
 export function closeContextPane() {
+  console.log(storySteps.get().length,storySteps.get())
   const button = document.querySelector("button#close");
   button?.setAttribute("href", document.referrer);
   button?.addEventListener("click", () => {

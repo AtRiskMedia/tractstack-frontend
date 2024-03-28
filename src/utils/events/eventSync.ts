@@ -66,20 +66,22 @@ export async function eventSync(payload: EventStream[]) {
             type: `Pane`,
             title: matchPane.title,
             slug: matchPane.slug,
-            parentId: matchStoryFragment.id,
+            parentId: matchStoryFragment?.id || undefined,
           };
-          nodes[matchStoryFragment.id] = {
-            type: `StoryFragment`,
-            title: matchStoryFragment.title,
-            slug: matchStoryFragment.slug,
-            parentId: matchStoryFragment.parentId,
-          };
-          if (matchStoryFragment?.parentId)
-            nodes[matchStoryFragment.parentId] = {
-              type: `TractStack`,
-              title: matchStoryFragment.parentTitle,
-              slug: matchStoryFragment.parentSlug,
+          if (matchStoryFragment) {
+            nodes[matchStoryFragment.id] = {
+              type: `StoryFragment`,
+              title: matchStoryFragment.title,
+              slug: matchStoryFragment.slug,
+              parentId: matchStoryFragment.parentId,
             };
+            if (matchStoryFragment?.parentId)
+              nodes[matchStoryFragment.parentId] = {
+                type: `TractStack`,
+                title: matchStoryFragment.parentTitle,
+                slug: matchStoryFragment.parentSlug,
+              };
+          }
         }
         events[idx] = thisEvent;
         break;

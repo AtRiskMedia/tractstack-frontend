@@ -140,6 +140,14 @@ export async function init() {
         verb: `ENTERED`,
       };
       events.set([...events.get(), event]);
+    } else if (!internal && ref && cur?.id) {
+      const event = {
+        id: cur.id,
+        type: `Pane`,
+        verb: `ENTERED`,
+      };
+      console.log(event);
+      events.set([...events.get(), event]);
     }
   }
 }
