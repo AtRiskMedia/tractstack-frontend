@@ -174,9 +174,6 @@ export async function eventSync(payload: EventStream[]) {
     events,
     referrer: refPayload,
   };
-  console.log(events);
-  console.log(nodes);
-  console.log(``);
   const response = await pushPayload(options);
   if (response.status === 200) return true;
 

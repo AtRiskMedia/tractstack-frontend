@@ -10,7 +10,15 @@ import {
   BoltIcon,
   ChatBubbleBottomCenterIcon,
 } from "@heroicons/react/24/outline";
-import { sync, auth, profile, error, success, loading } from "../../store/auth";
+import {
+  newProfile,
+  sync,
+  auth,
+  profile,
+  error,
+  success,
+  loading,
+} from "../../store/auth";
 import { loadProfile, saveProfile } from "../../api/services";
 import { contactPersona } from "../../assets/contactPersona";
 import type { ContactPersona } from "../../types";
@@ -37,6 +45,7 @@ async function goSaveProfile(payload: {
     }
     success.set(true);
     loading.set(false);
+    return true;
     /* eslint-disable @typescript-eslint/no-explicit-any */
   } catch (e: any) {
     error.set(true);
@@ -51,6 +60,7 @@ async function goSaveProfile(payload: {
     auth.setKey(`unlockedProfile`, undefined);
     auth.setKey(`hasProfile`, undefined);
     console.log(`error`, e);
+    return false;
   }
 }
 
@@ -94,6 +104,7 @@ export const ProfileEdit = () => {
   const [firstname, setFirstname] = useState(``);
   const [bio, setBio] = useState(``);
   const [codeword, setCodeword] = useState(``);
+  const [saved, setSaved] = useState(false);
   const [personaSelected, setPersonaSelected] = useState<ContactPersona>(
     contactPersona[0]
   );
@@ -149,9 +160,25 @@ export const ProfileEdit = () => {
         persona: personaSelected.id,
         init: false,
       };
-      goSaveProfile(payload);
+      goSaveProfile(payload).then((res: any) => {
+        if (res) setSaved(true);
+      });
     }
   };
+
+  useEffect(() => {
+    // triggers "saved" alert if coming from ProfileCreate
+    if (newProfile.get()) {
+      newProfile.set(false);
+      setSaved(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (saved) {
+      setTimeout(() => setSaved(false), 7000);
+    }
+  }, [saved]);
 
   useEffect(() => {
     // on init, load profile from concierge
@@ -164,9 +191,20 @@ export const ProfileEdit = () => {
       import.meta.env.PROD &&
       $authPayload?.token
     ) {
-      error.set(false);
-      loading.set(true);
-      goLoadProfile();
+      const checkProfile = profile.get();
+      if (
+        !checkProfile.firstname ||
+        !checkProfile.contactPersona ||
+        !checkProfile.email
+      ) {
+        error.set(false);
+        loading.set(true);
+        goLoadProfile();
+      } else {
+        error.set(false);
+        loading.set(false);
+        success.set(true);
+      }
     } else if (
       $sync &&
       typeof $success == `boolean` &&
@@ -206,7 +244,7 @@ export const ProfileEdit = () => {
   return (
     <>
       <h3 className="font-action text-xl py-6 text-myblue">
-        Feel free to introduce yourself
+        Welcome to Tract Stack
       </h3>
 
       <form onSubmit={handleSubmit}>
@@ -403,6 +441,12 @@ export const ProfileEdit = () => {
               <span className="text-xs px-4 text-red-500">Required field.</span>
             )}
           </div>
+
+          {saved ? (
+            <div className="col-span-3 flex justify-center align-center py-12 font-action text-red-500">
+              Profile Saved
+            </div>
+          ) : null}
 
           {codeword !== `` ? (
             <div className="col-span-3 flex justify-center align-center py-12">

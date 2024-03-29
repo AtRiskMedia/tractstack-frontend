@@ -9,20 +9,34 @@ function getCurrentAccessToken() {
 }
 
 function setRefreshedTokens(response: IAuthStoreLoginResponse) {
-  console.log(`login`, response);
-  const authPayload = auth.get();
-  const authProfile = profile.get();
-  console.log(`update`, authPayload, authProfile);
+  console.log(`REFRESH`, response);
+  if (response?.tokens) {
+    auth.setKey(`token`, response.tokens);
+  }
+  if (response?.fingerprint) {
+    auth.setKey(`key`, response.fingerprint);
+  }
+  if (response?.firstname) {
+    profile.set({
+      ...profile.get(),
+      firstname: response.firstname,
+    });
+  }
+  if (response?.knownLead) {
+    auth.setKey(`consent`, `1`);
+    auth.setKey(`hasProfile`, `1`);
+  } else auth.setKey(`hasProfile`, undefined);
+  if (response?.auth ) {
+    auth.setKey(`unlockedProfile`, `1`);
+  } else auth.setKey(`unlockedProfile`, undefined);
+  auth.setKey(`active`, Date.now().toString());
 }
 
 function logout(full: boolean = false) {
-  console.log(`logout`, full);
   sync.set(false);
   locked.set(false);
   if (full) {
     auth.setKey(`token`, undefined);
-    console.log(`wiped token`);
-    //auth.setKey(`active`, "0");
   }
 }
 
@@ -31,7 +45,6 @@ function getAuthData() {
     encryptedCode: ``,
     encryptedEmail: ``,
   };
-  console.log(`must get auth data`);
   return {
     encryptedCode: authData.encryptedCode,
     encryptedEmail: authData.encryptedEmail,
@@ -82,7 +95,6 @@ export const getTokens = async ({
     if (!ref?.utmSource) delete ref.utmSource;
     if (!ref?.utmTerm) delete ref.utmTerm;
     const options = { referrer: ref, ...params, fingerprint };
-    console.log(`getTokens`, options);
     const response = await conciergeSync(options);
     const accessToken = response.data.jwt;
     const auth = response.data.auth;

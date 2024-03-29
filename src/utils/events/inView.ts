@@ -41,7 +41,7 @@ export function inView() {
             verb: verb,
             duration: diff / 1000,
           };
-          console.log(`=event`, event);
+          //console.log(`=event`, event);
           events.set([...events.get(), event]);
         }
       }

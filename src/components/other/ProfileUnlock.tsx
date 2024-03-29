@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { FormEvent } from "react";
 import { classNames } from "../../utils/helpers";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
@@ -12,7 +12,10 @@ import {
 } from "../../store/auth";
 import { getTokens } from "../../api/axiosClient";
 
-async function goUnlockProfile(payload: { email: string; codeword: string }) {
+export async function goUnlockProfile(payload: {
+  email: string;
+  codeword: string;
+}) {
   try {
     const ref = referrer.get();
     const settings = { ...payload, referrer: ref };
@@ -28,7 +31,6 @@ async function goUnlockProfile(payload: { email: string; codeword: string }) {
         shortBio: undefined,
       });
       auth.setKey(`unlockedProfile`, undefined);
-      auth.setKey(`hasProfile`, undefined);
       return false;
     }
     if (conciergeSync?.auth) {
@@ -90,6 +92,12 @@ export const ProfileUnlock = () => {
       });
     }
   };
+
+  useEffect(() => {
+    if (badLogin) {
+      setTimeout(() => setBadLogin(false), 7000);
+    }
+  }, [badLogin]);
 
   return (
     <>

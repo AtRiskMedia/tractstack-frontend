@@ -10,9 +10,18 @@ import {
   BoltIcon,
   ChatBubbleBottomCenterIcon,
 } from "@heroicons/react/24/outline";
-import { sync, auth, profile, error, success, loading } from "../../store/auth";
+import {
+  newProfile,
+  sync,
+  auth,
+  profile,
+  error,
+  success,
+  loading,
+} from "../../store/auth";
 import { loadProfile, saveProfile } from "../../api/services";
 import { contactPersona } from "../../assets/contactPersona";
+import { goUnlockProfile } from "./ProfileUnlock";
 
 async function goSaveProfile(payload: {
   firstname: string;
@@ -23,19 +32,25 @@ async function goSaveProfile(payload: {
   init: boolean;
 }) {
   try {
-    const response = await saveProfile({ profile: payload });
+    await saveProfile({ profile: payload });
     profile.set({
       firstname: payload.firstname,
       contactPersona: payload.persona,
       email: payload.email,
       shortBio: payload.bio,
     });
-    if (response?.data?.knownLead) {
-      auth.setKey(`hasProfile`, `1`);
-      auth.setKey(`consent`, `1`);
-    }
+    auth.setKey(`hasProfile`, `1`);
+    auth.setKey(`unlockedProfile`, `1`);
+    auth.setKey(`consent`, `1`);
+    newProfile.set(true);
+    const settings = {
+      email: payload.email,
+      codeword: payload.codeword,
+    };
+    await goUnlockProfile(settings);
     success.set(true);
     loading.set(false);
+    return true;
     /* eslint-disable @typescript-eslint/no-explicit-any */
   } catch (e: any) {
     error.set(true);
@@ -50,6 +65,7 @@ async function goSaveProfile(payload: {
     auth.setKey(`unlockedProfile`, undefined);
     auth.setKey(`hasProfile`, undefined);
     console.log(`error`, e);
+    return false;
   }
 }
 
@@ -93,6 +109,7 @@ export const ProfileCreate = () => {
   const [firstname, setFirstname] = useState(``);
   const [bio, setBio] = useState(``);
   const [codeword, setCodeword] = useState(``);
+  const [badSave, setBadSave] = useState(false);
   const [personaSelected, setPersonaSelected] = useState(contactPersona[0]);
   const $authPayload = useStore(auth);
   const $profile = useStore(profile);
@@ -137,7 +154,7 @@ export const ProfileCreate = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitted(true);
-    if (firstname && codeword && email && bio && personaSelected.id) {
+    if (firstname && codeword && email && personaSelected.id) {
       const payload = {
         firstname,
         email,
@@ -146,9 +163,24 @@ export const ProfileCreate = () => {
         persona: personaSelected.id,
         init: true,
       };
-      goSaveProfile(payload);
+      goSaveProfile(payload).then((res: any) => {
+        if (!res) {
+          setFirstname(``);
+          setEmail(``);
+          setBio(``);
+          setCodeword(``);
+          setPersonaSelected(contactPersona[0]);
+          setBadSave(true);
+        }
+      });
     }
   };
+
+  useEffect(() => {
+    if (badSave) {
+      setTimeout(() => setBadSave(false), 7000);
+    }
+  }, [badSave]);
 
   useEffect(() => {
     // on init, load profile from concierge
@@ -425,8 +457,14 @@ export const ProfileCreate = () => {
             <></>
           )}
 
+          {badSave ? (
+            <div className="col-span-3 flex justify-center align-center py-12 font-action text-red-500">
+              Profile could not be saved. Email already registered.
+            </div>
+          ) : null}
+
           <div className="col-span-3 flex justify-center align-center py-12">
-            {!personaSelected?.disabled ? (
+            {!personaSelected?.disabled && !badSave ? (
               <button
                 type="submit"
                 className="inline-flex rounded-md bg-myorange/10 hover:bg-black hover:text-white px-3.5 py-1.5 text-base leading-7 text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-myorange"
@@ -434,9 +472,9 @@ export const ProfileCreate = () => {
                 <span className="pr-4">Save Profile</span>
                 <ChevronRightIcon className="h-5 w-5 mr-3" aria-hidden="true" />
               </button>
-            ) : (
+            ) : !badSave ? (
               `Profile disabled. (Privacy mode enabled)`
-            )}
+            ) : null}
           </div>
         </div>
       </form>

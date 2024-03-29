@@ -21,17 +21,8 @@ export async function init() {
   let reset = false;
   const authPayload = auth.get();
   const lastActive = authPayload?.active ? parseInt(authPayload.active) : 0;
-  console.log(`has key`, !!authPayload?.key);
-  console.log(`has token`, !!authPayload?.token);
-  console.log(`lastActive`, lastActive);
-  console.log(`diff`, Date.now() - lastActive);
-  if (Date.now() - lastActive > JWT_LIFETIME)
-    console.log(`that's bigger than`, JWT_LIFETIME);
-  else console.log(`that's not bigger than`, JWT_LIFETIME);
-  console.log(`consent`, authPayload?.consent === "1");
   const mustSync =
     !authPayload?.token || Date.now() > lastActive + JWT_LIFETIME;
-  console.log(`mustSync`, mustSync);
 
   // delete any session storage after > 1 hr if no consent provided
   if (
@@ -48,7 +39,6 @@ export async function init() {
     auth.setKey(`token`, undefined);
     auth.setKey(`key`, undefined);
     reset = true;
-    console.log(`reset`);
     //window.location.reload();
   }
 
@@ -100,7 +90,6 @@ export async function init() {
     auth.setKey(`token`, conciergeSync.tokens);
   }
   if (conciergeSync?.fingerprint) {
-    console.log(`fingerprint`, conciergeSync.fingerprint);
     auth.setKey(`key`, conciergeSync.fingerprint);
   }
   if (conciergeSync?.firstname) {
@@ -113,7 +102,7 @@ export async function init() {
     auth.setKey(`consent`, `1`);
     auth.setKey(`hasProfile`, `1`);
   } else auth.setKey(`hasProfile`, undefined);
-  if (conciergeSync?.auth === "1") {
+  if (conciergeSync?.auth ) {
     auth.setKey(`unlockedProfile`, `1`);
   } else auth.setKey(`unlockedProfile`, undefined);
   auth.setKey(`active`, Date.now().toString());
@@ -146,7 +135,6 @@ export async function init() {
         type: `Pane`,
         verb: `ENTERED`,
       };
-      console.log(event);
       events.set([...events.get(), event]);
     }
   }

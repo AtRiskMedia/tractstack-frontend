@@ -34,6 +34,7 @@ export const auth = persistentMap<AuthSettings>("auth:", {
 });
 
 export const entered = atom<boolean>(false);
+export const newProfile = atom<boolean>(false);
 export const sync = atom<boolean>(false);
 export const locked = atom<boolean>(false);
 export const error = atom<boolean | undefined>(undefined);
