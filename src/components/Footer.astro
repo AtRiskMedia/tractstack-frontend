@@ -31,9 +31,7 @@ const { created = new Date(), context = false, menu } = Astro.props;
   <div class="pb-6">
     {menu ? <FooterMenu payload={menu} /> : null}
     <Socials />
-    <div
-      class="my-2 flex flex-col items-center justify-center xs:flex-row"
-    >
+    <div class="my-2 flex flex-col items-center justify-center xs:flex-row">
       <span>Copyright &#169; {created.getFullYear()}</span>
       <span class="hidden xs:inline">&nbsp;|&nbsp;</span>
       <span>{slogan}</span>
@@ -41,17 +39,17 @@ const { created = new Date(), context = false, menu } = Astro.props;
     <div
       class="my-2 flex flex-col items-center justify-center xs:flex-row text-myblue/80"
     >
-    <div class="px-3 text-center">
-      Pressed with&nbsp;
-      <Link
-        href="https://tractstack.com"
-        className="hover:underline font-bold"
-        target="_blank"
-        title="Tract Stack by At Risk Media"
-      >
-        Tract Stack</Link
-      >
-      : all-in-one publishing platform to grow your content into a business
+      <div class="px-3 text-center">
+        Pressed with&nbsp;
+        <Link
+          href="https://tractstack.com"
+          className="hover:underline font-bold"
+          target="_blank"
+          title="Tract Stack by At Risk Media"
+        >
+          Tract Stack</Link
+        >
+        : all-in-one publishing platform to grow your content into a business
       </div>
     </div>
   </div>
