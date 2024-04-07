@@ -104,7 +104,6 @@ async function goLoadProfile() {
 }
 
 export const ProfileCreate = () => {
-  const [hasSync,setHasSync] = useState(false)
   const [submitted, setSubmitted] = useState<boolean | undefined>(undefined);
   const [email, setEmail] = useState(``);
   const [firstname, setFirstname] = useState(``);
@@ -194,7 +193,6 @@ export const ProfileCreate = () => {
       import.meta.env.PROD &&
       $authPayload?.token
     ) {
-      setHasSync(true)
       error.set(false);
       loading.set(true);
       goLoadProfile();
@@ -217,13 +215,13 @@ export const ProfileCreate = () => {
       typeof submitted === `undefined` &&
       $error &&
       typeof $loading === `undefined` &&
-      !$success && hasSync
+      !$success
     ) {
       error.set(undefined);
       success.set(undefined);
       if (!$sync) window.location.reload();
     }
-  }, [hasSync, $sync, $success, $authPayload?.token, $error, submitted, $loading]);
+  }, [$sync, $success, $authPayload?.token, $error, submitted, $loading]);
 
   if (typeof submitted === `undefined`) return <div />;
   return (
