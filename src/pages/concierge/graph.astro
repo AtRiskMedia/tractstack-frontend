@@ -3,15 +3,10 @@ import Layout from "@layouts/Layout.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
 import { FastTravel } from "../../components/FastTravel";
-import { getAllStoryFragments, getAllPaneDatum } from "../../api/drupal";
-import type {
-  PaneDatum,
-  PaneNode,
-  StoryFragment,
-  ContentMap,
-} from "../../types";
+import { getAllStoryFragments, getAllPanes } from "../../api/drupal";
+import type { Pane, PaneNode, StoryFragment, ContentMap } from "../../types";
 
-const allPanes = await getAllPaneDatum();
+const allPanes = await getAllPanes();
 const storyFragments: StoryFragment[] = await getAllStoryFragments();
 const contentMap: ContentMap[] = storyFragments
   .map((s: StoryFragment) => {
@@ -27,7 +22,7 @@ const contentMap: ContentMap[] = storyFragments
     } as ContentMap;
   })
   .concat(
-    allPanes.map((p: PaneDatum) => {
+    allPanes.map((p: Pane) => {
       return {
         id: p.id,
         slug: p.field_slug,
