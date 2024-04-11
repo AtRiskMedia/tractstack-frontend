@@ -1,36 +1,77 @@
 ---
-import { getImage } from "astro:assets";
 import ContextPaneWrapper from "@components/ContextPaneWrapper.astro";
 import ImpressionWrapper from "@components/ImpressionWrapper";
 import Layout from "@layouts/Layout.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
-import {
-  getAllFiles,
-  getAllPaneDatum,
-  getAllStoryFragmentDatum,
-  getAllContextPaneDatum,
-} from "../../api/drupal";
+import { getImage } from "astro:assets";
 import { cleanPaneDatum } from "../../utils/compositor/cleanPaneDatum";
 import { cleanFileDatum } from "../../utils/compositor/cleanFileDatum";
 import { cleanImpressionsDatum } from "../../utils/compositor/cleanImpressionsDatum";
 import type {
-  OptimizedImagePre,
-  OptimizedImage,
-  FileNode,
-  PaneDatum,
-  ContextPaneDatum,
-  PaneDatumProps,
   ImpressionDatum,
+  PaneDatumProps,
   PaneFileNode,
-  StoryFragmentDatum,
+  OptimizedImage,
+  OptimizedImagePre,
+  MarkdownFullDatum,
   ContentMap,
-  MarkdownDatum,
-  DrupalFile,
-  ContextPaneProps,
+  FileNode,
+  ContextPaneFullDatum,
 } from "../../types";
 
-export async function getOptimizedImage(src: string) {
+const { slug } = Astro.params;
+const lookup = slug || import.meta.env.PUBLIC_HOME;
+const url = `${Astro.url.origin}/api/contentMap.json`;
+const request: Response = await fetch(url);
+const contentMap: ContentMap[] =
+  request.status === 404 ? [] : await request.json();
+const id = contentMap.find(c => c.slug === lookup)?.id;
+if (id === undefined) {
+  throw new Error("Slug not found");
+}
+const url2 = `${Astro.url.origin}/api/context/${id}.json`;
+const request2: Response = await fetch(url2);
+const pane: ContextPaneFullDatum =
+  request.status === 404 ? [] : await request2.json();
+
+const title = pane.title;
+const created = new Date(pane.created);
+const changed = new Date(pane.changed);
+
+// optimize images
+const optimizedImagesPre: OptimizedImagePre[] = [];
+const p = pane;
+const markdownFiles =
+  p?.field_markdown
+    .map((m: MarkdownFullDatum) => {
+      let val: FileNode[] = [];
+      if (typeof m.field_image === `object`) val = val.concat(m.field_image);
+      if (typeof m.field_image_svg === `object`)
+        val = val.concat(m.field_image_svg);
+      return val;
+    })
+    .at(0) || [];
+let paneFiles: FileNode[] = [];
+if (typeof p.field_image === `object`)
+  paneFiles = paneFiles.concat(p.field_image);
+if (typeof p.field_image_svg === `object`)
+  paneFiles = paneFiles.concat(p.field_image_svg);
+const allFiles = [...markdownFiles, ...paneFiles];
+allFiles?.forEach((f: FileNode) => {
+  const thisFile = f;
+  if (
+    thisFile &&
+    !optimizedImagesPre.filter((i: OptimizedImagePre) => i.id === thisFile.id)
+      .length
+  )
+    optimizedImagesPre.push({
+      id: thisFile.id,
+      filename: thisFile.filename,
+      url: thisFile.uri.url,
+    });
+});
+async function getOptimizedImage(src: string) {
   try {
     const img = await getImage({
       src,
@@ -39,166 +80,52 @@ export async function getOptimizedImage(src: string) {
     return img.src;
   } catch {
     console.log(`error`);
+    return null;
   }
 }
-
-export async function getStaticPaths() {
-  const files = await getAllFiles();
-  const panes = await getAllPaneDatum();
-  const storyFragments: StoryFragmentDatum[] = await getAllStoryFragmentDatum();
-  const contentMap: ContentMap[] = storyFragments
-    .map((s: StoryFragmentDatum) => {
-      return {
-        id: s.id,
-        slug: s.field_slug,
-        title: s.title,
-        type: `StoryFragment`,
-        parentId: s.field_tract_stack.id,
-        parentSlug: s.field_tract_stack.field_slug,
-        parentTitle: s.field_tract_stack.title,
-      } as ContentMap;
-    })
-    .concat(
-      panes.map((p: PaneDatum) => {
-        return {
-          id: p.id,
-          slug: p.field_slug,
-          title: p.title,
-          type: `Pane`,
-        } as ContentMap;
-      })
-    );
-
-  // must intercept image|imageSvg from panes; then optimize
-  const optimizedImagesPre: OptimizedImagePre[] = [];
-  panes.forEach((p: PaneDatum) => {
-    const markdownFiles =
-      p?.field_markdown
-        .map((m: MarkdownDatum) => {
-          let val: DrupalFile[] = [];
-          if (typeof m.field_image === `object`)
-            val = val.concat(m.field_image);
-          if (typeof m.field_image_svg === `object`)
-            val = val.concat(m.field_image_svg);
-          return val;
-        })
-        .at(0) || [];
-    let paneFiles: DrupalFile[] = [];
-    if (typeof p.field_image === `object`)
-      paneFiles = paneFiles.concat(p.field_image);
-    if (typeof p.field_image_svg === `object`)
-      paneFiles = paneFiles.concat(p.field_image_svg);
-    const allFiles = [...markdownFiles, ...paneFiles];
-    allFiles?.forEach((f: DrupalFile) => {
-      const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
-      const thisFile = thisFiles.at(0);
-      if (
-        thisFile &&
-        !optimizedImagesPre.filter(
-          (i: OptimizedImagePre) => i.id === thisFile.id
-        ).length
-      )
-        optimizedImagesPre.push({
-          id: thisFile.id,
-          filename: thisFile.filename,
-          url: thisFile.uri.url,
-        });
-    });
-  });
-  const optimizedImages = await Promise.all(
-    optimizedImagesPre.map(async (i: OptimizedImagePre) => {
-      const src = `${import.meta.env.PUBLIC_IMAGE_URL}${i.url}`;
-      const optimized = await getOptimizedImage(src);
+const optimizedImages: OptimizedImage[] = await Promise.all(
+  optimizedImagesPre.map(async (i: OptimizedImagePre) => {
+    const src = `${import.meta.env.PUBLIC_IMAGE_URL}${i.url}`;
+    const optimized = await getOptimizedImage(src);
+    if (optimized) {
       const val = { id: i.id, src: optimized };
       return val as OptimizedImage;
-    })
-  );
-
-  const contextPanes: ContextPaneDatum[] = await getAllContextPaneDatum();
-  const pathsPromises: Promise<{
-    params: { slug: string };
-    props: ContextPaneProps;
-  }>[] = contextPanes.map(async (pane: ContextPaneDatum) => {
-    const dateCreated = new Date(pane.created);
-    const dateChanged = new Date(pane.changed);
-    const paneFileNodes: PaneFileNode[] = [];
-    const thisFilesPayload: FileNode[] = [];
-    const markdownFiles =
-      pane?.field_markdown
-        .map((m: MarkdownDatum) => {
-          let val: DrupalFile[] = [];
-          if (typeof m.field_image === `object`) {
-            val = val.concat(m.field_image);
-          }
-          if (typeof m.field_image_svg === `object`)
-            val = val.concat(m.field_image_svg);
-          return val;
-        })
-        .at(0) || [];
-    let paneFiles: DrupalFile[] = [];
-    if (typeof pane.field_image === `object`)
-      paneFiles = paneFiles.concat(pane.field_image);
-    if (typeof pane.field_image_svg === `object`)
-      paneFiles = paneFiles.concat(pane.field_image_svg);
-    const allFiles = [...markdownFiles, ...paneFiles];
-    allFiles?.forEach((f: DrupalFile) => {
-      const thisFiles = files.filter((n: DrupalFile) => n.id === f.id);
-      const thisFile = thisFiles.at(0);
-      if (thisFile) {
-        const optimizedSrcRaw = optimizedImages.filter(
-          (i: OptimizedImage) => i.id === thisFile.id
-        );
-        const optimizedSrc = optimizedSrcRaw.at(0);
-        thisFilesPayload.push(cleanFileDatum(thisFile, optimizedSrc?.src));
-      }
-    });
-    if (thisFilesPayload.length)
-      paneFileNodes.push({
-        id: pane.id,
-        files: thisFilesPayload,
-      });
-    const thisFilesArray = paneFileNodes
-      .filter((f: PaneFileNode) => f.id === pane.id)
-      .at(0);
-    const panePayload: PaneDatumProps = cleanPaneDatum(pane, thisFilesArray);
-    const impressionsRaw = panePayload
-      ? [cleanImpressionsDatum(panePayload.optionsPayload?.impressions)]
-      : [];
-    const impressions = impressionsRaw as ImpressionDatum[];
-
-    return {
-      params: { slug: pane.field_slug },
-      props: {
-        title: pane.title,
-        id: pane.id,
-        slug: pane.field_slug,
-        panePayload,
-        impressions,
-        changed: dateChanged,
-        created: dateCreated,
-        contentMap,
-      },
-    };
+    }
+    return { id: `404`, src: `` };
+  })
+);
+const paneFileNodes: PaneFileNode[] = [];
+const payload = pane;
+const thisFilesPayload: FileNode[] = [];
+allFiles?.forEach((f: FileNode) => {
+  const thisFile: FileNode = f;
+  if (thisFile) {
+    const optimizedSrc = optimizedImages.find(
+      (o: OptimizedImage) => o.id === thisFile.id
+    );
+    if (optimizedSrc)
+      thisFilesPayload.push(cleanFileDatum(thisFile, optimizedSrc.src));
+  }
+});
+if (thisFilesPayload.length)
+  paneFileNodes.push({
+    id: payload.id,
+    files: thisFilesPayload,
   });
-  return Promise.all(pathsPromises);
-}
-const {
-  title,
-  id,
-  slug,
-  panePayload,
-  impressions,
-  changed,
-  created,
-  contentMap,
-}: any = Astro.props;
+const thisFilesArray = paneFileNodes
+  .filter((f: PaneFileNode) => f.id === pane.id)
+  .at(0);
+const panePayload: PaneDatumProps = cleanPaneDatum(pane, thisFilesArray);
+const impressionsRaw = panePayload
+  ? [cleanImpressionsDatum(panePayload.optionsPayload?.impressions)]
+  : [];
+const impressions = impressionsRaw as ImpressionDatum[];
+
 const current = {
   id,
-  slug,
+  slug: slug || `404`,
   title,
 };
-
-export const prerender = true;
 ---
 
 <Layout

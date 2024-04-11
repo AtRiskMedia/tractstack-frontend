@@ -3,6 +3,8 @@ import Layout from "@layouts/Layout.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
 import { ShoppingCart } from "@components/ShoppingCart";
+
+export const prerender = false;
 ---
 
 <Layout title="Shopping Cart" pubDatetime={new Date()} modDatetime={new Date()}>

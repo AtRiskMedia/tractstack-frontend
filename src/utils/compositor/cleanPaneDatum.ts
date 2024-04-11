@@ -1,20 +1,20 @@
 import type {
   PaneFileNode,
   FileNode,
-  PaneDatum,
-  MarkdownDatum,
-  ContextPaneDatum,
+  PaneFullDatum,
+  MarkdownFullDatum,
+  ContextPaneFullDatum,
 } from "../../types";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { toHast } from "mdast-util-to-hast";
 
 export function cleanPaneDatum(
-  pane: PaneDatum | ContextPaneDatum,
+  pane: PaneFullDatum | ContextPaneFullDatum,
   files?: PaneFileNode
 ) {
   const thisFiles = files?.files?.map((f: FileNode, idx: number) => {
     let altText = ``;
-    pane.field_markdown.forEach((m: MarkdownDatum) => {
+    pane.field_markdown.forEach((m: MarkdownFullDatum) => {
       const regexpImage = `^.*\\[(.*)\\]\\((${f.filename})\\)`;
       const match = m.field_markdown_body
         .replace(/[\n\r]+/g, " ")
@@ -29,7 +29,7 @@ export function cleanPaneDatum(
         `This should be a description of the image; we apologize for this information being unset`,
     };
   });
-  const markdown = pane.field_markdown.map((m: MarkdownDatum) => {
+  const markdown = pane.field_markdown.map((m: MarkdownFullDatum) => {
     return {
       id: m.id,
       drupalNid: m.drupal_internal__nid,

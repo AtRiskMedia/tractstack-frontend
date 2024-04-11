@@ -1,18 +1,16 @@
 ---
 import { classNames } from "../utils/helpers";
 import Pane from "@components/Pane";
-import type { Current, ContentMap, PaneDatumProps, PaneNode } from "../types";
+import type { Current, ContentMap, PaneDatumProps } from "../types";
 
 export interface Props {
   tailwindBgColour: string | undefined;
-  panes: PaneNode[];
   panesPayload: PaneDatumProps[];
   contentMap: ContentMap[];
   current: Current;
 }
 
-const { tailwindBgColour, panes, panesPayload, contentMap, current } =
-  Astro.props;
+const { tailwindBgColour, panesPayload, contentMap, current } = Astro.props;
 
 // per pane settings
 const hiddenPanes: { [key: string]: boolean } = panesPayload.reduce(function (
@@ -44,7 +42,7 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
 >
   <ul class={tailwindBgColour}>
     {
-      panes.map((pane: PaneNode, idx: number) => (
+      panesPayload.map((pane: PaneDatumProps, idx: number) => (
         <>
           <astro-pane key={`pane-${pane.id}`}>
             <li
@@ -60,7 +58,7 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
                 typeof hiddenPanes[pane.id] === `boolean` ? `true` : `false`
               }
             >
-              <div id={`${pane.field_slug}`}>
+              <div id={`${pane.slug}`}>
                 {idx <= 2 ? (
                   <Pane
                     client:load

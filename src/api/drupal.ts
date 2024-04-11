@@ -6,8 +6,10 @@ import type {
   MarkdownDatum,
   Pane,
   PaneDatum,
+  PaneFullDatum,
   StoryFragment,
   StoryFragmentDatum,
+  StoryFragmentFullDatum,
   TractStack,
   TractStackDatum,
   Menu,
@@ -15,6 +17,7 @@ import type {
   Resource,
   ResourceDatum,
   ContextPaneDatum,
+  ContextPaneFullDatum,
 } from "../types.ts";
 import type { TJsonApiBody, TJsonaModel } from "jsona/lib/JsonaTypes";
 
@@ -129,6 +132,79 @@ export const getAllStoryFragmentDatum = async (): Promise<
     .addFilter("status", "1");
   const path: string = params.getQueryString();
   return await fetchUrl(baseUrl + "/jsonapi/node/story_fragment?" + path);
+};
+
+export const getStoryFragmentFullDatum = async (
+  id: string
+): Promise<StoryFragmentFullDatum[]> => {
+  const params: DrupalJsonApiParams = new DrupalJsonApiParams();
+  params
+    .addFields("node--story_fragment", [
+      "type",
+      "id",
+      "drupal_internal__nid",
+      "title",
+      "field_slug",
+      "field_social_image_path",
+      "field_tailwind_background_colour",
+      "field_tract_stack",
+      "field_panes",
+      "field_menu",
+      "changed",
+      "created",
+    ])
+    .addInclude(["field_tract_stack"])
+    .addFields("node--tractstack", ["title", "field_slug"])
+    .addInclude(["field_panes"])
+    .addFields("node--pane", [
+      "type",
+      "id",
+      "drupal_internal__nid",
+      "title",
+      "field_slug",
+      "field_options",
+      "field_is_context_pane",
+      "field_height_ratio_desktop",
+      "field_height_ratio_tablet",
+      "field_height_ratio_mobile",
+      "field_height_offset_desktop",
+      "field_height_offset_tablet",
+      "field_height_offset_mobile",
+      "field_markdown",
+      "field_image",
+      "field_image_svg",
+    ])
+    .addInclude(["field_panes.field_markdown"])
+    .addFields("node--markdown", [
+      "type",
+      "id",
+      "drupal_internal__nid",
+      "title",
+      "field_slug",
+      "field_markdown_body",
+      "field_image",
+      "field_image_svg",
+    ])
+    .addInclude(["field_panes.field_image", "field_panes.field_image_svg"])
+    .addInclude([
+      "field_panes.field_markdown.field_image",
+      "field_panes.field_markdown.field_image_svg",
+    ])
+    .addFields("file--file", ["type", "id", "filename", "uri"])
+    .addInclude(["field_menu"])
+    .addFields("node--menu", [
+      "type",
+      "id",
+      "drupal_internal__nid",
+      "title",
+      "field_theme",
+      "field_options",
+    ])
+    .addFilter("status", "1");
+  const path: string = params.getQueryString();
+  return await fetchUrl(
+    baseUrl + "/jsonapi/node/story_fragment/" + id + "?" + path
+  );
 };
 
 export const getAllStoryFragments = async (): Promise<StoryFragment[]> => {
@@ -265,6 +341,53 @@ export const getAllContextPaneDatum = async (): Promise<ContextPaneDatum[]> => {
   return await fetchUrl(baseUrl + "/jsonapi/node/pane?" + path);
 };
 
+export const getContextPaneFullDatum = async (
+  id: string
+): Promise<ContextPaneFullDatum[]> => {
+  const params: DrupalJsonApiParams = new DrupalJsonApiParams();
+  params
+    .addFields("node--pane", [
+      "type",
+      "id",
+      "drupal_internal__nid",
+      "title",
+      "field_slug",
+      "field_options",
+      "field_is_context_pane",
+      "field_height_ratio_desktop",
+      "field_height_ratio_tablet",
+      "field_height_ratio_mobile",
+      "field_height_offset_desktop",
+      "field_height_offset_tablet",
+      "field_height_offset_mobile",
+      "field_markdown",
+      "field_image",
+      "field_image_svg",
+      "changed",
+      "created",
+    ])
+    .addFields("node--markdown", [
+      "type",
+      "id",
+      "drupal_internal__nid",
+      "title",
+      "field_slug",
+      "field_markdown_body",
+      "field_image",
+      "field_image_svg",
+    ])
+    .addInclude(["field_markdown"])
+    .addInclude([
+      "field_markdown.field_image",
+      "field_markdown.field_image_svg",
+    ])
+    .addFields("file--file", ["type", "id", "filename", "uri"])
+    .addFilter("field_is_context_pane", "1")
+    .addFilter("status", "1");
+  const path: string = params.getQueryString();
+  return await fetchUrl(baseUrl + "/jsonapi/node/pane/" + id + "?" + path);
+};
+
 export const getAllPaneDatum = async (): Promise<PaneDatum[]> => {
   const params: DrupalJsonApiParams = new DrupalJsonApiParams();
   params
@@ -297,6 +420,48 @@ export const getAllPaneDatum = async (): Promise<PaneDatum[]> => {
       "field_image_svg",
     ])
     .addInclude(["field_markdown"])
+    .addFilter("status", "1");
+  const path: string = params.getQueryString();
+  return await fetchUrl(baseUrl + "/jsonapi/node/pane?" + path);
+};
+
+export const getAllPaneFullDatum = async (): Promise<PaneFullDatum[]> => {
+  const params: DrupalJsonApiParams = new DrupalJsonApiParams();
+  params
+    .addFields("node--pane", [
+      "type",
+      "id",
+      "drupal_internal__nid",
+      "title",
+      "field_slug",
+      "field_options",
+      "field_is_context_pane",
+      "field_height_ratio_desktop",
+      "field_height_ratio_tablet",
+      "field_height_ratio_mobile",
+      "field_height_offset_desktop",
+      "field_height_offset_tablet",
+      "field_height_offset_mobile",
+      "field_markdown",
+      "field_image",
+      "field_image_svg",
+    ])
+    .addFields("node--markdown", [
+      "type",
+      "id",
+      "drupal_internal__nid",
+      "title",
+      "field_slug",
+      "field_markdown_body",
+      "field_image",
+      "field_image_svg",
+    ])
+    .addInclude(["field_markdown"])
+    .addInclude([
+      "field_markdown.field_image",
+      "field_markdown.field_image_svg",
+    ])
+    .addFields("file--file", ["type", "id", "filename", "uri"])
     .addFilter("status", "1");
   const path: string = params.getQueryString();
   return await fetchUrl(baseUrl + "/jsonapi/node/pane?" + path);

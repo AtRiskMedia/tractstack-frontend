@@ -159,6 +159,19 @@ export interface StoryFragmentDatum extends StoryFragment {
   changed: string;
   created: string;
 }
+
+export interface StoryFragmentFullDatum extends T8kNode {
+  field_slug: string;
+  field_panes: PaneFullDatum[];
+  field_tract_stack: TractStackNode;
+  drupal_internal__nid: number;
+  field_social_image_path: string;
+  field_tailwind_background_colour: string;
+  field_menu: MenuDatum;
+  changed: string;
+  created: string;
+}
+
 export interface TractStackDatum extends TractStack {
   drupal_internal__nid: number;
   field_story_fragment: StoryFragmentNode[];
@@ -193,15 +206,41 @@ export interface PaneDatum extends Pane {
   field_image: DrupalFile[];
   field_image_svg: DrupalFile[];
 }
+export interface PaneFullDatum extends Pane {
+  drupal_internal__nid: number;
+  field_options: string;
+  field_is_context_pane: boolean;
+  field_height_ratio_desktop: string;
+  field_height_ratio_tablet: string;
+  field_height_ratio_mobile: string;
+  field_height_offset_desktop: number;
+  field_height_offset_tablet: number;
+  field_height_offset_mobile: number;
+  field_markdown: MarkdownFullDatum[];
+  field_image: FileNode[];
+  field_image_svg: FileNode[];
+}
+
 export interface ContextPaneDatum extends PaneDatum {
   changed: string;
   created: string;
 }
+export interface ContextPaneFullDatum extends PaneFullDatum {
+  changed: string;
+  created: string;
+}
+
 export interface MarkdownDatum extends Markdown {
   drupal_internal__nid: number;
   field_markdown_body: string;
   field_image: DrupalFile[];
   field_image_svg: DrupalFile[];
+}
+export interface MarkdownFullDatum extends Markdown {
+  drupal_internal__nid: number;
+  field_markdown_body: string;
+  field_image: FileNode[];
+  field_image_svg: FileNode[];
 }
 export interface ResourceDatum extends Resource {
   drupal_internal__nid: number;
@@ -229,7 +268,6 @@ export interface StoryFragmentProps {
   tractStackSlug: string;
   changed: Date;
   created: Date;
-  contentMap: ContentMap[];
 }
 
 export interface ContextPaneProps {
@@ -240,7 +278,6 @@ export interface ContextPaneProps {
   impressions: ImpressionDatum[];
   changed: Date;
   created: Date;
-  contentMap: ContentMap[];
 }
 
 // axios sync to concierge

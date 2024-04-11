@@ -1,7 +1,7 @@
-import type { DrupalFile, FileNode } from "../../types";
+import type { FileNode } from "../../types";
 
 export function cleanFileDatum(
-  file: DrupalFile,
+  file: FileNode,
   optimizedSrc: string | undefined
 ) {
   const thisFile: FileNode = {
