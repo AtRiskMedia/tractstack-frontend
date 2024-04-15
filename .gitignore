@@ -52,7 +52,7 @@ public/fonts
 public/styles
 
 # custom codehooks
-src/custom
+src/custom/*
 !src/custom/codehooks.tsx.example
 
 # custom assets
