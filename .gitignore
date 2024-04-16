@@ -57,3 +57,7 @@ src/custom/*
 
 # custom assets
 public/custom
+
+# custom Dockerfile
+Dockerfile
+!Dockerfile.example
