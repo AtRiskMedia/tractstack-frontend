@@ -56,7 +56,8 @@ export const SvgInsideLeft = ({
   const b64Left = Buffer.from(leftMaskSvg, `utf8`).toString(`base64`);
   const leftMask = `data:image/svg+xml;base64,${b64Left}`;
   const style = {
-    width: `calc(var(--scale)*${cut + paddingLeft}px )`,
+    width: `calc(var(--scale)*${cut + paddingLeft}px)`,
+    height: `calc(var(--scale)*${paneHeight}px)`,
     shapeOutside: `url(${leftMask})`,
   };
 

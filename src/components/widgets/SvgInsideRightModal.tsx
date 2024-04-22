@@ -57,7 +57,8 @@ export const SvgInsideRightModal = ({
   const b64Right = Buffer.from(rightMaskSvg, `utf8`).toString(`base64`);
   const rightMask = `data:image/svg+xml;base64,${b64Right}`;
   const style = {
-    width: `calc(var(--scale)*${thisWidth - (cut + paddingLeft)}px )`,
+    width: `calc(var(--scale)*${thisWidth - (cut + paddingLeft)}px)`,
+    height: `calc(var(--scale)*${paneHeight}px)`,
     shapeOutside: `url(${rightMask})`,
   };
 
