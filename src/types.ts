@@ -1,3 +1,7 @@
+export interface StylesVersion {
+  v: number;
+}
+
 export type Site = {
   website: string;
   author: string;

@@ -20,7 +20,14 @@ import type {
   MarkdownFullDatum,
   Current,
   ContentMap,
+  StylesVersion,
 } from "../types";
+
+const stylesVerUrl = `${import.meta.env.PUBLIC_CONCIERGE_STYLES_URL}/v.json`;
+const requestStyles: Response = await fetch(stylesVerUrl);
+const stylesVer: StylesVersion =
+  requestStyles.status === 404 ? 0 : await requestStyles.json();
+const stylesUrl = `${import.meta.env.PUBLIC_CONCIERGE_STYLES_URL}/frontend.css?v=${stylesVer?.v || 0}`;
 
 const { slug } = Astro.params;
 const lookup = slug || import.meta.env.PUBLIC_HOME;
@@ -32,10 +39,10 @@ const id = contentMap.find(c => c.slug === lookup)?.id;
 if (id === undefined) {
   return Astro.redirect("/404");
 }
-const url2 = `${Astro.url.origin}/api/storyfragment/${id}.json`;
-const request2: Response = await fetch(url2);
+const urlDatum = `${Astro.url.origin}/api/storyfragment/${id}.json`;
+const requestDatum: Response = await fetch(urlDatum);
 const storyFragment: StoryFragmentFullDatum =
-  request.status === 404 ? [] : await request2.json();
+  requestDatum.status === 404 ? [] : await requestDatum.json();
 
 const title = storyFragment?.title;
 const socialImagePath = storyFragment?.field_social_image_path || undefined;
@@ -175,6 +182,7 @@ const impressions = impressionsRaw as ImpressionDatum[];
   pubDatetime={created || new Date()}
   modDatetime={changed || new Date()}
   ogImage={socialImagePath}
+  stylesUrl={stylesUrl}
 >
   <Header title={title || ``} menu={menu} slug={slug || `404`} />
   <main id="main-content">

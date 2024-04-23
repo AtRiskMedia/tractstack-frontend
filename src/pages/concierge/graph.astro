@@ -3,17 +3,26 @@ import Layout from "@layouts/Layout.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
 import { FastTravel } from "../../components/FastTravel";
-import type { ContentMap } from "../../types";
+import type { ContentMap, StylesVersion } from "../../types";
+
+const stylesVerUrl = `${import.meta.env.PUBLIC_CONCIERGE_STYLES_URL}/v.json`;
+const requestStyles: Response = await fetch(stylesVerUrl);
+const stylesVer: StylesVersion =
+  requestStyles.status === 404 ? 0 : await requestStyles.json();
+const stylesUrl = `${import.meta.env.PUBLIC_CONCIERGE_STYLES_URL}/frontend.css?v=${stylesVer?.v || 0}`;
 
 const url = `${Astro.url.origin}/api/contentMap.json`;
 const request: Response = await fetch(url);
 const contentMap: ContentMap[] =
   request.status === 404 ? [] : await request.json();
-
-export const prerender = false;
 ---
 
-<Layout title="Fast Travel" pubDatetime={new Date()} modDatetime={new Date()}>
+<Layout
+  title="Fast Travel"
+  pubDatetime={new Date()}
+  modDatetime={new Date()}
+  stylesUrl={stylesUrl}
+>
   <Header title="Fast Travel" slug="graph" />
   <main id="main-content">
     <div class="px-12 md:px-24 font-main text-xl py-24">

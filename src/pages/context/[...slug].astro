@@ -18,7 +18,14 @@ import type {
   ContentMap,
   FileNode,
   ContextPaneFullDatum,
+  StylesVersion,
 } from "../../types";
+
+const stylesVerUrl = `${import.meta.env.PUBLIC_CONCIERGE_STYLES_URL}/v.json`;
+const requestStyles: Response = await fetch(stylesVerUrl);
+const stylesVer: StylesVersion =
+  requestStyles.status === 404 ? 0 : await requestStyles.json();
+const stylesUrl = `${import.meta.env.PUBLIC_CONCIERGE_STYLES_URL}/frontend.css?v=${stylesVer?.v || 0}`;
 
 const { slug } = Astro.params;
 const lookup = slug || import.meta.env.PUBLIC_HOME;
@@ -30,10 +37,10 @@ const id = contentMap.find(c => c.slug === lookup)?.id;
 if (id === undefined) {
   throw new Error("Slug not found");
 }
-const url2 = `${Astro.url.origin}/api/context/${id}.json`;
-const request2: Response = await fetch(url2);
+const urlDatum = `${Astro.url.origin}/api/context/${id}.json`;
+const requestDatum: Response = await fetch(urlDatum);
 const pane: ContextPaneFullDatum =
-  request.status === 404 ? [] : await request2.json();
+  requestDatum.status === 404 ? [] : await requestDatum.json();
 
 const title = pane.title;
 const created = new Date(pane.created);
@@ -132,6 +139,7 @@ const current = {
   title={title}
   pubDatetime={created || new Date()}
   modDatetime={changed || new Date()}
+  stylesUrl={stylesUrl}
 >
   <Header title={title || ``} slug="context" context={true} />
   <main id="main-content">

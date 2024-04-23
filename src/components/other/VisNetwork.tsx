@@ -72,7 +72,9 @@ const VisNetwork = ({
           } else {
             const gotoSlugs = thisStoryFragment.map((f: ContentMap) => {
               return [
-                f.slug !== import.meta.env.PUBLIC_HOME ? `/${f.slug}` : `/`,
+                f.slug !== import.meta.env.PUBLIC_HOME
+                  ? `/${f.slug}#${thisPane.slug}`
+                  : `/#${thisPane.slug}`,
                 f.slug,
                 f.title,
               ];
@@ -177,13 +179,6 @@ const VisNetwork = ({
                               <li key={e[1]}>
                                 <a
                                   className="text-myblue hover:text-black hover:underline"
-                                  onClick={() => {
-                                    if (gotoMenu?.type === `Pane`)
-                                      console.log(`set goto last pane`, [
-                                        e[3],
-                                        e[1],
-                                      ]);
-                                  }}
                                   href={e[0]}
                                 >
                                   {e[2]}

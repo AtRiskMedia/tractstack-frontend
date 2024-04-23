@@ -13,6 +13,7 @@ export interface Props {
   pubDatetime?: Date;
   modDatetime?: Date | null;
   scrollSmooth?: boolean;
+  stylesUrl?: string;
 }
 
 const {
@@ -24,6 +25,7 @@ const {
   pubDatetime,
   modDatetime,
   scrollSmooth = false,
+  stylesUrl = ``,
 } = Astro.props;
 
 const socialImageURL = new URL(
@@ -46,6 +48,7 @@ const socialImageURL = new URL(
 
     <!-- Custom styles -->
     <link rel="stylesheet" href="/styles/custom.css" />
+    <link rel="stylesheet" href={stylesUrl} />
 
     <!-- General Meta Tags -->
     <title>{title}</title>
