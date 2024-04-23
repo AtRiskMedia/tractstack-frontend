@@ -30,7 +30,7 @@ const contentMap: ContentMap[] =
   request.status === 404 ? [] : await request.json();
 const id = contentMap.find(c => c.slug === lookup)?.id;
 if (id === undefined) {
-  throw new Error("Slug not found");
+  return Astro.redirect("/404");
 }
 const url2 = `${Astro.url.origin}/api/storyfragment/${id}.json`;
 const request2: Response = await fetch(url2);

@@ -174,6 +174,12 @@ export async function eventSync(payload: EventStream[]) {
     events,
     referrer: refPayload,
   };
+
+  if (!import.meta.env.PROD) {
+    console.log(`dev mode. skipping event pushPayload:`, options);
+    return true;
+  }
+
   const response = await pushPayload(options);
   if (response.status === 200) return true;
 

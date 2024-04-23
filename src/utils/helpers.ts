@@ -11,8 +11,6 @@ export function classNames(...classes: string[]) {
 }
 
 export function handleResize() {
-  const scrollBarOffset =
-    window.innerWidth - document.documentElement.clientWidth;
   const thisWidth = document.documentElement.clientWidth;
   const thisScale =
     thisWidth < 801
