@@ -39,10 +39,10 @@ export const fetchUrl = async (url: string): Promise<any> => {
         const dataFormatter: Jsona = new Jsona();
         const thisData = dataFormatter.deserialize(json);
         if (thisData.length) data = data.concat(thisData);
-        else data.push(thisData);
+        //else data.push(thisData);
         url = typeof json !== `string` ? json?.links?.next?.href : null;
         if (typeof url === `undefined`) more = false;
-      } else return null;
+      } else return data;
     } catch (e) {
       console.log(`error connecting to Drupal`, e);
       more = false;
