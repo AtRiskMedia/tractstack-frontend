@@ -33,8 +33,8 @@ export const fetchUrl = async (url: string): Promise<any> => {
   let more = true;
   while (more) {
     try {
-      const request: Response = await fetch(url);
-      if (request.success === 200) {
+      const request = await fetch(url);
+      if (request.ok) {
         const json: string | DrupalApiBody = await request.json();
         const dataFormatter: Jsona = new Jsona();
         const thisData = dataFormatter.deserialize(json);
