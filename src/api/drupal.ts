@@ -34,13 +34,15 @@ export const fetchUrl = async (url: string): Promise<any> => {
   while (more) {
     try {
       const request: Response = await fetch(url);
-      const json: string | DrupalApiBody = await request.json();
-      const dataFormatter: Jsona = new Jsona();
-      const thisData = dataFormatter.deserialize(json);
-      if (thisData.length) data = data.concat(thisData);
-      else data.push(thisData);
-      url = typeof json !== `string` ? json?.links?.next?.href : null;
-      if (typeof url === `undefined`) more = false;
+      if (request.success === 200) {
+        const json: string | DrupalApiBody = await request.json();
+        const dataFormatter: Jsona = new Jsona();
+        const thisData = dataFormatter.deserialize(json);
+        if (thisData.length) data = data.concat(thisData);
+        else data.push(thisData);
+        url = typeof json !== `string` ? json?.links?.next?.href : null;
+        if (typeof url === `undefined`) more = false;
+      } else more = false;
     } catch (e) {
       console.log(`error connecting to Drupal`, e);
       more = false;
