@@ -42,7 +42,7 @@ export const fetchUrl = async (url: string): Promise<any> => {
         else data.push(thisData);
         url = typeof json !== `string` ? json?.links?.next?.href : null;
         if (typeof url === `undefined`) more = false;
-      } else more = false;
+      } else return null;
     } catch (e) {
       console.log(`error connecting to Drupal`, e);
       more = false;
