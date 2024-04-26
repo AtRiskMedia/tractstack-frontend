@@ -9,7 +9,6 @@ function getCurrentAccessToken() {
 }
 
 function setRefreshedTokens(response: IAuthStoreLoginResponse) {
-  console.log(`REFRESH`, response);
   if (response?.tokens) {
     auth.setKey(`token`, response.tokens);
   }
@@ -60,7 +59,7 @@ export const client = createAxiosClient({
     },
   },
   getCurrentAccessToken,
-  refreshTokenUrl: import.meta.env.PUBLIC_CONCIERGE_REFRESH_TOKEN_URL,
+  refreshTokenUrl: `${import.meta.env.PUBLIC_CONCIERGE_BASE_URL}/auth/refreshToken`,
   setRefreshedTokens,
   getAuthData,
   logout,
