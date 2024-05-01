@@ -77,11 +77,7 @@ export default function PaneRender({ payload }: PaneRenderProps) {
     <div
       id={payload.slug}
       style={bgColourStyle}
-      className={classNames(
-        paneHeightRatio,
-        paneHeightOffset,
-        `grid h-fit-contents`
-      )}
+      className={classNames(paneHeightRatio, paneHeightOffset, `grid`)}
     >
       {paneFragments
         .sort(
@@ -94,7 +90,7 @@ export default function PaneRender({ payload }: PaneRenderProps) {
         )
         .map((f: BgPaneDatum | MarkdownPaneDatum) => (
           <div
-            className="relative w-full h-full justify-self-start"
+            className="relative w-full h-auto justify-self-start"
             style={paneFragmentStyle}
             key={f.id}
           >
