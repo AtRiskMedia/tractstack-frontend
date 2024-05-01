@@ -58,14 +58,25 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
                 typeof hiddenPanes[pane.id] === `boolean` ? `true` : `false`
               }
             >
-              <Pane
-                client:load
-                payload={
-                  panesPayload
-                    .filter((p: PaneDatumProps) => p.id === pane.id)
-                    .at(0)!
-                }
-              />
+              {idx === 0 ? (
+                <Pane
+                  client:load
+                  payload={
+                    panesPayload
+                      .filter((p: PaneDatumProps) => p.id === pane.id)
+                      .at(0)!
+                  }
+                />
+              ) : (
+                <Pane
+                  client:visible
+                  payload={
+                    panesPayload
+                      .filter((p: PaneDatumProps) => p.id === pane.id)
+                      .at(0)!
+                  }
+                />
+              )}
             </div>
           </astro-pane>
         </>
