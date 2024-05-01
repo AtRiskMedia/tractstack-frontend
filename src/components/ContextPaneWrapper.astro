@@ -14,23 +14,21 @@ const { pane, contentMap, current } = Astro.props;
   data-id={JSON.stringify(current)}
   data-map={JSON.stringify(contentMap)}
 >
-  <ul class="py-16">
-    <astro-context-pane key={`pane-${pane.id}`}>
-      <li id={`pane-${pane.id}`} class="pane" data-hidden="false">
-        <div id={`${pane.slug}`}>
-          <Pane client:load payload={pane} />
-        </div>
-      </li>
+  <div class="py-16">
+    <astro-context-pane key={`pane-${pane.id}`} id={`${pane.id}`}>
+      <div id={`pane-${pane.slug}`} class="pane" data-hidden="false">
+        <Pane client:load payload={pane} />
+      </div>
     </astro-context-pane>
-    <li class="text-center py-4">
+    <div class="text-center py-4">
       <button
         id="close-main"
         class="rounded-md bg-myorange/10 hover:bg-black hover:text-white px-3.5 py-1.5 text-base leading-7 text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-myorange"
       >
         Close
       </button>
-    </li>
-  </ul>
+    </div>
+  </div>
 </astro-context-pane-wrapper>
 
 <script>
