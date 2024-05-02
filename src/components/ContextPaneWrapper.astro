@@ -15,11 +15,9 @@ const { pane, contentMap, current } = Astro.props;
   data-map={JSON.stringify(contentMap)}
 >
   <div class="py-16">
-    <astro-context-pane key={`pane-${pane.id}`} id={`${pane.slug}`}>
-      <div id={`pane-${pane.id}`} class="pane" data-hidden="false">
-        <Pane client:load payload={pane} />
-      </div>
-    </astro-context-pane>
+    <div id={`pane-${pane.id}`} class="pane" data-hidden="false">
+      <Pane client:load payload={pane} />
+    </div>
     <div class="text-center py-4">
       <button
         id="close-main"
@@ -51,16 +49,7 @@ const { pane, contentMap, current } = Astro.props;
       }
       const contentMapPayload = this.dataset.map;
       if (contentMapPayload) contentMap.set(JSON.parse(contentMapPayload));
-      this.querySelector("div");
     }
   }
   customElements.define("astro-context-pane-wrapper", ContextPaneWrap);
-
-  class ContextPane extends HTMLElement {
-    constructor() {
-      super();
-      this.querySelector("div");
-    }
-  }
-  customElements.define("astro-context-pane", ContextPane);
 </script>

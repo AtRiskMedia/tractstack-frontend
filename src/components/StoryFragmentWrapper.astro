@@ -48,32 +48,28 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
   >
     {
       panesPayload.map((pane: PaneDatumProps) => (
-        <>
-          <astro-pane key={`pane-${pane.id}`} id={pane.id}>
-            <div
-              id={`pane-${pane.id}`}
-              class={classNames(
-                `pane`,
-                typeof overflowHidden[pane.id] === `boolean`
-                  ? `overflow-hidden`
-                  : ``,
-                typeof maxHScreen[pane.id] === `boolean` ? `h-max-screen` : ``
-              )}
-              data-hidden={
-                typeof hiddenPanes[pane.id] === `boolean` ? `true` : `false`
-              }
-            >
-              <Pane
-                client:load
-                payload={
-                  panesPayload
-                    .filter((p: PaneDatumProps) => p.id === pane.id)
-                    .at(0)!
-                }
-              />
-            </div>
-          </astro-pane>
-        </>
+        <div
+          id={`pane-${pane.id}`}
+          class={classNames(
+            `pane`,
+            typeof overflowHidden[pane.id] === `boolean`
+              ? `overflow-hidden`
+              : ``,
+            typeof maxHScreen[pane.id] === `boolean` ? `h-max-screen` : ``
+          )}
+          data-hidden={
+            typeof hiddenPanes[pane.id] === `boolean` ? `true` : `false`
+          }
+        >
+          <Pane
+            client:load
+            payload={
+              panesPayload
+                .filter((p: PaneDatumProps) => p.id === pane.id)
+                .at(0)!
+            }
+          />
+        </div>
       ))
     }
   </div>
@@ -99,16 +95,7 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
       }
       const contentMapPayload = this.dataset.map;
       if (contentMapPayload) contentMap.set(JSON.parse(contentMapPayload));
-      this.querySelector("div");
     }
   }
   customElements.define("astro-storyfragment", StoryFragment);
-
-  class Pane extends HTMLElement {
-    constructor() {
-      super();
-      this.querySelector("div");
-    }
-  }
-  customElements.define("astro-pane", Pane);
 </script>

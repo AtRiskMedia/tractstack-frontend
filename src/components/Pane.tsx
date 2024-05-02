@@ -12,20 +12,26 @@ const Pane = (props: { payload: PaneDatumProps }) => {
   // intercept codehook on panePayload
   const hasCodeHook =
     typeof props?.payload?.optionsPayload?.codeHook?.target === `string`;
-  if (hasCodeHook && filterBeliefs) {
-    return (
-      <PaneFilter
-        heldBeliefsFilter={props?.payload?.optionsPayload?.heldBeliefs}
-        withheldBeliefsFilter={props?.payload?.optionsPayload?.withheldBeliefs}
-      >
-        <div className="bg-yellow-300">
-          <p>codehook here {props.payload.optionsPayload.codeHook.target}</p>
-        </div>
-      </PaneFilter>
-    );
-  } else if (hasCodeHook) {
+  //if (hasCodeHook && filterBeliefs) {
+  //  return (
+  //    <PaneFilter
+  //      heldBeliefsFilter={props?.payload?.optionsPayload?.heldBeliefs}
+  //      withheldBeliefsFilter={props?.payload?.optionsPayload?.withheldBeliefs}
+  //    >
+  //      <div className="bg-yellow-300">
+  //        <p>codehook here {props.payload.optionsPayload.codeHook.target}</p>
+  //      </div>
+  //    </PaneFilter>
+  //  );
+  //}
+  if (hasCodeHook) {
     const target = props.payload.optionsPayload.codeHook.target;
-    if (target) return <CodeHook target={target} />;
+    if (target)
+      return (
+        <div id={props.payload.slug}>
+          <CodeHook target={target} />
+        </div>
+      );
     else return <div />;
   }
 

@@ -102,7 +102,7 @@ export const Belief = ({
                     selected?.color
                       ? `border-${selected.color.substring(3)}`
                       : `bg-slate-200`,
-                    `relative w-full cursor-default rounded-md border bg-white text-black py-2 pl-3 pr-10 text-left shadow-sm focus:border-myorange focus:outline-none focus:ring-1 focus:ring-myorange sm:text-sm`
+                    `relative w-full cursor-default rounded-md border bg-white text-black py-2 pl-3 pr-10 text-left shadow-sm focus:border-myorange focus:outline-none focus:ring-1 focus:ring-myorange`
                   )}
                 >
                   <span className="flex items-center">
@@ -133,7 +133,7 @@ export const Belief = ({
                   leaveFrom="opacity-100"
                   leaveTo="opacity-0"
                 >
-                  <Listbox.Options className="absolute mt-1 max-h-60 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                  <Listbox.Options className="absolute mt-1 max-h-60 overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     {thisScale.map((factor: BeliefOptionDatum) => (
                       <Listbox.Option
                         key={factor.id}
