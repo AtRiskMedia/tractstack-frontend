@@ -25,7 +25,7 @@ export function tailwindWhitelist(
         : Math.floor((600 * Number(pane.heightRatioMobile)) / 100);
     const paneHeightRatio = classNames(
       paneHeightRatioMobile
-        ? `h-[calc(var(--scale)*${paneHeightRatioMobile}px)]`
+        ? `h-[calc(var(--scale)*${paneHeightRatioMobile}px)] xs:h-[calc(var(--scale)*${paneHeightRatioMobile}px)]`
         : ``,
       paneHeightRatioTablet
         ? `md:h-[calc(var(--scale)*${paneHeightRatioTablet}px)]`
@@ -36,7 +36,7 @@ export function tailwindWhitelist(
     );
     const paneHeightOffset = classNames(
       pane.heightOffsetMobile
-        ? `mt-[calc(var(--scale)*${Math.floor((600 * pane.heightOffsetMobile) / 100)}px)]`
+        ? `mt-[calc(var(--scale)*${Math.floor((600 * pane.heightOffsetMobile) / 100)}px)] xs:mt-[calc(var(--scale)*${Math.floor((600 * pane.heightOffsetMobile) / 100)}px)]`
         : ``,
       pane.heightOffsetTablet
         ? `md:mt-[calc(var(--scale)*${Math.floor(
