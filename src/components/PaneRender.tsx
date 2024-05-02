@@ -24,7 +24,7 @@ export default function PaneRender({ payload }: PaneRenderProps) {
       : Math.floor((600 * Number(payload.heightRatioMobile)) / 100);
   const paneHeightRatio = classNames(
     paneHeightRatioMobile
-      ? `h-[calc(var(--scale)*${paneHeightRatioMobile}px)]`
+      ? `h-[calc(var(--scale)*${paneHeightRatioMobile}px)] xs:h-[calc(var(--scale)*${paneHeightRatioMobile}px)]`
       : ``,
     paneHeightRatioTablet
       ? `md:h-[calc(var(--scale)*${paneHeightRatioTablet}px)]`
@@ -42,7 +42,7 @@ export default function PaneRender({ payload }: PaneRenderProps) {
   // - if paneOffset[Desktop|Tablet|Mobile], calculate margin and inject
   const paneHeightOffset = classNames(
     payload.heightOffsetMobile
-      ? `mt-[calc(var(--scale)*${Math.floor((600 * payload.heightOffsetMobile) / 100)}px)]`
+      ? `mt-[calc(var(--scale)*${Math.floor((600 * payload.heightOffsetMobile) / 100)}px)] xs:mt-[calc(var(--scale)*${Math.floor((600 * payload.heightOffsetMobile) / 100)}px)]`
       : ``,
     payload.heightOffsetTablet
       ? `md:mt-[calc(var(--scale)*${Math.floor(
