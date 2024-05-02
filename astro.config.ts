@@ -12,7 +12,12 @@ export default defineConfig({
     mode: "standalone",
   }),
   image: {
-    domains: [SITE.imageDomain],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**.tractstack.com",
+      },
+    ],
   },
   site: SITE.website,
   integrations: [

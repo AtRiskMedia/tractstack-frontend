@@ -4,7 +4,6 @@ export interface StylesVersion {
 
 export type Site = {
   website: string;
-  imageDomain: string;
   author: string;
   desc: string;
   title: string;

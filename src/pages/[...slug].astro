@@ -106,6 +106,7 @@ async function getOptimizedImage(src: string) {
     const img = await getImage({
       src,
       inferSize: true,
+      format: `webp`,
     });
     return img.src;
   } catch {
