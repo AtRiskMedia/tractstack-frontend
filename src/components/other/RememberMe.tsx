@@ -20,7 +20,8 @@ export const RememberMe = () => {
       </a>
     );
   return (
-    <a href="/concierge/profile" className="hover:text-myblue hover:rotate-6">
+    <a href="/concierge/profile" className="hover:text-myblue hover:rotate-6" 
+    title="Session and Profile options">
       <BoltIcon
         className="h-6 w-6 mx-2 text-myblue/80"
         title="Configure your Session"
