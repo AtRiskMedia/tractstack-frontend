@@ -40,9 +40,14 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
   data-id={JSON.stringify(current)}
   data-map={JSON.stringify(contentMap)}
 >
-  <div class={classNames(tailwindBgColour ? tailwindBgColour : ``,`overflow-hidden`)}>
+  <div
+    class={classNames(
+      tailwindBgColour ? tailwindBgColour : ``,
+      `overflow-hidden`
+    )}
+  >
     {
-      panesPayload.map((pane: PaneDatumProps, idx: number) => (
+      panesPayload.map((pane: PaneDatumProps) => (
         <>
           <astro-pane key={`pane-${pane.id}`} id={pane.id}>
             <div
@@ -58,25 +63,14 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
                 typeof hiddenPanes[pane.id] === `boolean` ? `true` : `false`
               }
             >
-              {idx === 0 ? (
-                <Pane
-                  client:load
-                  payload={
-                    panesPayload
-                      .filter((p: PaneDatumProps) => p.id === pane.id)
-                      .at(0)!
-                  }
-                />
-              ) : (
-                <Pane
-                  client:idle
-                  payload={
-                    panesPayload
-                      .filter((p: PaneDatumProps) => p.id === pane.id)
-                      .at(0)!
-                  }
-                />
-              )}
+              <Pane
+                client:load
+                payload={
+                  panesPayload
+                    .filter((p: PaneDatumProps) => p.id === pane.id)
+                    .at(0)!
+                }
+              />
             </div>
           </astro-pane>
         </>
