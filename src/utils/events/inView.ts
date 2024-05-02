@@ -13,6 +13,7 @@ export function inView() {
   elements.on("enter", (event: InViewEvent) => {
     const target = event.target as HTMLElement;
     if (target.dataset.hidden === `false`) {
+      console.log(`enter`, event.target.id);
       const id = event.target.id.substring(5);
       if (!panesVisible.get()[id]) panesVisible.setKey(id, Date.now());
     }
@@ -22,6 +23,7 @@ export function inView() {
     const target = event.target as HTMLElement;
     if (target.dataset.hidden === `false`) {
       const id = event.target.id.substring(5);
+      console.log(`exit`, event.target.id);
       const values = panesVisible.get();
       const value = values[id];
       if (value) {

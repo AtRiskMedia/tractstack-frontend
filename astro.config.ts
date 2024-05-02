@@ -12,7 +12,7 @@ export default defineConfig({
     mode: "standalone",
   }),
   image: {
-    domains: ["tractstack.com", "atriskmedia.com"],
+    domains: [SITE.imageDomain],
   },
   site: SITE.website,
   integrations: [

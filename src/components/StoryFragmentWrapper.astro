@@ -44,9 +44,9 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
     {
       panesPayload.map((pane: PaneDatumProps, idx: number) => (
         <>
-          <astro-pane key={`pane-${pane.id}`} id={`pane-${pane.id}`}>
+          <astro-pane key={`pane-${pane.id}`} id={pane.id}>
             <div
-              id={`${pane.slug}`}
+              id={`pane-${pane.id}`}
               class={classNames(
                 `pane`,
                 typeof overflowHidden[pane.id] === `boolean`
@@ -105,7 +105,7 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
       }
       const contentMapPayload = this.dataset.map;
       if (contentMapPayload) contentMap.set(JSON.parse(contentMapPayload));
-      this.querySelector("ul");
+      this.querySelector("div");
     }
   }
   customElements.define("astro-storyfragment", StoryFragment);
@@ -113,7 +113,7 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
   class Pane extends HTMLElement {
     constructor() {
       super();
-      this.querySelector("li");
+      this.querySelector("div");
     }
   }
   customElements.define("astro-pane", Pane);
