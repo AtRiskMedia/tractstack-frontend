@@ -40,7 +40,7 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
   data-id={JSON.stringify(current)}
   data-map={JSON.stringify(contentMap)}
 >
-  <div class={classNames(tailwindBgColour,`overflow-hidden`)}>
+  <div class={classNames(tailwindBgColour ? tailwindBgColour : ``,`overflow-hidden`)}>
     {
       panesPayload.map((pane: PaneDatumProps, idx: number) => (
         <>
