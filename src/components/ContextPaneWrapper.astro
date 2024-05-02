@@ -51,7 +51,7 @@ const { pane, contentMap, current } = Astro.props;
       }
       const contentMapPayload = this.dataset.map;
       if (contentMapPayload) contentMap.set(JSON.parse(contentMapPayload));
-      this.querySelector("ul");
+      this.querySelector("div");
     }
   }
   customElements.define("astro-context-pane-wrapper", ContextPaneWrap);
@@ -59,7 +59,7 @@ const { pane, contentMap, current } = Astro.props;
   class ContextPane extends HTMLElement {
     constructor() {
       super();
-      this.querySelector("li");
+      this.querySelector("div");
     }
   }
   customElements.define("astro-context-pane", ContextPane);
