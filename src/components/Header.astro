@@ -29,21 +29,23 @@ const isHome = slug === import.meta.env.PUBLIC_HOME;
   <div
     class="flex flex-row flex-nowrap items-center justify-between py-3 px-4 md:px-8 bg-mygreen/10"
   >
-    <div class="flex flex-row flex-nowrap items-center h-8">
-      <object
-        type="image/svg+xml"
-        data="/custom/logo.svg"
-        class="h-5 w-auto"
-        aria-label="Logo">Logo</object
-      >
-      <span class="w-2"></span>
-      <object
-        type="image/svg+xml"
-        data="/custom/wordmark.svg"
-        aria-label="Wordmark"
-        class="h-5 w-auto">Wordmark</object
-      >
-    </div>
+    <a href="/" title="Home page">
+      <div class="flex flex-row flex-nowrap items-center h-8">
+        <object
+          type="image/svg+xml"
+          data="/custom/logo.svg"
+          class="h-5 w-auto pointer-events-none"
+          aria-label="Logo">Logo</object
+        >
+        <span class="w-2"></span>
+        <object
+          type="image/svg+xml"
+          data="/custom/wordmark.svg"
+          aria-label="Wordmark"
+          class="h-5 w-auto pointer-events-none">Wordmark</object
+        >
+      </div>
+    </a>
     {!!menu ? <Menu payload={menu} client:load /> : null}
   </div>
   <div

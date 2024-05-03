@@ -10,7 +10,7 @@ export interface Props {
   context?: boolean;
 }
 
-const slogan = import.meta.env.PUBLIC_FOOTER || ``;
+const footer = import.meta.env.PUBLIC_FOOTER || ``;
 const { created = new Date(), context = false, menu } = Astro.props;
 ---
 
@@ -21,7 +21,7 @@ const { created = new Date(), context = false, menu } = Astro.props;
         <button
           id="top"
           title="Back to top"
-          class="text-black/50 hover:text-black text-3xl"
+          class="opacity-20 hover:opacity-50 text-myblue p-1 rounded-md bg-white hover:bg-myblue hover:text-white text-xl fixed bottom-12 right-2"
         >
           ↑
         </button>
@@ -31,26 +31,36 @@ const { created = new Date(), context = false, menu } = Astro.props;
   <div class="pb-6">
     {menu ? <FooterMenu payload={menu} /> : null}
     <Socials />
-    <div class="my-2 flex flex-col items-center justify-center xs:flex-row">
-      <span>Copyright &#169; {created.getFullYear()}</span>
-      <span class="hidden xs:inline">&nbsp;|&nbsp;</span>
-      <span>{slogan}</span>
+    <div
+      class="my-2 flex flex-col items-center justify-center xs:flex-row text-myblue/80"
+    >
+      <div class="px-8 text-center">
+        Copyright &#169; {created.getFullYear()}
+        &nbsp;|&nbsp;
+        {footer}
+      </div>
     </div>
     <div
       class="my-2 flex flex-col items-center justify-center xs:flex-row text-myblue/80"
     >
-      <div class="px-3 text-center">
-        Pressed with&nbsp;
+      <div class="px-8 text-center">
+        This website is pressed with&nbsp;
         <Link
           href="https://tractstack.com"
-          className="hover:underline font-bold"
+          className="hover:underline font-bold hover:text-black"
           target="_blank"
           title="Tract Stack by At Risk Media"
         >
           Tract Stack</Link
         >
-        : all-in-one publishing platform to grow your content into a business
+        &ndash; Powered by <Link
+          href="https://atriskmedia.com"
+          className="hover:underline font-bold hover:text-black"
+          target="_blank"
+          title="At Risk Media">At Risk Media</Link
+        >'s next chapter digital analytics
       </div>
+      <br /><br /><br />
     </div>
   </div>
 </footer>

@@ -112,7 +112,7 @@ export const ProfileUnlock = () => {
               Email address
             </label>
             <input
-              type="text"
+              type="email"
               name="email"
               id="email"
               autoComplete="email"
