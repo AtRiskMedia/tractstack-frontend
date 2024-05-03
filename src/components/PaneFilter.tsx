@@ -12,6 +12,7 @@ const PaneFilter = (props: {
   const $heldBeliefsAll = useStore(heldBeliefs);
 
   const [reveal, setReveal] = useState(false);
+  const [hasReveal, setHasReveal] = useState(false);
   const [overrideWithhold, setOverrideWithhold] = useState(false);
 
   useEffect(() => {
@@ -42,8 +43,10 @@ const PaneFilter = (props: {
           });
         }
       });
-      if (match) setReveal(true);
-      else setReveal(false);
+      if (match) {
+        if (!hasReveal) setHasReveal(true);
+        setReveal(true);
+      } else setReveal(false);
     } else setReveal(true);
 
     // must match for all withheldBeliefs
@@ -78,6 +81,8 @@ const PaneFilter = (props: {
     } else setOverrideWithhold(true);
   }, [$heldBeliefsAll, heldBeliefsFilter, withheldBeliefsFilter]);
 
+  if (hasReveal && reveal && overrideWithhold)
+    return <div className="motion-safe:animate-fadeInUp">{props.children}</div>;
   if (reveal && overrideWithhold) return props.children;
   return <div />;
 };
