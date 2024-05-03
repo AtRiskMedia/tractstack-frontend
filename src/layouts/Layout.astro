@@ -24,7 +24,7 @@ const {
   canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
   pubDatetime,
   modDatetime,
-  scrollSmooth = false,
+  scrollSmooth = true,
   stylesUrl = ``,
 } = Astro.props;
 
@@ -34,7 +34,7 @@ const socialImageURL = `${canonicalURL}${ogImage ?? SITE.ogImage ?? `og.png`}`;
 <!doctype html>
 <html
   lang=`${LOCALE.lang ?? "en"}`
-  class={`${scrollSmooth && "scroll-smooth"}`}
+  class={`${scrollSmooth && "motion-safe:scroll-smooth"}`}
 >
   <head>
     <meta charset="UTF-8" />

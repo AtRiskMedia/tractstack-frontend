@@ -32,49 +32,63 @@ export function scrollToTop() {
 }
 
 export function closeContextPane() {
+  const lastStep =
+    storySteps.get()?.length > 2 ? storySteps.get().at(-2) : null;
+  const goto =
+    lastStep && typeof lastStep.slug === `string` && lastStep.slug.length
+      ? lastStep.slug
+      : ``;
   const button = document.querySelector("button#close");
   button?.setAttribute("href", document.referrer);
   button?.addEventListener("click", () => {
-    if (typeof document.referrer.split("/")[2] === `undefined`)
-      window.location.href = `/`;
-    else history.go(-1);
+    window.location.href = `/${goto}`;
   });
   const button2 = document.querySelector("button#close-main");
   button2?.setAttribute("href", document.referrer);
   button2?.addEventListener("click", () => {
-    if (typeof document.referrer.split("/")[2] === `undefined`)
-      window.location.href = `/`;
-    else history.go(-1);
+    window.location.href = `/${goto}`;
   });
 }
 
 export function closeCart() {
+  const lastStep =
+    storySteps.get()?.length > 2 ? storySteps.get().at(-2) : null;
+  const goto =
+    lastStep && typeof lastStep.slug === `string` && lastStep.slug.length
+      ? lastStep.slug
+      : ``;
   const button = document.querySelector("button#close-cart");
   button?.setAttribute("href", document.referrer);
   button?.addEventListener("click", () => {
-    if (typeof document.referrer.split("/")[2] === `undefined`)
-      window.location.href = `/`;
-    else history.go(-1);
+    window.location.href = `/${goto}`;
   });
 }
 
 export function closeGraph() {
+  const lastStep =
+    storySteps.get()?.length > 2 ? storySteps.get().at(-2) : null;
+  const goto =
+    lastStep && typeof lastStep.slug === `string` && lastStep.slug.length
+      ? lastStep.slug
+      : ``;
   const button = document.querySelector("button#close-graph");
   button?.setAttribute("href", document.referrer);
   button?.addEventListener("click", () => {
-    if (typeof document.referrer.split("/")[2] === `undefined`)
-      window.location.href = `/`;
-    else history.go(-1);
+    window.location.href = `/${goto}`;
   });
 }
 
 export function closeProfile() {
+  const lastStep =
+    storySteps.get()?.length > 2 ? storySteps.get().at(-2) : null;
+  const goto =
+    lastStep && typeof lastStep.slug === `string` && lastStep.slug.length
+      ? lastStep.slug
+      : ``;
   const button = document.querySelector("button#close-profile");
   button?.setAttribute("href", document.referrer);
   button?.addEventListener("click", () => {
-    if (typeof document.referrer.split("/")[2] === `undefined`)
-      window.location.href = `/`;
-    else history.go(-1);
+    window.location.href = `/${goto}`;
   });
 }
 
