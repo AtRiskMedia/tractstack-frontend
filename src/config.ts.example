@@ -5,7 +5,7 @@ export const SITE: Site = {
   author: "At Risk Media",
   desc: "Story Keeper Analytics + Web Press",
   title: "TractStack",
-  ogImage: "og.jpg",
+  ogImage: "og.png",
 };
 
 export const LOCALE = {
