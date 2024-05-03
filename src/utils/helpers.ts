@@ -35,14 +35,20 @@ export function closeContextPane() {
   const button = document.querySelector("button#close");
   button?.setAttribute("href", document.referrer);
   button?.addEventListener("click", () => {
-    if (storySteps.get().length > 1) history.back();
-    else window.location.href = `/`;
+    if (
+      typeof document.referrer.split("/")[2] === `undefined`
+    )
+      window.location.href = `/`;
+    else history.back();
   });
   const button2 = document.querySelector("button#close-main");
   button2?.setAttribute("href", document.referrer);
   button2?.addEventListener("click", () => {
-    if (storySteps.get().length > 1) history.back();
-    else window.location.href = `/`;
+    if (
+      typeof document.referrer.split("/")[2] === `undefined`
+    )
+      window.location.href = `/`;
+    else history.back();
   });
 }
 
@@ -50,8 +56,11 @@ export function closeCart() {
   const button = document.querySelector("button#close-cart");
   button?.setAttribute("href", document.referrer);
   button?.addEventListener("click", () => {
-    if (storySteps.get().length > 1) history.back();
-    else window.location.href = `/`;
+    if (
+      typeof document.referrer.split("/")[2] === `undefined`
+    )
+      window.location.href = `/`;
+    else history.back();
   });
 }
 
@@ -59,8 +68,11 @@ export function closeGraph() {
   const button = document.querySelector("button#close-graph");
   button?.setAttribute("href", document.referrer);
   button?.addEventListener("click", () => {
-    if (storySteps.get().length > 1) history.back();
-    else window.location.href = `/`;
+    if (
+      typeof document.referrer.split("/")[2] === `undefined`
+    )
+      window.location.href = `/`;
+    else history.back();
   });
 }
 
@@ -68,8 +80,11 @@ export function closeProfile() {
   const button = document.querySelector("button#close-profile");
   button?.setAttribute("href", document.referrer);
   button?.addEventListener("click", () => {
-    if (storySteps.get().length > 1) history.back();
-    else window.location.href = `/`;
+    if (
+      typeof document.referrer.split("/")[2] === `undefined`
+    )
+      window.location.href = `/`;
+    else history.back();
   });
 }
 
