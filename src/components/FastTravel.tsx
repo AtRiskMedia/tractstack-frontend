@@ -67,7 +67,7 @@ export const FastTravel = ({ contentMap }: { contentMap: ContentMap[] }) => {
         {!loaded ? (
           <div className="flex items-center justify-center h-full">
             <div className="max-w-xs leading-6 text-lg text-mydarkgrey font-action">
-              <p className="py-16">
+              <p className="p-16">
                 <strong>Loading</strong>
               </p>
             </div>
@@ -75,7 +75,7 @@ export const FastTravel = ({ contentMap }: { contentMap: ContentMap[] }) => {
         ) : !show ? (
           <div className="flex items-center justify-center h-full">
             <div className="max-w-xs leading-6 text-lg">
-              <p className="py-16">
+              <p className="p-16">
                 <span className="font-action text-myblue">
                   Your content journey has just begun.
                 </span>
