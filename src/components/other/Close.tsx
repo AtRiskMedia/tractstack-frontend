@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useStore } from "@nanostores/react";
 import { storySteps } from "../../store/events";
-import type { StoryStep } from "../types";
+import type { StoryStep } from "../../types";
 
 export const Close = () => {
   const [goto, setGoto] = useState(``);
