@@ -82,9 +82,15 @@ const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
 </Layout>
 
 <script>
+  import { handleResize } from "../../utils/helpers";
   import { init } from "../../utils/init";
 
-  document.addEventListener("astro:page-load", () => {
+  init();
+  handleResize();
+  window.addEventListener(`resize`, handleResize);
+
+  document.addEventListener("astro:after-swap", () => {
     init();
+    window.addEventListener(`resize`, handleResize);
   });
 </script>

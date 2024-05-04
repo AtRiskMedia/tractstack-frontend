@@ -19,7 +19,7 @@ const { pane, contentMap, current } = Astro.props;
     <div id={`pane-${pane.id}`} class="pane" data-hidden="false">
       <Pane client:load payload={pane} />
     </div>
-    <Close />
+    <Close client:load />
   </div>
 </astro-context-pane-wrapper>
 
@@ -44,18 +44,6 @@ const { pane, contentMap, current } = Astro.props;
       }
       const contentMapPayload = this.dataset.map;
       if (contentMapPayload) contentMap.set(JSON.parse(contentMapPayload));
-
-      const closeButton = this.querySelector(`button#close-main`);
-      if (closeButton)
-        closeButton.addEventListener("click", () => {
-          const goto =
-            lastStep &&
-            typeof lastStep.slug === `string` &&
-            lastStep.slug.length
-              ? lastStep.slug
-              : ``;
-          window.location.href = `/${goto}`;
-        });
     }
   }
   customElements.define("astro-context-pane-wrapper", ContextPaneWrap);

@@ -214,8 +214,13 @@ const impressions = impressionsRaw as ImpressionDatum[];
 
   // always run first load
   handleResize();
+  init();
+  inView();
+  eventStream();
+  scrollToTop();
+  window.addEventListener(`resize`, handleResize);
 
-  document.addEventListener("astro:page-load", () => {
+  document.addEventListener("astro:after-swap", () => {
     init();
     inView();
     eventStream();
