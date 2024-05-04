@@ -31,66 +31,22 @@ export function scrollToTop() {
   });
 }
 
-//export function closeContextPane() {
-//  const lastStep =
-//    storySteps.get()?.length > 2 ? storySteps.get().at(-2) : null;
-//  const goto =
-//    lastStep && typeof lastStep.slug === `string` && lastStep.slug.length
-//      ? lastStep.slug
-//      : ``;
-//  const button = document.querySelector("button#close");
-//  button?.setAttribute("href", document.referrer);
-//  button?.addEventListener("click", () => {
-//    window.location.href = `/${goto}`;
-//  });
-//  const button2 = document.querySelector("button#close-main");
-//  button2?.setAttribute("href", document.referrer);
-//  button2?.addEventListener("click", () => {
-//    window.location.href = `/${goto}`;
-//  });
-//}
-
-//export function closeCart() {
-//  const lastStep =
-//    storySteps.get()?.length > 2 ? storySteps.get().at(-2) : null;
-//  const goto =
-//    lastStep && typeof lastStep.slug === `string` && lastStep.slug.length
-//      ? lastStep.slug
-//      : ``;
-//  const button = document.querySelector("button#close-cart");
-//  button?.setAttribute("href", document.referrer);
-//  button?.addEventListener("click", () => {
-//    window.location.href = `/${goto}`;
-//  });
-//}
-//
-//export function closeGraph() {
-//  const lastStep =
-//    storySteps.get()?.length > 2 ? storySteps.get().at(-2) : null;
-//  const goto =
-//    lastStep && typeof lastStep.slug === `string` && lastStep.slug.length
-//      ? lastStep.slug
-//      : ``;
-//  const button = document.querySelector("button#close-graph");
-//  button?.setAttribute("href", document.referrer);
-//  button?.addEventListener("click", () => {
-//    window.location.href = `/${goto}`;
-//  });
-//}
-//
-//export function closeProfile() {
-//  const lastStep =
-//    storySteps.get()?.length > 2 ? storySteps.get().at(-2) : null;
-//  const goto =
-//    lastStep && typeof lastStep.slug === `string` && lastStep.slug.length
-//      ? lastStep.slug
-//      : ``;
-//  const button = document.querySelector("button#close-profile");
-//  button?.setAttribute("href", document.referrer);
-//  button?.addEventListener("click", () => {
-//    window.location.href = `/${goto}`;
-//  });
-//}
+export function handleScroll() {
+  const rootElement = document.documentElement;
+  const button = document.querySelector("button#top");
+  const scrollTotal = rootElement.scrollHeight - rootElement.clientHeight;
+  const aboveFold = window.innerHeight > rootElement.scrollTop
+  const hitBottom = scrollTotal - rootElement.scrollTop < 150;
+  if (!aboveFold && !hitBottom ) {
+    // Show button
+    button.classList.add("block");
+    button.classList.remove("hidden");
+  } else {
+    // Hide button
+    button.classList.add("hidden");
+    button.classList.remove("block");
+  }
+}
 
 export const processGraphPayload = (rows: GraphNodes[]) => {
   const graphNodes: GraphNode[] = [];

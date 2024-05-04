@@ -198,14 +198,14 @@ const impressions = impressionsRaw as ImpressionDatum[];
   </main>
   {
     Object.keys(impressions).length ? (
-      <ImpressionWrapper payload={impressions} />
+      <ImpressionWrapper payload={impressions} client:load />
     ) : null
   }
-  <Footer created={created || new Date()} menu={menu} />
+  <Footer created={created || new Date()} menu={menu} backToTop={true} />
 </Layout>
 
 <script>
-  import { handleResize } from "../utils/helpers";
+  import { handleResize, handleScroll } from "../utils/helpers";
   import { eventStream } from "../utils/events/eventStream";
   import { inView } from "../utils/events/inView";
   import { scrollToTop } from "../utils/helpers";
@@ -214,19 +214,22 @@ const impressions = impressionsRaw as ImpressionDatum[];
 
   // always run first load
   handleResize();
+  handleScroll();
   init();
   inView();
   eventStream();
   scrollToTop();
-  window.addEventListener(`resize`, handleResize);
+  document.addEventListener("scroll", handleScroll)
 
   document.addEventListener("astro:after-swap", () => {
     handleResize();
+    handleScroll();
     init();
     inView();
     eventStream();
     scrollToTop();
     window.addEventListener(`resize`, handleResize);
+    document.addEventListener("scroll", handleScroll)
   });
   document.addEventListener("astro:before-swap", () => {
     eventProcessQueue();

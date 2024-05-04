@@ -7,21 +7,21 @@ import type { MenuDatum } from "../types";
 export interface Props {
   created?: Date;
   menu?: MenuDatum;
-  context?: boolean;
+  backToTop?: boolean;
 }
 
 const footer = import.meta.env.PUBLIC_FOOTER || ``;
-const { created = new Date(), context = false, menu } = Astro.props;
+const { created = new Date(), backToTop = false, menu } = Astro.props;
 ---
 
-<footer class="w-full">
+<footer class="w-full z-99 bg-white relative">
   <div class="flex justify-end px-6">
     {
-      !context ? (
+      backToTop ? (
         <button
           id="top"
           title="Back to top"
-          class="font-action font-bold opacity-50 hover:opacity-100 text-black px-1.5 rounded-md bg-white border-mydarkgrey/20 border-2 hover:bg-myblue hover:text-white text-2xl fixed bottom-12 right-2"
+          class="motion-safe:animate-fadeInUp font-action font-bold text-black px-1.5 rounded-md bg-white/20 border-mydarkgrey/20 border-2 hover:bg-myorange hover:text-white text-2xl fixed bottom-4 right-2"
         >
           ↑
         </button>

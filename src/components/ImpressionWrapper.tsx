@@ -60,15 +60,16 @@ const ImpressionWrapper = ({ payload }: { payload: ImpressionDatum[] }) => {
   if (!currentImpression) return <aside />;
   if (!$show)
     return (
-      <aside className="mr-1 fixed bottom-[1vh] right-[1vh] w-auto h-auto z-70">
+      <aside className="mr-1 fixed bottom-20 right-1 w-auto h-auto z-70">
         <button
           type="button"
-          className="rounded-md bg-mylightgrey/50 hover:bg-myorange/50 text-black focus:outline-none focus:ring-2 focus:ring-mygreen focus:ring-offset-2"
+        title="Click for notifications"
+          className="h-5 w-5 rounded-full bg-mylightgrey/50 hover:bg-myorange/100 text-black hover:text-white flex justify-center items-center items motion-safe:animate-pulse"
           onClick={() => showImpressions.set(!$show)}
         >
           <span className="sr-only">Show impressions</span>
-          <ArrowsPointingOutIcon className="h-8 w-8" aria-hidden="true" />
-          <span className="absolute -top-5 -left-4 h-6 w-6 rounded-full bg-myorange/20 text-black flex justify-center items-center items">
+          <span 
+        >
             {activeImpressions.length}
           </span>
         </button>
@@ -76,7 +77,7 @@ const ImpressionWrapper = ({ payload }: { payload: ImpressionDatum[] }) => {
     );
   else
     return (
-      <aside className="mr-1 fixed bottom-[1vh] right-[1vh] w-auto h-auto z-70 h-[calc(--scale)*152px] w-[calc(--scale)*540px] max-h-[152px] max-w-[540px] md:h-[135px] md:w-[480px] overflow-hidden bg-white rounded-md border border-mydarkgrey">
+      <aside className="mr-1 fixed bottom-16 right-2 w-auto h-auto z-70 h-[calc(--scale)*152px] w-[calc(--scale)*540px] max-h-[152px] max-w-[540px] md:h-[135px] md:w-[480px] overflow-hidden bg-white rounded-md border border-mydarkgrey">
         <button
           type="button"
           className="z-90101 absolute right-2 top-2 rounded-md bg-white text-mylightgrey hover:text-mylightgrey focus:outline-none focus:ring-2 focus:ring-mygreen focus:ring-offset-2"
