@@ -47,7 +47,7 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
     )}
   >
     {
-      panesPayload.map((pane: PaneDatumProps) => (
+      panesPayload.map((pane: PaneDatumProps, idx: number) => (
         <div
           id={`pane-${pane.id}`}
           class={classNames(
@@ -61,14 +61,25 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
             typeof hiddenPanes[pane.id] === `boolean` ? `true` : `false`
           }
         >
-          <Pane
-            client:load
-            payload={
-              panesPayload
-                .filter((p: PaneDatumProps) => p.id === pane.id)
-                .at(0)!
-            }
-          />
+          {idx < 2 ? (
+            <Pane
+              client:load
+              payload={
+                panesPayload
+                  .filter((p: PaneDatumProps) => p.id === pane.id)
+                  .at(0)!
+              }
+            />
+          ) : (
+            <Pane
+              client:idle
+              payload={
+                panesPayload
+                  .filter((p: PaneDatumProps) => p.id === pane.id)
+                  .at(0)!
+              }
+            />
+          )}
         </div>
       ))
     }
