@@ -37,6 +37,8 @@ const { pane, contentMap, current } = Astro.props;
       super();
       const id = this.dataset.id;
       const thisId = id ? JSON.parse(id) : null;
+      const lastStep = storySteps.get()?.at(-1);
+      console.log(`lastStep`, lastStep);
       if (thisId) {
         current.set(thisId);
         const storyStep = {
@@ -49,6 +51,18 @@ const { pane, contentMap, current } = Astro.props;
       }
       const contentMapPayload = this.dataset.map;
       if (contentMapPayload) contentMap.set(JSON.parse(contentMapPayload));
+
+      const closeButton = this.querySelector(`button#close-main`);
+      if (closeButton)
+        closeButton.addEventListener("click", () => {
+          const goto =
+            lastStep &&
+            typeof lastStep.slug === `string` &&
+            lastStep.slug.length
+              ? lastStep.slug
+              : ``;
+          window.location.href = `/${goto}`;
+        });
     }
   }
   customElements.define("astro-context-pane-wrapper", ContextPaneWrap);

@@ -11,10 +11,9 @@ export interface Props {
   title: string;
   slug: string;
   menu?: MenuDatum;
-  context?: boolean;
 }
 
-const { title, slug, menu, context = false } = Astro.props;
+const { title, slug, menu } = Astro.props;
 const isHome = slug === import.meta.env.PUBLIC_HOME;
 
 // this may include:
@@ -22,7 +21,6 @@ const isHome = slug === import.meta.env.PUBLIC_HOME;
 // - shopify cart
 // - go home
 // - breadcrumbs map
-// - close button (back) on context panes
 ---
 
 <header class="relative bg-white shadow-inner">
@@ -73,17 +71,6 @@ px-4 md:px-8 bg-mywhite shadow-inner"
         <StorySteps client:load />
       </a>
       <RememberMe client:load />
-      {
-        context ? (
-          <button
-            id="close"
-            class="text-myblue/80 hover:text-myblue hover:rotate-6"
-            title="Return to previous page"
-          >
-            <Close classes="w-6 h-6 mx-2" client:load />
-          </button>
-        ) : null
-      }
       <CartIcon client:load />
     </div>
   </div>
