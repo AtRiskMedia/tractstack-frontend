@@ -221,6 +221,7 @@ const impressions = impressionsRaw as ImpressionDatum[];
   window.addEventListener(`resize`, handleResize);
 
   document.addEventListener("astro:after-swap", () => {
+    handleResize();
     init();
     inView();
     eventStream();

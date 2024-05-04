@@ -172,6 +172,7 @@ const current = {
   window.addEventListener(`resize`, handleResize);
 
   document.addEventListener("astro:after-swap", () => {
+    handleResize();
     init();
     inView();
     eventStream();

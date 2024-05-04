@@ -91,6 +91,7 @@ const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
 
   document.addEventListener("astro:after-swap", () => {
     init();
+    handleResize();
     window.addEventListener(`resize`, handleResize);
   });
 </script>
