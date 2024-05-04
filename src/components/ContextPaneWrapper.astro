@@ -1,5 +1,6 @@
 ---
 import Pane from "@components/Pane";
+import { Close } from "./other/Close";
 import type { Current, ContentMap, PaneDatumProps } from "../types";
 
 export interface Props {
@@ -18,14 +19,7 @@ const { pane, contentMap, current } = Astro.props;
     <div id={`pane-${pane.id}`} class="pane" data-hidden="false">
       <Pane client:load payload={pane} />
     </div>
-    <div class="text-center py-4">
-      <button
-        id="close-main"
-        class="rounded-md bg-myorange/10 hover:bg-black hover:text-white px-3.5 py-1.5 text-black shadow-sm"
-      >
-        Close
-      </button>
-    </div>
+    <Close />
   </div>
 </astro-context-pane-wrapper>
 

@@ -24,21 +24,13 @@ export const prerender = false;
   <main id="main-content">
     <ShoppingCart client:load />
     <div class="text-center pb-16">
-      <button
-        id="close-cart"
+      <a
+        href="/"
         class="rounded-md bg-myorange/10 hover:bg-black hover:text-white px-3.5 py-1.5 text-base leading-7 text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-myorange"
       >
         Close
-      </button>
+      </a>
     </div>
   </main>
   <Footer created={new Date()} context={true} />
 </Layout>
-
-<script>
-  import { closeCart } from "../utils/helpers";
-
-  document.addEventListener("astro:page-load", () => {
-    closeCart();
-  });
-</script>
