@@ -43,7 +43,9 @@ const urlDatum = `${Astro.url.origin}/api/storyfragment/${id}.json`;
 const requestDatum: Response = await fetch(urlDatum);
 const storyFragment: StoryFragmentFullDatum =
   requestDatum.status === 404 ? [] : await requestDatum.json();
-
+if (!storyFragment) {
+  return Astro.redirect("/404");
+}
 const title = storyFragment?.title;
 const socialImagePath = storyFragment?.field_social_image_path || undefined;
 const tailwindBgColour =
