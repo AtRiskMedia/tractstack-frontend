@@ -12,7 +12,6 @@ export const Close = () => {
       (e: StoryStep) => e.type !== `ContextPane`
     );
     const lastStep = lastSteps.length ? lastSteps.at(-1) : null;
-    console.log(lastStep);
     setGoto(
       lastStep && typeof lastStep.slug === `string` && lastStep.slug.length
         ? lastStep.slug
