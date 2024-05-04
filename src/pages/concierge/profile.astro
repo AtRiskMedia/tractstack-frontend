@@ -85,13 +85,13 @@ const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
   import { handleResize } from "../../utils/helpers";
   import { init } from "../../utils/init";
 
-  init();
   handleResize();
+  init();
   window.addEventListener(`resize`, handleResize);
 
   document.addEventListener("astro:after-swap", () => {
-    init();
     handleResize();
+    init();
     window.addEventListener(`resize`, handleResize);
   });
 </script>
