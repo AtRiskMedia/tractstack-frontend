@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useStore } from "@nanostores/react";
-import { XMarkIcon, ArrowsPointingOutIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { panesVisible, showImpressions } from "../store/events";
 import { useInterval } from "../utils/useInterval";
 import { Impression } from "./Impression";
@@ -63,15 +63,12 @@ const ImpressionWrapper = ({ payload }: { payload: ImpressionDatum[] }) => {
       <aside className="mr-1 fixed bottom-20 right-1 w-auto h-auto z-70">
         <button
           type="button"
-        title="Click for notifications"
+          title="Click for notifications"
           className="h-5 w-5 rounded-full bg-mylightgrey/50 hover:bg-myorange/100 text-black hover:text-white flex justify-center items-center items motion-safe:animate-pulse"
           onClick={() => showImpressions.set(!$show)}
         >
           <span className="sr-only">Show impressions</span>
-          <span 
-        >
-            {activeImpressions.length}
-          </span>
+          <span>{activeImpressions.length}</span>
         </button>
       </aside>
     );

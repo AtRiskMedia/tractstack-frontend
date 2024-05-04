@@ -35,13 +35,13 @@ export function handleScroll() {
   const rootElement = document.documentElement;
   const button = document.querySelector("button#top");
   const scrollTotal = rootElement.scrollHeight - rootElement.clientHeight;
-  const aboveFold = window.innerHeight > rootElement.scrollTop
+  const aboveFold = window.innerHeight > rootElement.scrollTop;
   const hitBottom = scrollTotal - rootElement.scrollTop < 150;
-  if (!aboveFold && !hitBottom ) {
+  if (!aboveFold && !hitBottom && button) {
     // Show button
     button.classList.add("block");
     button.classList.remove("hidden");
-  } else {
+  } else if (button) {
     // Hide button
     button.classList.add("hidden");
     button.classList.remove("block");

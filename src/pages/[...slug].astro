@@ -219,7 +219,7 @@ const impressions = impressionsRaw as ImpressionDatum[];
   inView();
   eventStream();
   scrollToTop();
-  document.addEventListener("scroll", handleScroll)
+  document.addEventListener("scroll", handleScroll);
 
   document.addEventListener("astro:after-swap", () => {
     handleResize();
@@ -229,7 +229,7 @@ const impressions = impressionsRaw as ImpressionDatum[];
     eventStream();
     scrollToTop();
     window.addEventListener(`resize`, handleResize);
-    document.addEventListener("scroll", handleScroll)
+    document.addEventListener("scroll", handleScroll);
   });
   document.addEventListener("astro:before-swap", () => {
     eventProcessQueue();
