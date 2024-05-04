@@ -31,7 +31,6 @@ const { pane, contentMap, current } = Astro.props;
       super();
       const id = this.dataset.id;
       const thisId = id ? JSON.parse(id) : null;
-      const lastStep = storySteps.get()?.at(-1);
       if (thisId) {
         current.set(thisId);
         const storyStep = {
