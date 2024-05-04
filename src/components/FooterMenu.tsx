@@ -35,7 +35,7 @@ const FooterMenu = (props: { payload: MenuDatum; theme?: string }) => {
   const allLinks = additionalLinks.concat(featuredLinks);
 
   return (
-    <div className="mx-auto max-w-sm pb-12">
+    <div className="mx-auto max-w-sm py-12">
       <nav className="flex flex-wrap justify-evenly">
         {allLinks.map((item: MenuLink) => (
           <span key={item.name} className="py-1.5">
