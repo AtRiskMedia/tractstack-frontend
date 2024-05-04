@@ -8,6 +8,7 @@ import type {
   PaneDatum,
   PaneFullDatum,
   StoryFragment,
+  StoryFragmentSiteMap,
   StoryFragmentDatum,
   StoryFragmentFullDatum,
   TractStack,
@@ -16,6 +17,7 @@ import type {
   MenuDatum,
   Resource,
   ResourceDatum,
+  ContextPaneSiteMap,
   ContextPaneDatum,
   ContextPaneFullDatum,
 } from "../types.ts";
@@ -229,6 +231,22 @@ export const getAllStoryFragments = async (): Promise<StoryFragment[]> => {
   return await fetchUrl(baseUrl + "/jsonapi/node/story_fragment?" + path);
 };
 
+export const getAllStoryFragmentsSiteMap = async (): Promise<
+  StoryFragmentSiteMap[]
+> => {
+  const params: DrupalJsonApiParams = new DrupalJsonApiParams();
+  params
+    .addFields("node--story_fragment", [
+      "title",
+      "field_slug",
+      "changed",
+      "created",
+    ])
+    .addFilter("status", "1");
+  const path: string = params.getQueryString();
+  return await fetchUrl(baseUrl + "/jsonapi/node/story_fragment?" + path);
+};
+
 export const getTractStack = async (id: string): Promise<TractStackDatum[]> => {
   const params: DrupalJsonApiParams = new DrupalJsonApiParams();
   params
@@ -299,6 +317,18 @@ export const getAllContextPanes = async (): Promise<Pane[]> => {
   const params: DrupalJsonApiParams = new DrupalJsonApiParams();
   params
     .addFields("node--pane", ["type", "id", "title", "field_slug"])
+    .addFilter("field_is_context_pane", "1")
+    .addFilter("status", "1");
+  const path: string = params.getQueryString();
+  return await fetchUrl(baseUrl + "/jsonapi/node/pane?" + path);
+};
+
+export const getAllContextPanesSiteMap = async (): Promise<
+  ContextPaneSiteMap[]
+> => {
+  const params: DrupalJsonApiParams = new DrupalJsonApiParams();
+  params
+    .addFields("node--pane", ["title", "field_slug", "changed", "created"])
     .addFilter("field_is_context_pane", "1")
     .addFilter("status", "1");
   const path: string = params.getQueryString();

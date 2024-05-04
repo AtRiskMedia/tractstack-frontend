@@ -135,11 +135,22 @@ export interface StoryFragment extends T8kNode {
   field_panes: PaneNode[];
   field_tract_stack: TractStackNode;
 }
+export interface StoryFragmentSiteMap extends T8kNode {
+  field_slug: string;
+  changed: string;
+  created: string;
+}
+
 export interface TractStack extends T8kNode {
   field_slug: string;
 }
 export interface Pane extends T8kNode {
   field_slug: string;
+}
+export interface ContextPaneSiteMap extends T8kNode {
+  field_slug: string;
+  changed: string;
+  created: string;
 }
 export interface Markdown extends T8kNode {
   field_slug: string;
