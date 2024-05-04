@@ -41,13 +41,15 @@ export function closeContextPane() {
   const button = document.querySelector("button#close");
   button?.setAttribute("href", document.referrer);
   button?.addEventListener("click", () => {
-  alert(goto)
+    alert(goto)
+    alert(JSON.stringify(storySteps.get()));
     window.location.href = `/${goto}`;
   });
   const button2 = document.querySelector("button#close-main");
   button2?.setAttribute("href", document.referrer);
   button2?.addEventListener("click", () => {
-  alert(goto)
+    alert(goto)
+    alert(JSON.stringify(storySteps.get()));
     window.location.href = `/${goto}`;
   });
 }
