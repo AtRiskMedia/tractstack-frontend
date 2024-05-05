@@ -219,6 +219,7 @@ const impressions = impressionsRaw as ImpressionDatum[];
   inView();
   eventStream();
   scrollToTop();
+  window.addEventListener(`resize`, handleResize);
   document.addEventListener("scroll", handleScroll);
 
   document.addEventListener("astro:after-swap", () => {
