@@ -11,11 +11,14 @@ export function classNames(...classes: string[]) {
 }
 
 export function handleResize() {
-  const thisWidth = document.documentElement.clientWidth;
+  const scrollBarOffset =
+    window.innerWidth - document.documentElement.clientWidth;
+  const thisWidth = document.documentElement.clientWidth - scrollBarOffset;
+  const innerWidth = window.innerWidth;
   const thisScale =
-    thisWidth < 801
+    innerWidth < 801
       ? thisWidth / 600
-      : thisWidth < 1367
+      : innerWidth < 1367
         ? thisWidth / 1080
         : thisWidth / 1920;
   document.documentElement.style.setProperty(`--scale`, thisScale.toString());
