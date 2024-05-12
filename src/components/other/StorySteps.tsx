@@ -7,7 +7,6 @@ export const StorySteps = () => {
   const [hidden, setHidden] = useState(true);
   const $sync = useStore(sync);
   const $auth = useStore(auth);
-  console.log(`neo4jEnabled?`,$auth.neo4jEnabled)
 
   useEffect(() => {
     if ($sync && $auth.neo4jEnabled) setHidden(false);
