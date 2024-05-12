@@ -95,6 +95,9 @@ export async function init() {
   if (conciergeSync?.fingerprint) {
     auth.setKey(`key`, conciergeSync.fingerprint);
   }
+  if (conciergeSync?.neo4jEnabled) {
+    auth.setKey(`neo4jEnabled`, `1`);
+  }
   if (conciergeSync?.firstname) {
     profile.set({
       ...profile.get(),

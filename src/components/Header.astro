@@ -15,6 +15,7 @@ export interface Props {
 
 const { title, slug, menu } = Astro.props;
 const isHome = slug === import.meta.env.PUBLIC_HOME;
+console.log(`header`,slug,isHome)
 
 // this may include:
 // - Menu

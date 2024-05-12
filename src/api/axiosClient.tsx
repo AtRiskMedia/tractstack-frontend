@@ -107,6 +107,7 @@ export const getTokens = async ({
     const refreshToken = response.data.refreshToken;
     const auth = response.data.auth;
     const knownLead = response.data.known_lead;
+    const neo4jEnabled = response.data.neo4jEnabled;
     const firstname = response.data.first_name;
     const consent = response.data.consent;
     const newFingerprint = response.data.fingerprint;
@@ -123,6 +124,7 @@ export const getTokens = async ({
       auth,
       firstname,
       knownLead,
+      neo4jEnabled,
       mode,
       fingerprint: newFingerprint,
       encryptedEmail,

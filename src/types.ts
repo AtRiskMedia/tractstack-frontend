@@ -360,10 +360,11 @@ export interface IAuthStorePayload {
 }
 
 export interface IAuthStoreLoginResponse {
-  refreshToken: string;
+  refreshToken: string | null;
   jwt: string | null;
   auth: boolean;
   knownLead: boolean;
+  neo4jEnabled: boolean;
   firstname: string | null;
   fingerprint: string;
   encryptedEmail: string | null;
