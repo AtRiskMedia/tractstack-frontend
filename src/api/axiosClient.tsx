@@ -7,10 +7,17 @@ function getCurrentAccessToken() {
   const authPayload = auth.get();
   return authPayload?.token;
 }
+function getCurrentRefreshToken() {
+  const authPayload = auth.get();
+  return authPayload?.refreshToken;
+}
 
 function setRefreshedTokens(response: IAuthStoreLoginResponse) {
-  if (response?.tokens) {
-    auth.setKey(`token`, response.tokens);
+  if (response?.jwt) {
+    auth.setKey(`token`, response.jwt);
+  }
+  if (response?.refreshToken) {
+    auth.setKey(`refreshToken`, response.refreshToken);
   }
   if (response?.fingerprint) {
     auth.setKey(`key`, response.fingerprint);
@@ -59,6 +66,7 @@ export const client = createAxiosClient({
     },
   },
   getCurrentAccessToken,
+  getCurrentRefreshToken,
   refreshTokenUrl: `${import.meta.env.PUBLIC_CONCIERGE_BASE_URL}/auth/refreshToken`,
   setRefreshedTokens,
   getAuthData,
@@ -95,7 +103,8 @@ export const getTokens = async ({
     if (!ref?.utmTerm) delete ref.utmTerm;
     const options = { referrer: ref, ...params, fingerprint };
     const response = await conciergeSync(options);
-    const accessToken = response.data.jwt;
+    const jwt = response.data.jwt;
+    const refreshToken = response.data.refreshToken;
     const auth = response.data.auth;
     const knownLead = response.data.known_lead;
     const firstname = response.data.first_name;
@@ -109,7 +118,8 @@ export const getTokens = async ({
         ? JSON.parse(response?.data?.beliefs)
         : null;
     return {
-      tokens: accessToken,
+      jwt,
+      refreshToken,
       auth,
       firstname,
       knownLead,
@@ -126,7 +136,7 @@ export const getTokens = async ({
     console.log(`error`, error);
     return {
       error: error?.response?.data?.message || error?.message || error,
-      tokens: null,
+      jwt: null,
     };
   }
 };

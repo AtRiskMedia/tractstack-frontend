@@ -86,8 +86,11 @@ export async function init() {
         }
       : { referrer: ref };
   const conciergeSync = await getTokens(settings);
-  if (conciergeSync?.tokens) {
-    auth.setKey(`token`, conciergeSync.tokens);
+  if (conciergeSync?.jwt) {
+    auth.setKey(`token`, conciergeSync.jwt);
+  }
+  if (conciergeSync?.refreshToken) {
+    auth.setKey(`refreshToken`, conciergeSync.refreshToken);
   }
   if (conciergeSync?.fingerprint) {
     auth.setKey(`key`, conciergeSync.fingerprint);

@@ -5,6 +5,7 @@ import type { Referrer } from "../types";
 export type AuthSettings = {
   key: string | undefined;
   token: string | undefined;
+  refreshToken: string | undefined;
   beliefs: string | undefined;
   encryptedEmail: string | undefined;
   encryptedCode: string | undefined;
@@ -24,6 +25,7 @@ export type AuthProfile = {
 export const auth = persistentMap<AuthSettings>("auth:", {
   key: undefined,
   token: undefined,
+  refreshToken: undefined,
   beliefs: undefined,
   encryptedEmail: undefined,
   encryptedCode: undefined,

@@ -315,6 +315,7 @@ export interface IEventStreamDict {
 export interface IAxiosClientProps {
   options: any;
   getCurrentAccessToken: any;
+  getCurrentRefreshToken: any;
   refreshTokenUrl: string | undefined;
   setRefreshedTokens: any;
   getAuthData: any;
@@ -359,7 +360,7 @@ export interface IAuthStorePayload {
 }
 
 export interface IAuthStoreLoginResponse {
-  tokens: string;
+  refreshToken: string;
   jwt: string | null;
   auth: boolean;
   knownLead: boolean;
