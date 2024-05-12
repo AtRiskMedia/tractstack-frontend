@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useStore } from "@nanostores/react";
-import { sync,auth } from "../../store/auth";
+import { sync, auth } from "../../store/auth";
 import { MapIcon } from "@heroicons/react/24/outline";
 
 export const StorySteps = () => {
