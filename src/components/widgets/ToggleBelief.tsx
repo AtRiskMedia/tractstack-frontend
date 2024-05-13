@@ -13,15 +13,15 @@ export const ToggleBelief = ({
   belief: string;
   prompt: string;
 }) => {
-  const [enabled, setEnabled] = useState(false);
+  const [enabled, setEnabled] = useState<undefined|boolean>(undefined);
   const $heldBeliefsAll = useStore(heldBeliefs);
 
   useEffect(() => {
-    const hasMatchingBelief = heldBeliefs
-      .get()
+    const hasMatchingBelief = $heldBeliefsAll
       .filter((e: BeliefDatum) => e.slug === belief)
       .at(0);
-    if (hasMatchingBelief && hasMatchingBelief?.slug) setEnabled(!enabled);
+    if (hasMatchingBelief && hasMatchingBelief?.slug && typeof enabled === `boolean`) setEnabled(!enabled);
+    else if (hasMatchingBelief && hasMatchingBelief?.slug ) setEnabled(hasMatchingBelief.slug===`BELIEVES_YES`)
   }, [heldBeliefs]);
 
   const handleClick = () => {
@@ -46,6 +46,7 @@ export const ToggleBelief = ({
     events.set([...prevEvents, event]);
   };
 
+  if( typeof enabled === `undefined` ) return <div />
   return (
     <Switch.Group as="div" className={classNames(`flex items-center mt-6`)}>
       <Switch

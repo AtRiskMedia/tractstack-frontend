@@ -20,6 +20,7 @@ const PaneFilter = (props: {
     // - setReveal true on match
     if (heldBeliefsFilter && Object.keys(heldBeliefsFilter)?.length) {
       let match = false;
+      let all = true;
       Object.entries(heldBeliefsFilter).forEach(([key, value]) => {
         if (typeof value === `string`) {
           const thisMatchingBelief = $heldBeliefsAll
@@ -30,6 +31,7 @@ const PaneFilter = (props: {
             )
             .at(0);
           if (thisMatchingBelief) match = true;
+	  else all = false;
         } else {
           Object.values(value).forEach(v => {
             const thisMatchingBelief = $heldBeliefsAll
@@ -40,10 +42,11 @@ const PaneFilter = (props: {
               )
               .at(0);
             if (thisMatchingBelief) match = true;
+	    else all = false;
           });
         }
       });
-      if (match) {
+      if (match && all) {
         if (!hasReveal) setHasReveal(true);
         setReveal(true);
       } else setReveal(false);
@@ -53,6 +56,7 @@ const PaneFilter = (props: {
     // - setWithhold false on match
     if (withheldBeliefsFilter && Object.keys(withheldBeliefsFilter)?.length) {
       let override = false;
+      let all = true;
       Object.entries(withheldBeliefsFilter).forEach(([key, value]) => {
         if (typeof value === `string`) {
           const thisMatchingBelief = $heldBeliefsAll
@@ -63,6 +67,7 @@ const PaneFilter = (props: {
             )
             .at(0);
           if (thisMatchingBelief) override = true;
+	  else all = false;
         } else {
           Object.values(value).forEach(v => {
             const thisMatchingBelief = $heldBeliefsAll
@@ -73,10 +78,11 @@ const PaneFilter = (props: {
               )
               .at(0);
             if (thisMatchingBelief) override = true;
+	    else all = false;
           });
         }
       });
-      if (override) setOverrideWithhold(true);
+      if (override && all) setOverrideWithhold(true);
       else setOverrideWithhold(false);
     } else setOverrideWithhold(true);
   }, [$heldBeliefsAll, heldBeliefsFilter, withheldBeliefsFilter]);
