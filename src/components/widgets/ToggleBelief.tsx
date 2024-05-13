@@ -22,6 +22,7 @@ export const ToggleBelief = ({
       .at(0);
     if (hasMatchingBelief && hasMatchingBelief?.slug && typeof enabled === `boolean`) setEnabled(!enabled);
     else if (hasMatchingBelief && hasMatchingBelief?.verb ) setEnabled(hasMatchingBelief.verb===`BELIEVES_YES`)
+    else if ( typeof enabled === `undefined` ) setEnabled(false);
   }, [heldBeliefs]);
 
   const handleClick = () => {
