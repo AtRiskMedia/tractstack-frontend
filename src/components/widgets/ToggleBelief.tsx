@@ -21,7 +21,7 @@ export const ToggleBelief = ({
       .filter((e: BeliefDatum) => e.slug === belief)
       .at(0);
     if (hasMatchingBelief && hasMatchingBelief?.slug && typeof enabled === `boolean`) setEnabled(!enabled);
-    else if (hasMatchingBelief && hasMatchingBelief?.slug ) setEnabled(hasMatchingBelief.slug===`BELIEVES_YES`)
+    else if (hasMatchingBelief && hasMatchingBelief?.verb ) setEnabled(hasMatchingBelief.verb===`BELIEVES_YES`)
   }, [heldBeliefs]);
 
   const handleClick = () => {
