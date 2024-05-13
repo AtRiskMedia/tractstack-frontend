@@ -64,8 +64,8 @@ export const ToggleBelief = ({
           )}
         />
       </Switch>
-      <Switch.Label as="span" className="ml-3 text-sm">
-        <span className="font-bold text-black">{prompt}</span>
+      <Switch.Label as="span" className="ml-3">
+        <span>{prompt}</span>
       </Switch.Label>
     </Switch.Group>
   );
