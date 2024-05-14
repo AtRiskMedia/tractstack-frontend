@@ -124,9 +124,11 @@ const thisFilesArray = paneFileNodes
   .at(0);
 const panePayload: PaneDatumProps = cleanPaneDatum(pane, thisFilesArray);
 const impressionsRaw = panePayload
-  ? [cleanImpressionsDatum(panePayload.optionsPayload?.impressions)]
-  : [];
-const impressions = impressionsRaw as ImpressionDatum[];
+  ? cleanImpressionsDatum(panePayload.optionsPayload?.impressions)
+  : null;
+const impressions = impressionsRaw
+  ? [impressionsRaw]
+  : ([] as ImpressionDatum[]);
 
 const current = {
   id,

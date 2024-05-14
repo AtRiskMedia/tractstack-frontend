@@ -31,7 +31,7 @@ const PaneFilter = (props: {
             )
             .at(0);
           if (thisMatchingBelief) match = true;
-	  else all = false;
+          else all = false;
         } else {
           Object.values(value).forEach(v => {
             const thisMatchingBelief = $heldBeliefsAll
@@ -42,7 +42,7 @@ const PaneFilter = (props: {
               )
               .at(0);
             if (thisMatchingBelief) match = true;
-	    else all = false;
+            else all = false;
           });
         }
       });
@@ -67,7 +67,7 @@ const PaneFilter = (props: {
             )
             .at(0);
           if (thisMatchingBelief) override = true;
-	  else all = false;
+          else all = false;
         } else {
           Object.values(value).forEach(v => {
             const thisMatchingBelief = $heldBeliefsAll
@@ -78,7 +78,7 @@ const PaneFilter = (props: {
               )
               .at(0);
             if (thisMatchingBelief) override = true;
-	    else all = false;
+            else all = false;
           });
         }
       });
