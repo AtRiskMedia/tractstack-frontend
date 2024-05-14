@@ -41,7 +41,7 @@ const FooterMenu = (props: { payload: MenuDatum; theme?: string }) => {
           <span key={item.name} className="py-1.5">
             <a
               href={item.to}
-              className="text-xs font-action leading-6 text-mydarkgrey hover:text-black"
+              className="text-xl font-action leading-6 text-mydarkgrey hover:text-black"
               title={item.description}
             >
               {item.name}
