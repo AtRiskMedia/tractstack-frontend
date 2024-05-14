@@ -43,7 +43,7 @@ const Menu = (props: { payload: MenuDatum; theme?: string }) => {
           <div key={item.name} className="relative">
             <a
               href={item.to}
-              className="block text-sm font-bold leading-6 text-mydarkgrey hover:text-black"
+              className="block text-lg leading-6 text-mydarkgrey hover:text-black"
               title={item.description}
             >
               {item.name}
@@ -103,20 +103,22 @@ const Menu = (props: { payload: MenuDatum; theme?: string }) => {
                         Breadcrumbs <span aria-hidden="true">&rarr;</span>
                       </a>
                     </div>
-                    <ul role="list" className="mt-6 space-y-6">
-                      {additionalLinks.map((item: MenuLink) => (
-                        <li key={item.name} className="relative">
-                          <a
-                            href={item.to}
-                            className="block truncate text-sm font-bold leading-6 text-mydarkgrey hover:text-black"
-                            title={item.description}
-                          >
-                            {item.name}
-                            <span className="absolute inset-0" />
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
+                    {additionalLinks.length ? (
+                      <ul role="list" className="mt-6 space-y-6">
+                        {additionalLinks.map((item: MenuLink) => (
+                          <li key={item.name} className="relative">
+                            <a
+                              href={item.to}
+                              className="block truncate text-sm font-bold leading-6 text-mydarkgrey hover:text-black"
+                              title={item.description}
+                            >
+                              {item.name}
+                              <span className="absolute inset-0" />
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
                   </div>
                 </div>
               </div>
