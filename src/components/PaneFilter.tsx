@@ -55,8 +55,7 @@ const PaneFilter = (props: {
     // must match for all withheldBeliefs
     // - setWithhold false on match
     if (withheldBeliefsFilter && Object.keys(withheldBeliefsFilter)?.length) {
-      let override = false;
-      let all = true;
+      let withhold = true;
       Object.entries(withheldBeliefsFilter).forEach(([key, value]) => {
         if (typeof value === `string`) {
           const thisMatchingBelief = $heldBeliefsAll
@@ -66,8 +65,7 @@ const PaneFilter = (props: {
                 (m.verb === value || m.verb === `*` || m?.object === value)
             )
             .at(0);
-          if (thisMatchingBelief) override = true;
-          else all = false;
+          if (thisMatchingBelief) withhold = false;
         } else {
           Object.values(value).forEach(v => {
             const thisMatchingBelief = $heldBeliefsAll
@@ -77,12 +75,11 @@ const PaneFilter = (props: {
                   (m.slug === key && m?.object === v)
               )
               .at(0);
-            if (thisMatchingBelief) override = true;
-            else all = false;
+            if (thisMatchingBelief) withhold = false;
           });
         }
       });
-      if (override && all) setOverrideWithhold(true);
+      if (withhold ) setOverrideWithhold(true);
       else setOverrideWithhold(false);
     } else setOverrideWithhold(true);
   }, [$heldBeliefsAll, heldBeliefsFilter, withheldBeliefsFilter]);
