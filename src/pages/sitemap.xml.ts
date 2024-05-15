@@ -18,7 +18,10 @@ const v = storyFragments
   .map((u: StoryFragmentSiteMap) => {
     const thisPriority =
       u.field_slug === import.meta.env.PUBLIC_HOME ? `1.0` : `0.8`;
-    const thisUrl = new URL(u.field_slug, import.meta.env.SITE).href;
+    const thisUrl =
+      u.field_slug === import.meta.env.PUBLIC_HOME
+        ? new URL(`/`, import.meta.env.SITE).href
+        : new URL(u.field_slug, import.meta.env.SITE).href;
     const thisChanged = +new Date(u.changed);
     const thisCreated = +new Date(u.created);
     const daysDelta = (thisChanged - thisCreated) / (1000 * 60 * 60 * 24);
