@@ -187,7 +187,12 @@ const impressions = impressionsRaw as ImpressionDatum[];
   ogImage={socialImagePath}
   stylesUrl={stylesUrl}
 >
-  <Header title={title || ``} menu={menu} slug={slug || `404`} />
+  <Header
+    title={title || ``}
+    menu={menu}
+    slug={slug || `404`}
+    impressions={impressions}
+  />
   <main id="main-content">
     <StoryFragmentWrapper
       tailwindBgColour={tailwindBgColour}
@@ -197,7 +202,7 @@ const impressions = impressionsRaw as ImpressionDatum[];
     />
   </main>
   {
-    Object.keys(impressions).length ? (
+    impressions?.length ? (
       <ImpressionWrapper payload={impressions} client:load />
     ) : null
   }

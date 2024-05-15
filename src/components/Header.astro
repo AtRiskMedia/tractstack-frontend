@@ -4,17 +4,19 @@ import { Home } from "./icons/Home";
 import Menu from "./Menu";
 import { StorySteps } from "./other/StorySteps";
 import { RememberMe } from "./other/RememberMe";
+import ImpressionWrapper from "@components/ImpressionWrapper";
 import { CartIcon } from "./other/CartIcon";
 import { WORDMARK_MODE } from "../constants";
-import type { MenuDatum } from "../types";
+import type { MenuDatum, ImpressionDatum } from "../types";
 
 export interface Props {
   title: string;
   slug: string;
   menu?: MenuDatum;
+  impressions?: ImpressionDatum[];
 }
 
-const { title, slug, menu } = Astro.props;
+const { title, slug, menu, impressions } = Astro.props;
 const isHome = slug === import.meta.env.PUBLIC_HOME;
 
 // this may include:
@@ -87,6 +89,11 @@ px-4 md:px-8 bg-mywhite shadow-inner"
       </a>
       <RememberMe client:load />
       <CartIcon client:load />
+      {
+        impressions?.length ? (
+          <ImpressionWrapper payload={impressions} icon={true} client:load />
+        ) : null
+      }
     </div>
   </div>
 </header>

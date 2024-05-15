@@ -6,7 +6,13 @@ import { useInterval } from "../utils/useInterval";
 import { Impression } from "./Impression";
 import type { ImpressionDatum } from "../types";
 
-const ImpressionWrapper = ({ payload }: { payload: ImpressionDatum[] }) => {
+const ImpressionWrapper = ({
+  payload,
+  icon = false,
+}: {
+  payload: ImpressionDatum[];
+  icon?: boolean;
+}) => {
   const $inView = useStore(panesVisible);
   const $show = useStore(showImpressions);
   const [offset, setOffset] = useState(0);
@@ -57,22 +63,9 @@ const ImpressionWrapper = ({ payload }: { payload: ImpressionDatum[] }) => {
     }
   }, [$inView]);
 
-  if (!currentImpression) return <aside />;
-  if (!$show)
-    return (
-      <aside className="mr-1 fixed bottom-20 right-1 w-auto h-auto z-70">
-        <button
-          type="button"
-          title="Click for notifications"
-          className="h-5 w-5 rounded-full bg-mylightgrey/50 hover:bg-myorange/100 text-black hover:text-white flex justify-center items-center items motion-safe:animate-pulse"
-          onClick={() => showImpressions.set(!$show)}
-        >
-          <span className="sr-only">Show impressions</span>
-          <span>{activeImpressions.length}</span>
-        </button>
-      </aside>
-    );
-  else
+  // show as aside
+  if (!icon) {
+    if (!currentImpression || !$show) return <aside />;
     return (
       <aside className="mr-1 fixed bottom-16 right-2 w-auto h-auto z-70 h-[calc(--scale)*152px] w-[calc(--scale)*540px] max-h-[152px] max-w-[540px] md:h-[135px] md:w-[480px] overflow-hidden bg-white rounded-md border border-mydarkgrey">
         <button
@@ -86,6 +79,19 @@ const ImpressionWrapper = ({ payload }: { payload: ImpressionDatum[] }) => {
         <Impression payload={currentImpression} />
       </aside>
     );
+  }
+  // else just show icon (for header)
+  return (
+    <button
+      type="button"
+      title="Click for notifications"
+      className="h-6 w-6 rounded-full bg-myblue/80 hover:bg-myorange/100 text-white flex justify-center items-center items motion-safe:animate-bounceIn"
+      onClick={() => showImpressions.set(!$show)}
+    >
+      <span className="sr-only">Show impressions</span>
+      <span>{activeImpressions.length}</span>
+    </button>
+  );
 };
 
 export default ImpressionWrapper;

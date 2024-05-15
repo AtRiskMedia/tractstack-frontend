@@ -55,6 +55,7 @@ module.exports = {
         fadeInUp: 'fadeInUp 1s ease-in',
         fadeInRight: 'fadeInRight 1s ease-in',
         fadeInLeft: 'fadeInLeft 1s ease-in',
+        bounceIn: 'bounce 1s ease-in-out 4.5',
       },
       keyframes: {
         fadeIn: {
