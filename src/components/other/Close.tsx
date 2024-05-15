@@ -20,10 +20,10 @@ export const Close = () => {
   }, [$lastStep]);
 
   return (
-    <div className="text-center py-4">
+    <div className="text-center py-12 text-2xl md:text-3xl">
       <a
         href={`/${goto}`}
-        className="rounded-md bg-myorange/10 hover:bg-black hover:text-white px-3.5 py-1.5 text-black shadow-sm"
+        className="px-3.5 py-2.5 bg-slate-50 rounded-lg hover:rotate-1 hover:text-white hover:bg-myorange"
       >
         {goto ? <span>Close</span> : <span>Home</span>}
       </a>
