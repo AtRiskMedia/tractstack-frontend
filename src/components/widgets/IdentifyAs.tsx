@@ -89,7 +89,7 @@ export const IdentifyAs = ({
             selected.id === 0
               ? `bg-white hover:bg-myorange/5 ring-myorange/50`
               : `bg-white hover:bg-myorange/5 ring-mygreen/5`,
-            `rounded-md px-3 py-2 text-sm font-bold text-black shadow-sm ring-1 ring-inset`
+            `rounded-md px-3 py-2 text-lg text-black shadow-sm ring-1 ring-inset`
           )}
         >
           <div className="flex items-center">

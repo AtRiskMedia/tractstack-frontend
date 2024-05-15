@@ -79,7 +79,7 @@ const PaneFilter = (props: {
           });
         }
       });
-      if (withhold ) setOverrideWithhold(true);
+      if (withhold) setOverrideWithhold(true);
       else setOverrideWithhold(false);
     } else setOverrideWithhold(true);
   }, [$heldBeliefsAll, heldBeliefsFilter, withheldBeliefsFilter]);
