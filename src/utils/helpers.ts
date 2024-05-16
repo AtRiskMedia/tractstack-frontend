@@ -152,12 +152,14 @@ export const processGraphPayload = (rows: GraphNodes[]) => {
         color: color,
       });
     else if (e?.id && e?.properties?.belief_id)
+    {
       nodes.push({
         id: e.id,
         title: `Belief`,
         label: e.properties.belief_id,
         color: color,
       });
+    }
     else if (e?.id && e?.properties?.visit_id)
       nodes.push({
         id: e.id,
@@ -171,7 +173,7 @@ export const processGraphPayload = (rows: GraphNodes[]) => {
       return {
         from: e.startNodeId,
         to: e.endNodeId,
-        label: e.type || `unknown`,
+        label: e?.properties?.object! || e.type || `unknown`,
         font: { align: `top`, size: `8` },
         arrows: {
           to: {

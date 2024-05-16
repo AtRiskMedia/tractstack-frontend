@@ -657,6 +657,7 @@ export type GraphNode = {
     visit_id?: string;
     object_type?: string;
     object_name?: string;
+    object?: string;
     fingerprint_id?: string;
     belief_id?: string;
     pageRank?: number;
