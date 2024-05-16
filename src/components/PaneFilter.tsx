@@ -87,7 +87,7 @@ const PaneFilter = (props: {
   if (hasReveal && reveal && overrideWithhold)
     return <div className="motion-safe:animate-fadeInUp">{props.children}</div>;
   if (reveal && overrideWithhold) return props.children;
-  return <div />;
+  return <div className="invisible h-0">{props.children}</div>;
 };
 
 export default PaneFilter;
