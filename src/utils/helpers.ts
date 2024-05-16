@@ -151,16 +151,14 @@ export const processGraphPayload = (rows: GraphNodes[]) => {
         label: `You`,
         color: color,
       });
-    else if (e?.id && e?.properties?.belief_id)
-    {
+    else if (e?.id && e?.properties?.belief_id) {
       nodes.push({
         id: e.id,
         title: `Belief`,
         label: e.properties.belief_id,
         color: color,
       });
-    }
-    else if (e?.id && e?.properties?.visit_id)
+    } else if (e?.id && e?.properties?.visit_id)
       nodes.push({
         id: e.id,
         title: `Visit`,
