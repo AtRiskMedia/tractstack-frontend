@@ -27,7 +27,7 @@ const PaneFilter = (props: {
             .filter(
               (m: BeliefStore) =>
                 m.slug === key &&
-                (m.verb === value || m.verb === `*` || m?.object === value)
+                (m.verb === value || value === `*` || m?.object === value)
             )
             .at(0);
           if (thisMatchingBelief) match = true;
@@ -38,7 +38,8 @@ const PaneFilter = (props: {
               .filter(
                 (m: BeliefStore) =>
                   (m.slug === key && m.verb === v) ||
-                  (m.slug === key && m?.object === v)
+                  (m.slug === key && m?.object === v) ||
+                  (m.slug === key && v === `*`)
               )
               .at(0);
             if (thisMatchingBelief) match = true;
@@ -62,7 +63,7 @@ const PaneFilter = (props: {
             .filter(
               (m: BeliefStore) =>
                 m.slug === key &&
-                (m.verb === value || m.verb === `*` || m?.object === value)
+                (m.verb === value || value === `*` || m?.object === value)
             )
             .at(0);
           if (thisMatchingBelief) withhold = false;
@@ -72,7 +73,8 @@ const PaneFilter = (props: {
               .filter(
                 (m: BeliefStore) =>
                   (m.slug === key && m.verb === v) ||
-                  (m.slug === key && m?.object === v)
+                  (m.slug === key && m?.object === v) ||
+                  (m.slug === key && v === `*`)
               )
               .at(0);
             if (thisMatchingBelief) withhold = false;

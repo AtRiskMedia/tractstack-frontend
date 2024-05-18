@@ -168,10 +168,16 @@ export const processGraphPayload = (rows: GraphNodes[]) => {
   });
   const edges: GraphRelationshipDatum[] = graphRelationships.map(
     (e: GraphNode) => {
+      const label =
+        typeof e?.properties?.object === `string`
+          ? e.properties.object
+          : typeof e?.type === `string`
+            ? e.type
+            : `unknown`;
       return {
         from: e.startNodeId,
         to: e.endNodeId,
-        label: e?.properties?.object! || e.type || `unknown`,
+        label: label,
         font: { align: `top`, size: `8` },
         arrows: {
           to: {
