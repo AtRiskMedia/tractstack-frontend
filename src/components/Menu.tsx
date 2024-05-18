@@ -38,7 +38,7 @@ const Menu = (props: { payload: MenuDatum; theme?: string }) => {
 
   return (
     <>
-      <nav className="hidden font-action md:flex flex-wrap items-center space-x-6 justify-around ml-12">
+      <nav className="hidden md:flex flex-wrap items-center space-x-6 justify-around ml-12">
         {featuredLinks.map((item: MenuLink) => (
           <div key={item.name} className="relative">
             <a
@@ -51,7 +51,7 @@ const Menu = (props: { payload: MenuDatum; theme?: string }) => {
           </div>
         ))}
       </nav>
-      <div className="md:hidden font-action">
+      <div className="md:hidden">
         <Popover className="relative z-99">
           <Popover.Button className="inline-flex text-sm font-bold text-myblue hover:text-black">
             <span>Menu</span>
@@ -69,7 +69,7 @@ const Menu = (props: { payload: MenuDatum; theme?: string }) => {
           >
             <Popover.Panel className="absolute z-90000 mt-5 flex -right-4">
               <div className="w-screen">
-                <div className="p-4 flex-auto overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg ring-1 ring-mydarkgrey/5">
+                <div className="p-4 flex-auto overflow-hidden rounded-3xl bg-white text-md leading-6 shadow-lg ring-1 ring-mydarkgrey/5">
                   <div className="px-8">
                     {featuredLinks.map((item: MenuLink) => (
                       <div
@@ -79,7 +79,7 @@ const Menu = (props: { payload: MenuDatum; theme?: string }) => {
                         <div>
                           <a
                             href={item.to}
-                            className="font-bold text-myblack hover:text-black"
+                            className="text-myblack hover:text-black"
                           >
                             {item.name}
                             <span className="absolute inset-0" />
@@ -93,12 +93,14 @@ const Menu = (props: { payload: MenuDatum; theme?: string }) => {
                   </div>
                   <div className="bg-slate-50 p-8">
                     <div className="flex justify-between">
+                    {additionalLinks.length ? (
                       <h3 className="mt-4 text-sm leading-6 text-myblue">
                         Additional Links
                       </h3>
+                      ):<div />}
                       <a
                         href="/concierge/graph"
-                        className="text-sm leading-6 text-myorange"
+                        className="text-sm leading-6 text-myblue"
                       >
                         Breadcrumbs <span aria-hidden="true">&rarr;</span>
                       </a>
