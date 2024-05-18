@@ -26,6 +26,19 @@ const Pane = (props: { payload: PaneDatumProps }) => {
   //}
   if (hasCodeHook) {
     const target = props.payload.optionsPayload.codeHook.target;
+    if (filterBeliefs && target)
+      return (
+        <PaneFilter
+          heldBeliefsFilter={props?.payload?.optionsPayload?.heldBeliefs}
+          withheldBeliefsFilter={
+            props?.payload?.optionsPayload?.withheldBeliefs
+          }
+        >
+          <div id={props.payload.slug}>
+            <CodeHook target={target} />
+          </div>
+        </PaneFilter>
+      );
     if (target)
       return (
         <div id={props.payload.slug}>
