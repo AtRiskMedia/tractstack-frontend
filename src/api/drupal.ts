@@ -43,10 +43,10 @@ export const fetchUrl = async (url: string): Promise<any> => {
         // process as array
         if (thisData.length) data = data.concat(thisData);
         // process as single node
-        else data.push(thisData);
+        else if (Object.keys(thisData).length) data.push(thisData);
         url = typeof json !== `string` ? json?.links?.next?.href : null;
         if (typeof url === `undefined`) more = false;
-      } else return data;
+      } //else return data;
     } catch (e) {
       console.log(`error connecting to Drupal`, e);
       more = false;

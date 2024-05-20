@@ -57,9 +57,6 @@ const v = storyFragments
 const xmlBody = v.join(``);
 const xml = `${xmlTop}${xmlBody}${xmlBottom}`;
 
-//console.log(storyFragments)
-//console.log(contextPanes)
-
 export const GET: APIRoute = () => {
   return new Response(xml, {
     headers: {
