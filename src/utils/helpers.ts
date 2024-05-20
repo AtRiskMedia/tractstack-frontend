@@ -39,8 +39,8 @@ export function handleScroll() {
   const button = document.querySelector("button#top");
   const scrollTotal = rootElement.scrollHeight - rootElement.clientHeight;
   const aboveFold = window.innerHeight > rootElement.scrollTop;
-  const hitBottom = scrollTotal - rootElement.scrollTop < 150;
-  if (!aboveFold && !hitBottom && button) {
+  //const hitBottom = scrollTotal - rootElement.scrollTop < 150;
+  if (!aboveFold /* && !hitBottom */ && button) {
     // Show button
     button.classList.add("block");
     button.classList.remove("hidden");
