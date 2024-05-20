@@ -34,7 +34,7 @@ export const RememberMeToggle = () => {
         checked={consent}
         onChange={() => toggleConsent()}
         className={classNames(
-          consent ? `bg-myorange` : `bg-slate-200`,
+          consent ? `bg-myorange` : `bg-myblue`,
           `relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-myorange focus:ring-offset-2`
         )}
       >
