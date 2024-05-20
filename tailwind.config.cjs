@@ -56,6 +56,7 @@ module.exports = {
         fadeInRight: 'fadeInRight 1s ease-in',
         fadeInLeft: 'fadeInLeft 1s ease-in',
         bounceIn: 'bounce 1s ease-in-out 4.5',
+        wig: 'wiggle 1s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -73,6 +74,14 @@ module.exports = {
         fadeInLeft: {
           '0%': { transform: 'translate3d(-10px,0, 0)', opacity: '.25' },
           '100%': { transform: 'translate3d(0, 0, 0)', opacity: '1' },
+        },
+        wiggle: {
+          '0%, 100%': {
+            transform: 'translateX(3%)'
+          },
+          '50%': {
+            transform: 'translateX(0)'
+          },
         },
       },
       lineHeight: {

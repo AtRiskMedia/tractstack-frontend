@@ -67,7 +67,7 @@ export const ToggleBelief = ({
         <span
           aria-hidden="true"
           className={classNames(
-            enabled ? `translate-x-5` : `translate-x-0`,
+            enabled ? `translate-x-5` : `translate-x-0 motion-safe:animate-wig`,
             `pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`
           )}
         />
