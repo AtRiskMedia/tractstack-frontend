@@ -5,6 +5,7 @@ export interface Icons {
   linkedin: string;
   mail: string;
   twitter: string;
+  x: string;
   twitch: string;
   youtube: string;
   whatsapp: string;
@@ -25,6 +26,7 @@ export const socialIconKeys = [
   `linkedin`,
   `mail`,
   `twitter`,
+  `x`,
   `twitch`,
   `youtube`,
   `whatsapp`,
@@ -94,6 +96,15 @@ export const socialIcons: Icons = {
       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
       <rect x="3" y="5" width="18" height="14" rx="2"></rect>
       <polyline points="3 7 12 13 21 7"></polyline>
+    </svg>`,
+  x: `<svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="inline-block h-6 w-6 scale-125 fill-transparent"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+      <path d="M 13.70528,10.622647 20.401699,3 H 18.81542 L 12.998468,9.6172856 8.3559367,3 H 3 L 10.021948,13.007461 3,21 H 4.5862782 L 10.725162,14.010424 15.629075,21 h 5.355937 M 5.1588009,4.1714238 H 7.5957703 L 18.814221,19.886128 h -2.437569"></path>
     </svg>`,
   twitter: `<svg
       xmlns="http://www.w3.org/2000/svg"

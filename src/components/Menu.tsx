@@ -93,11 +93,13 @@ const Menu = (props: { payload: MenuDatum; theme?: string }) => {
                   </div>
                   <div className="bg-slate-50 p-8">
                     <div className="flex justify-between">
-                    {additionalLinks.length ? (
-                      <h3 className="mt-4 text-sm leading-6 text-myblue">
-                        Additional Links
-                      </h3>
-                      ):<div />}
+                      {additionalLinks.length ? (
+                        <h3 className="mt-4 text-sm leading-6 text-myblue">
+                          Additional Links
+                        </h3>
+                      ) : (
+                        <div />
+                      )}
                       <a
                         href="/concierge/graph"
                         className="text-sm leading-6 text-myblue"
