@@ -3,6 +3,10 @@ import { LOCALE, SITE } from "@config";
 import { ViewTransitions } from "astro:transitions";
 
 const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
+const gtagUrl =
+  typeof googleSiteVerification === `string`
+    ? `https://www.googletagmanager.com/gtag/js?id=${googleSiteVerification}`
+    : null;
 
 export interface Props {
   title?: string;
@@ -89,12 +93,16 @@ const socialImageURL = `${canonicalURL}${ogImage ?? SITE.ogImage ?? `og.png`}`;
       // If PUBLIC_GOOGLE_SITE_VERIFICATION is set in the environment variable,
       // include google-site-verification tag in the heading
       // Learn more: https://support.google.com/webmasters/answer/9008080#meta_tag_verification&zippy=%2Chtml-tag
-      googleSiteVerification && (
-        <meta
-          name="google-site-verification"
-          content={googleSiteVerification}
-        />
-      )
+      typeof gtagUrl === `string` ? (
+        <>
+          <script async src={gtagUrl} />
+          <script define:vars={{ googleSiteVerification }}>
+            window.dataLayer = window.dataLayer || []; function gtag()
+            {dataLayer.push(arguments)}
+            gtag('js', new Date()); gtag('config', googleSiteVerification);
+          </script>
+        </>
+      ) : null
     }
 
     <ViewTransitions />

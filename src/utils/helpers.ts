@@ -37,7 +37,7 @@ export function scrollToTop() {
 export function handleScroll() {
   const rootElement = document.documentElement;
   const button = document.querySelector("button#top");
-  const scrollTotal = rootElement.scrollHeight - rootElement.clientHeight;
+  //const scrollTotal = rootElement.scrollHeight - rootElement.clientHeight;
   const aboveFold = window.innerHeight > rootElement.scrollTop;
   //const hitBottom = scrollTotal - rootElement.scrollTop < 150;
   if (!aboveFold /* && !hitBottom */ && button) {
