@@ -95,8 +95,11 @@ const socialImageURL = `${canonicalURL}${ogImage ?? SITE.ogImage ?? `og.png`}`;
       // Learn more: https://support.google.com/webmasters/answer/9008080#meta_tag_verification&zippy=%2Chtml-tag
       typeof gtagUrl === `string` ? (
         <>
-          <script async src={gtagUrl} />
-          <script define:vars={{ googleSiteVerification }}>
+          <script type="text/partytown" async src={gtagUrl} />
+          <script
+            type="text/partytown"
+            define:vars={{ googleSiteVerification }}
+          >
             window.dataLayer = window.dataLayer || []; function gtag()
             {dataLayer.push(arguments)}
             gtag('js', new Date()); gtag('config', googleSiteVerification);
