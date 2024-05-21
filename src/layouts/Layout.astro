@@ -2,12 +2,6 @@
 import { LOCALE, SITE } from "@config";
 import { ViewTransitions } from "astro:transitions";
 
-const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
-const gtagUrl =
-  typeof googleSiteVerification === `string`
-    ? `https://www.googletagmanager.com/gtag/js?id=${googleSiteVerification}`
-    : null;
-
 export interface Props {
   title?: string;
   author?: string;
@@ -33,6 +27,12 @@ const {
 } = Astro.props;
 
 const socialImageURL = `${canonicalURL}${ogImage ?? SITE.ogImage ?? `og.png`}`;
+
+const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
+const gtagUrl =
+  typeof googleSiteVerification === `string`
+    ? `https://www.googletagmanager.com/gtag/js?id=${googleSiteVerification}`
+    : null;
 ---
 
 <!doctype html>
@@ -89,24 +89,58 @@ const socialImageURL = `${canonicalURL}${ogImage ?? SITE.ogImage ?? `og.png`}`;
     <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content={socialImageURL} />
 
-    {
-      // If PUBLIC_GOOGLE_SITE_VERIFICATION is set in the environment variable,
-      // include google-site-verification tag in the heading
-      // Learn more: https://support.google.com/webmasters/answer/9008080#meta_tag_verification&zippy=%2Chtml-tag
-      typeof gtagUrl === `string` ? (
-        <>
-          <script type="text/partytown" async src={gtagUrl} />
-          <script
-            type="text/partytown"
-            define:vars={{ googleSiteVerification }}
-          >
-            window.dataLayer = window.dataLayer || []; function gtag()
-            {dataLayer.push(arguments)}
-            gtag('js', new Date()); gtag('config', googleSiteVerification);
-          </script>
-        </>
-      ) : null
-    }
+    <!-- Google Analytics -->
+    <script async is:inline define:vars={{ gtagUrl }} src={gtagUrl}></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      // @ts-ignore gtag
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+    </script>
+
+    <!-- Tract Stack Concierge -->
+    <script>
+      import { handleResize, handleScroll } from "../utils/helpers";
+      import { eventStream } from "../utils/events/eventStream";
+      import { inView } from "../utils/events/inView";
+      import { scrollToTop } from "../utils/helpers";
+      import { eventProcessQueue } from "../utils/events/eventProcessQueue";
+      import { init } from "../utils/init";
+
+      // always run first load
+      handleResize();
+
+      document.addEventListener("astro:page-load", () => {
+        init();
+        handleScroll();
+        inView();
+        eventStream();
+        scrollToTop();
+        window.addEventListener(`resize`, handleResize);
+        document.addEventListener("scroll", handleScroll);
+
+        const googleSiteVerification = import.meta.env
+          .PUBLIC_GOOGLE_SITE_VERIFICATION;
+        if (googleSiteVerification) {
+          // @ts-expect-error gtag
+          gtag("js", new Date());
+          // @ts-expect-error gtag
+          gtag("config", googleSiteVerification);
+          // @ts-expect-error gtag
+          gtag("event", "page_view", {
+            page_title: document.title,
+            page_location: window.location.pathname,
+            page_path: window.location.pathname,
+            send_page_view: true,
+          });
+        }
+      });
+
+      document.addEventListener("astro:before-swap", () => {
+        eventProcessQueue();
+      });
+    </script>
 
     <ViewTransitions />
   </head>
