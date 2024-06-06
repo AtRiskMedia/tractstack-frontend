@@ -15,7 +15,6 @@ import type {
   TractStackDatum,
   Menu,
   MenuDatum,
-  Resource,
   ResourceDatum,
   ContextPaneSiteMap,
   ContextPaneDatum,
@@ -553,7 +552,7 @@ export const getResource = async (id: string): Promise<ResourceDatum[]> => {
   return await fetchUrl(baseUrl + "/jsonapi/node/resource/" + id + "?" + path);
 };
 
-export const getAllResources = async (): Promise<Resource[]> => {
+export const getAllResources = async (): Promise<ResourceDatum[]> => {
   const params: DrupalJsonApiParams = new DrupalJsonApiParams();
   params
     .addFields("node--resource", [
@@ -562,6 +561,9 @@ export const getAllResources = async (): Promise<Resource[]> => {
       "title",
       "field_slug",
       "field_category_slug",
+      "field_options",
+      "field_action_lisp",
+      "field_oneliner",
     ])
     .addFilter("status", "1");
   const path: string = params.getQueryString();

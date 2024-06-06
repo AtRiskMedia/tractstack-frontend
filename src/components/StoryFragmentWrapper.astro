@@ -1,16 +1,28 @@
 ---
 import { classNames } from "../utils/helpers";
 import Pane from "@components/Pane";
-import type { Current, ContentMap, PaneDatumProps } from "../types";
+import type {
+  Current,
+  ContentMap,
+  PaneDatumProps,
+  ResourceDatum,
+} from "../types";
 
 export interface Props {
   tailwindBgColour: string | undefined;
   panesPayload: PaneDatumProps[];
   contentMap: ContentMap[];
   current: Current;
+  codeHooksResourcePayload: ResourceDatum[];
 }
 
-const { tailwindBgColour, panesPayload, contentMap, current } = Astro.props;
+const {
+  tailwindBgColour,
+  panesPayload,
+  contentMap,
+  current,
+  codeHooksResourcePayload,
+} = Astro.props;
 
 // per pane settings
 const hiddenPanes: { [key: string]: boolean } = panesPayload.reduce(function (
@@ -34,6 +46,11 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
   if (cur.optionsPayload.maxHScreen) return { ...acc, [cur.id]: true };
   return acc;
 }, {});
+
+const perCodeHookPayloads: { [key: number]: boolean } = {};
+panesPayload.forEach((p: paneDatumProps, idx: number) => {
+  if (p?.optionsPayload?.codeHook?.target) perCodeHookPayloads[idx] = true;
+});
 ---
 
 <astro-storyfragment
@@ -64,6 +81,9 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
           {idx < 2 ? (
             <Pane
               client:load
+              resourcePayload={
+                perCodeHookPayloads[idx] ? codeHooksResourcePayload : []
+              }
               payload={
                 panesPayload
                   .filter((p: PaneDatumProps) => p.id === pane.id)
@@ -73,6 +93,9 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
           ) : (
             <Pane
               client:idle
+              resourcePayload={
+                perCodeHookPayloads[idx] ? codeHooksResourcePayload : []
+              }
               payload={
                 panesPayload
                   .filter((p: PaneDatumProps) => p.id === pane.id)
