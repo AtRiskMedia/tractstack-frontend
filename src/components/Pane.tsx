@@ -5,7 +5,7 @@ import type { PaneDatumProps, ResourceDatum } from "../types";
 
 const Pane = (props: {
   payload: PaneDatumProps;
-  resourcePayload: ResourceDatum[];
+  resourcePayload?: ResourceDatum[];
 }) => {
   // intercept any held or withheld beliefs
   const filterBeliefs =
