@@ -26,14 +26,20 @@ const Pane = (props: {
           }
         >
           <div id={props.payload.slug}>
-            <CodeHook target={target} payload={props?.resourcePayload || []} />
+            <CodeHook
+              target={target}
+              payload={(props?.resourcePayload as ResourceDatum[]) || []}
+            />
           </div>
         </PaneFilter>
       );
     if (target)
       return (
         <div id={props.payload.slug}>
-          <CodeHook target={target} payload={props?.resourcePayload || []} />
+          <CodeHook
+            target={target}
+            payload={(props?.resourcePayload as ResourceDatum[]) || []}
+          />
         </div>
       );
     else return <div />;

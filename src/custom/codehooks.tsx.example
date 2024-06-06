@@ -1,12 +1,13 @@
 //import Branding from './Branding';
+import type { ResourceDatum} from '../types';
 
-const CodeHook = ({ target }: { target: string }) => {
-  switch (target) {
+const CodeHook = ( props : { target: string;payload:ResourceDatum[] }) => {
+  switch (props.target) {
     //case `Branding`:
     //  return <Branding />
 
     default:
-      console.log(`missed on`, target)
+      console.log(`missed on`, props.target)
       return <div />
   }
 }
