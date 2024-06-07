@@ -8,6 +8,7 @@ import Footer from "@components/Footer.astro";
 import { getImage } from "astro:assets";
 import { cleanPaneDatum } from "../utils/compositor/cleanPaneDatum";
 import { cleanFileDatum } from "../utils/compositor/cleanFileDatum";
+import { cleanResourceDatum } from "../utils/compositor/cleanResourceDatum";
 import { cleanImpressionsDatum } from "../utils/compositor/cleanImpressionsDatum";
 import { ENABLE_HEADER_WIDGET } from "../constants";
 import type {
@@ -23,6 +24,7 @@ import type {
   Current,
   ContentMap,
   ResourceDatum,
+  ResourceDatumProps,
   StylesVersion,
 } from "../types";
 
@@ -44,13 +46,16 @@ if (id === undefined) {
 }
 // this is for the Header Widget rough-in (you can safely ignore)
 // this uses the /api/resources/ look-up;
-// sets to ignore by passing | when HEADER_WIDGET_RESOURCE_CATEGORY is unset
+// sets to ignore by passing | auto when HEADER_WIDGET_RESOURCE_CATEGORY is unset
 const headerWidgetResourcesCategory =
   import.meta.env.HEADER_WIDGET_RESOURCE_CATEGORY || `|`;
 const resourceCategoryUrl = `${Astro.url.origin}/api/resources/${headerWidgetResourcesCategory}.json`;
 const resourceCategoryRequest: Response = await fetch(resourceCategoryUrl);
-const headerWidgetResourcePayload: ResourceDatum[] =
+const headerWidgetResourcePayloadRaw: ResourceDatumProps[] =
   request.status === 404 ? [] : await resourceCategoryRequest.json();
+const headerWidgetResourcePayload = cleanResourceDatum(
+  headerWidgetResourcePayloadRaw
+);
 const urlDatum = `${Astro.url.origin}/api/storyfragment/${id}.json`;
 const requestDatum: Response = await fetch(urlDatum);
 const storyFragment: StoryFragmentFullDatum =
@@ -94,8 +99,11 @@ const codeHookResourcesCategory = Array.from([
 ]).join(`|`);
 const codeHooksResourceCategoryRequest: Response =
   await fetch(resourceCategoryUrl);
-const codeHooksResourcePayload: ResourceDatum[] =
+const codeHooksResourcePayloadRaw: ResourceDatumProps[] =
   request.status === 404 ? [] : await codeHooksResourceCategoryRequest.json();
+const codeHooksResourcePayload = cleanResourceDatum(
+  codeHooksResourcePayloadRaw
+);
 
 // id for this storyFragment
 const current: Current = {

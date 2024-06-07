@@ -268,6 +268,15 @@ export interface MenuDatum extends Menu {
   field_options: string;
 }
 
+export interface ResourceDatumProps {
+  title: string;
+  slug: string;
+  actionLisp: string;
+  oneliner: string;
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  optionsPayload: any;
+}
+
 export interface StoryFragmentProps {
   title: string;
   id: string;
