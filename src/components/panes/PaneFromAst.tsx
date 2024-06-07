@@ -4,7 +4,7 @@ import { Belief } from "@components/widgets/Belief";
 import { IdentifyAs } from "@components/widgets/IdentifyAs";
 import { ToggleBelief } from "@components/widgets/ToggleBelief";
 import { classNames } from "../../utils/helpers";
-import { lispLexer } from "../../utils/concierge/lispLexar";
+import { lispLexer } from "../../utils/concierge/lispLexer";
 import { preParseAction } from "../../utils/concierge/preParseAction";
 import { preParseClicked } from "../../utils/concierge/preParseClicked";
 import { events } from "../../store/events";

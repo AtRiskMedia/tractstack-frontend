@@ -1,5 +1,5 @@
 import { preParseAction } from "../utils/concierge/preParseAction";
-import { lispLexer } from "../utils/concierge/lispLexar";
+import { lispLexer } from "../utils/concierge/lispLexer";
 import type { MenuDatum, MenuLink } from "../types";
 
 const FooterMenu = (props: { payload: MenuDatum; theme?: string }) => {

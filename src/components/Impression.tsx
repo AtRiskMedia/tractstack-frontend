@@ -1,4 +1,4 @@
-import { lispLexer } from "../utils/concierge/lispLexar";
+import { lispLexer } from "../utils/concierge/lispLexer";
 import { preParseAction } from "../utils/concierge/preParseAction";
 import { preParseImpression } from "../utils/concierge/preParseImpression";
 import { current, events } from "../store/events";
