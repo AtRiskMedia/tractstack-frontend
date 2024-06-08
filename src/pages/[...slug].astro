@@ -52,9 +52,10 @@ const resourceCategoryUrl = `${Astro.url.origin}/api/resources/${headerWidgetRes
 const resourceCategoryRequest: Response = await fetch(resourceCategoryUrl);
 const headerWidgetResourcePayloadRaw: ResourceDatum[] =
   request.status === 404 ? [] : await resourceCategoryRequest.json();
-const headerWidgetResourcePayload = cleanResourceDatum(
-  headerWidgetResourcePayloadRaw
-);
+const headerWidgetResourcePayload =
+  (headerWidgetResourcePayloadRaw?.length &&
+    cleanResourceDatum(headerWidgetResourcePayloadRaw)) ||
+  [];
 const urlDatum = `${Astro.url.origin}/api/storyfragment/${id}.json`;
 const requestDatum: Response = await fetch(urlDatum);
 const storyFragment: StoryFragmentFullDatum =
@@ -102,13 +103,16 @@ const codeHooksResourceCategoryRequest: Response =
   await fetch(resourceCategoryUrl);
 const codeHooksResourcePayloadRaw: ResourceDatum[] =
   request.status === 404 ? [] : await codeHooksResourceCategoryRequest.json();
-const codeHooksResourcePayload = cleanResourceDatum(
-  codeHooksResourcePayloadRaw.filter(
-    (r: ResourceDatum) =>
-      r?.field_category_slug &&
-      codeHookResourcesCategory.includes(r.field_category_slug)
-  )
-);
+const codeHooksResourcePayload =
+  (codeHooksResourcePayloadRaw?.length &&
+    cleanResourceDatum(
+      codeHooksResourcePayloadRaw.filter(
+        (r: ResourceDatum) =>
+          r?.field_category_slug &&
+          codeHookResourcesCategory.includes(r.field_category_slug)
+      )
+    )) ||
+  [];
 
 // id for this storyFragment
 const current: Current = {

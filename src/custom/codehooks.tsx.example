@@ -1,7 +1,7 @@
 //import Branding from './Branding';
-import type { ResourceDatum} from '../types';
+import type { ResourceDatumProps} from '../types';
 
-const CodeHook = ( props : { target: string;payload:ResourceDatum[] }) => {
+const CodeHook = ( props : { target: string;payload:ResourceDatumProps[] }) => {
   switch (props.target) {
     //case `Branding`:
     //  return <Branding />

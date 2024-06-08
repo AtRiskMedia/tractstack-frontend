@@ -1,6 +1,7 @@
 import type { ResourceDatum, ResourceDatumProps } from "../../types";
 
 export function cleanResourceDatum(resources: ResourceDatum[]) {
+  if (!resources.length) return [];
   const thisResources: ResourceDatumProps[] = resources.map(
     (resource: ResourceDatum) => {
       return {
