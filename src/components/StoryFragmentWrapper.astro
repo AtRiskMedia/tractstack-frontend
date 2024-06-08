@@ -49,7 +49,7 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
 
 const perCodeHookPayloads: { [key: number]: boolean } = {};
 panesPayload.forEach((p: PaneDatumProps, idx: number) => {
-  if (p?.optionsPayload?.codeHook?.target) perCodeHookPayloads[idx] = true;
+  if (p?.optionsPayload?.codeHook?.options) perCodeHookPayloads[idx] = true;
 });
 ---
 

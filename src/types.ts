@@ -271,6 +271,7 @@ export interface MenuDatum extends Menu {
 export interface ResourceDatumProps {
   title: string;
   slug: string;
+  category: string | null;
   actionLisp: string;
   oneliner: string;
   /* eslint-disable @typescript-eslint/no-explicit-any */

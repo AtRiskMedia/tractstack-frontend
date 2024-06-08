@@ -28,17 +28,17 @@ const isHome = slug === import.meta.env.PUBLIC_HOME;
 
 <header class="relative bg-white shadow-inner">
   <div
-    class="flex flex-row flex-nowrap items-center justify-between py-3 px-4 md:px-8 bg-mygreen/10"
+    class="flex flex-row flex-nowrap items-center justify-between py-3 px-4 md:px-8"
   >
     <a href="/" title="Home page">
-      <div class="flex flex-row flex-nowrap items-center h-8">
+      <div class="flex flex-row flex-nowrap items-center h-8 my-2">
         {
           [`default`, `logo`].includes(WORDMARK_MODE) ? (
             <>
               <object
                 type="image/svg+xml"
                 data="/custom/logo.svg"
-                class="h-5 w-auto pointer-events-none"
+                class="h-8 w-auto pointer-events-none"
                 aria-label="Logo"
               >
                 Logo
@@ -53,7 +53,7 @@ const isHome = slug === import.meta.env.PUBLIC_HOME;
               type="image/svg+xml"
               data="/custom/wordmark.svg"
               aria-label="Wordmark"
-              class="h-5 w-auto pointer-events-none"
+              class="h-12 w-auto pointer-events-none"
             >
               Wordmark
             </object>

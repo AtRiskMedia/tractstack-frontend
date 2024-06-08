@@ -1,11 +1,11 @@
 import PaneRender from "@components/PaneRender";
 import PaneFilter from "@components/PaneFilter";
 import CodeHook from "../custom/codehooks";
-import type { PaneDatumProps, ResourceDatum } from "../types";
+import type { PaneDatumProps, ResourceDatumProps } from "../types";
 
 const Pane = (props: {
   payload: PaneDatumProps;
-  resourcePayload?: ResourceDatum[];
+  resourcePayload?: ResourceDatumProps[];
 }) => {
   // intercept any held or withheld beliefs
   const filterBeliefs =
@@ -28,7 +28,7 @@ const Pane = (props: {
           <div id={props.payload.slug}>
             <CodeHook
               target={target}
-              payload={(props?.resourcePayload as ResourceDatum[]) || []}
+              payload={(props?.resourcePayload as ResourceDatumProps[]) || []}
             />
           </div>
         </PaneFilter>
@@ -38,7 +38,7 @@ const Pane = (props: {
         <div id={props.payload.slug}>
           <CodeHook
             target={target}
-            payload={(props?.resourcePayload as ResourceDatum[]) || []}
+            payload={(props?.resourcePayload as ResourceDatumProps[]) || []}
           />
         </div>
       );
