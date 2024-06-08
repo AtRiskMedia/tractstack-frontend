@@ -103,9 +103,10 @@ const codeHooksResourceCategoryRequest: Response =
 const codeHooksResourcePayloadRaw: ResourceDatum[] =
   request.status === 404 ? [] : await codeHooksResourceCategoryRequest.json();
 const codeHooksResourcePayload = cleanResourceDatum(
-  codeHooksResourcePayloadRaw.filter((r: ResourceDatum) =>
-    r?.field_category_slug &&
-    codeHookResourcesCategory.includes(r.field_category_slug)
+  codeHooksResourcePayloadRaw.filter(
+    (r: ResourceDatum) =>
+      r?.field_category_slug &&
+      codeHookResourcesCategory.includes(r.field_category_slug)
   )
 );
 
