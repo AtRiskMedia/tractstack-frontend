@@ -276,6 +276,22 @@ export interface ResourceDatumProps {
   oneliner: string;
   /* eslint-disable @typescript-eslint/no-explicit-any */
   optionsPayload: any;
+  timeString?: string;
+  dateString?: string;
+  venue?: string;
+}
+
+export interface ResourceDatumEventProps {
+  title: string;
+  slug: string;
+  category: string | null;
+  actionLisp: string;
+  oneliner: string;
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  optionsPayload: any;
+  timeString: string;
+  dateString: string;
+  venue: string;
 }
 
 export interface StoryFragmentProps {
@@ -406,6 +422,7 @@ export interface ImpressionDatum {
 export interface CodeHook {
   target: string;
   url: string | undefined;
+  options: string | undefined;
   height: string | undefined;
   width: string | undefined;
 }

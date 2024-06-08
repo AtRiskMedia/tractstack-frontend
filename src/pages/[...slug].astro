@@ -24,7 +24,6 @@ import type {
   Current,
   ContentMap,
   ResourceDatum,
-  ResourceDatumProps,
   StylesVersion,
 } from "../types";
 
@@ -51,7 +50,7 @@ const headerWidgetResourcesCategory =
   import.meta.env.HEADER_WIDGET_RESOURCE_CATEGORY || `|`;
 const resourceCategoryUrl = `${Astro.url.origin}/api/resources/${headerWidgetResourcesCategory}.json`;
 const resourceCategoryRequest: Response = await fetch(resourceCategoryUrl);
-const headerWidgetResourcePayloadRaw: ResourceDatumProps[] =
+const headerWidgetResourcePayloadRaw: ResourceDatum[] =
   request.status === 404 ? [] : await resourceCategoryRequest.json();
 const headerWidgetResourcePayload = cleanResourceDatum(
   headerWidgetResourcePayloadRaw
@@ -96,13 +95,18 @@ const codeHookResourcesCategoryRaw = panes
   .split(`|`);
 const codeHookResourcesCategory = Array.from([
   ...new Set(codeHookResourcesCategoryRaw),
-]).join(`|`);
+])
+  .join(`|`)
+  .split(`|`);
 const codeHooksResourceCategoryRequest: Response =
   await fetch(resourceCategoryUrl);
-const codeHooksResourcePayloadRaw: ResourceDatumProps[] =
+const codeHooksResourcePayloadRaw: ResourceDatum[] =
   request.status === 404 ? [] : await codeHooksResourceCategoryRequest.json();
 const codeHooksResourcePayload = cleanResourceDatum(
-  codeHooksResourcePayloadRaw
+  codeHooksResourcePayloadRaw.filter((r: ResourceDatum) =>
+    r?.field_category_slug &&
+    codeHookResourcesCategory.includes(r.field_category_slug)
+  )
 );
 
 // id for this storyFragment

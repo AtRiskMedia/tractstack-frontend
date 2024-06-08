@@ -5,7 +5,7 @@ import type {
   Current,
   ContentMap,
   PaneDatumProps,
-  ResourceDatum,
+  ResourceDatumProps,
 } from "../types";
 
 export interface Props {
@@ -13,7 +13,7 @@ export interface Props {
   panesPayload: PaneDatumProps[];
   contentMap: ContentMap[];
   current: Current;
-  codeHooksResourcePayload: ResourceDatum[];
+  codeHooksResourcePayload: ResourceDatumProps[];
 }
 
 const {
@@ -83,7 +83,7 @@ panesPayload.forEach((p: PaneDatumProps, idx: number) => {
               client:load
               resourcePayload={
                 perCodeHookPayloads[idx] && codeHooksResourcePayload?.length
-                  ? (codeHooksResourcePayload as ResourceDatum[])
+                  ? (codeHooksResourcePayload as ResourceDatumProps[])
                   : []
               }
               payload={
@@ -97,7 +97,7 @@ panesPayload.forEach((p: PaneDatumProps, idx: number) => {
               client:idle
               resourcePayload={
                 perCodeHookPayloads[idx] && codeHooksResourcePayload?.length
-                  ? (codeHooksResourcePayload as ResourceDatum[])
+                  ? (codeHooksResourcePayload as ResourceDatumProps[])
                   : []
               }
               payload={
