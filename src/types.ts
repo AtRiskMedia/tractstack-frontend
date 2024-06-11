@@ -419,7 +419,7 @@ export interface ImpressionDatum {
   parentId: string;
 }
 
-export interface CodeHook {
+export interface CodeHookDatum {
   target: string;
   url: string | undefined;
   options: string | undefined;
@@ -541,7 +541,7 @@ export interface PaneOptionsPayload {
   id: string;
   paneFragmentsPayload: BgPaneDatum[] | BgColourDatum[] | MarkdownPaneDatum[];
   impressions: ImpressionsDatum;
-  codeHook: CodeHook;
+  codeHook: CodeHookDatum;
   hiddenPane: boolean;
   overflowHidden: boolean;
   maxHScreen: boolean;

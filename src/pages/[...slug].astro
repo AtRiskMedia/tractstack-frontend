@@ -8,7 +8,6 @@ import Footer from "@components/Footer.astro";
 import { getImage } from "astro:assets";
 import { cleanPaneDatum } from "../utils/compositor/cleanPaneDatum";
 import { cleanFileDatum } from "../utils/compositor/cleanFileDatum";
-import { cleanResourceDatum } from "../utils/compositor/cleanResourceDatum";
 import { cleanImpressionsDatum } from "../utils/compositor/cleanImpressionsDatum";
 import { ENABLE_HEADER_WIDGET } from "../constants";
 import type {
@@ -23,7 +22,6 @@ import type {
   MarkdownFullDatum,
   Current,
   ContentMap,
-  ResourceDatum,
   StylesVersion,
 } from "../types";
 
@@ -43,19 +41,6 @@ const id = contentMap.find(c => c.slug === lookup)?.id;
 if (id === undefined) {
   return Astro.redirect("/404");
 }
-// this is for the Header Widget rough-in (you can safely ignore)
-// this uses the /api/resources/ look-up;
-// sets to ignore by passing | auto when HEADER_WIDGET_RESOURCE_CATEGORY is unset
-const headerWidgetResourcesCategory =
-  import.meta.env.HEADER_WIDGET_RESOURCE_CATEGORY || `|`;
-const resourceCategoryUrl = `${Astro.url.origin}/api/resources/${headerWidgetResourcesCategory}.json`;
-const resourceCategoryRequest: Response = await fetch(resourceCategoryUrl);
-const headerWidgetResourcePayloadRaw: ResourceDatum[] =
-  request.status === 404 ? [] : await resourceCategoryRequest.json();
-const headerWidgetResourcePayload =
-  (headerWidgetResourcePayloadRaw?.length &&
-    cleanResourceDatum(headerWidgetResourcePayloadRaw)) ||
-  [];
 const urlDatum = `${Astro.url.origin}/api/storyfragment/${id}.json`;
 const requestDatum: Response = await fetch(urlDatum);
 const storyFragment: StoryFragmentFullDatum =
@@ -76,43 +61,6 @@ const changed = storyFragment?.created ? new Date(storyFragment.created) : null;
 const created = storyFragment?.changed
   ? new Date(storyFragment?.changed)
   : null;
-
-// check for codeHooks with payloads
-const codeHookResourcesCategoryRaw = panes
-  .map((p: PaneFullDatum) => {
-    const optionsPayloadRaw = p.field_options;
-    try {
-      const optionsPayload = JSON.parse(optionsPayloadRaw);
-      const codeHooksRaw = optionsPayload?.codeHook?.options;
-      const codeHooks = JSON.parse(codeHooksRaw);
-      const category = codeHooks?.category;
-      return category;
-    } catch {
-      return null;
-    }
-  })
-  .filter((p: PaneFullDatum | null) => p)
-  .join(`|`)
-  .split(`|`);
-const codeHookResourcesCategory = Array.from([
-  ...new Set(codeHookResourcesCategoryRaw),
-])
-  .join(`|`)
-  .split(`|`);
-const codeHooksResourceCategoryRequest: Response =
-  await fetch(resourceCategoryUrl);
-const codeHooksResourcePayloadRaw: ResourceDatum[] =
-  request.status === 404 ? [] : await codeHooksResourceCategoryRequest.json();
-const codeHooksResourcePayload =
-  (codeHooksResourcePayloadRaw?.length &&
-    cleanResourceDatum(
-      codeHooksResourcePayloadRaw.filter(
-        (r: ResourceDatum) =>
-          r?.field_category_slug &&
-          codeHookResourcesCategory.includes(r.field_category_slug)
-      )
-    )) ||
-  [];
 
 // id for this storyFragment
 const current: Current = {
@@ -241,11 +189,7 @@ const impressions = impressionsRaw as ImpressionDatum[];
   ogImage={socialImagePath}
   stylesUrl={stylesUrl}
 >
-  {
-    ENABLE_HEADER_WIDGET ? (
-      <HeaderWidget resources={headerWidgetResourcePayload} />
-    ) : null
-  }
+  {ENABLE_HEADER_WIDGET ? <HeaderWidget /> : null}
   <Header
     title={title || ``}
     menu={menu}
@@ -258,7 +202,6 @@ const impressions = impressionsRaw as ImpressionDatum[];
       panesPayload={panesPayload}
       contentMap={contentMap}
       current={current}
-      codeHooksResourcePayload={codeHooksResourcePayload}
     />
   </main>
   {

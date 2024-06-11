@@ -1,11 +1,13 @@
 ---
 import { classNames } from "../utils/helpers";
-import Pane from "@components/Pane";
+import Pane from "./Pane.astro";
+import CodeHook from "../custom/codehooks.astro";
+import Filter from "@components/Filter";
 import type {
   Current,
   ContentMap,
   PaneDatumProps,
-  ResourceDatumProps,
+  CodeHookDatum,
 } from "../types";
 
 export interface Props {
@@ -13,18 +15,19 @@ export interface Props {
   panesPayload: PaneDatumProps[];
   contentMap: ContentMap[];
   current: Current;
-  codeHooksResourcePayload: ResourceDatumProps[];
 }
 
-const {
-  tailwindBgColour,
-  panesPayload,
-  contentMap,
-  current,
-  codeHooksResourcePayload,
-} = Astro.props;
+const { tailwindBgColour, panesPayload, contentMap, current } = Astro.props;
 
 // per pane settings
+const applyFilter: { [key: string]: boolean } = panesPayload.reduce(function (
+  acc,
+  cur
+) {
+  if (cur.optionsPayload.heldBeliefs || cur.optionsPayload.withheldBeliefs)
+    return { ...acc, [cur.id]: true };
+  return acc;
+}, {});
 const hiddenPanes: { [key: string]: boolean } = panesPayload.reduce(function (
   acc,
   cur
@@ -47,9 +50,19 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
   return acc;
 }, {});
 
-const perCodeHookPayloads: { [key: number]: boolean } = {};
+const perCodeHookPayload: { [key: number]: CodeHookDatum } = {};
+const perCodeHookResources: { [key: number]: string } = {};
 panesPayload.forEach((p: PaneDatumProps, idx: number) => {
-  if (p?.optionsPayload?.codeHook?.options) perCodeHookPayloads[idx] = true;
+  if (p?.optionsPayload?.codeHook?.options) {
+    try {
+      const thisOptions = JSON.parse(p.optionsPayload.codeHook.options);
+      if (thisOptions.category)
+        perCodeHookResources[idx] = thisOptions.category;
+    } finally {
+    }
+  }
+  if (p?.optionsPayload?.codeHook?.target)
+    perCodeHookPayload[idx] = p.optionsPayload.codeHook;
 });
 ---
 
@@ -69,6 +82,7 @@ panesPayload.forEach((p: PaneDatumProps, idx: number) => {
           id={`pane-${pane.id}`}
           class={classNames(
             `pane`,
+            typeof applyFilter[pane.id] === `boolean` ? `invisible` : ``,
             typeof overflowHidden[pane.id] === `boolean`
               ? `overflow-hidden`
               : ``,
@@ -78,28 +92,19 @@ panesPayload.forEach((p: PaneDatumProps, idx: number) => {
             typeof hiddenPanes[pane.id] === `boolean` ? `true` : `false`
           }
         >
-          {idx < 2 ? (
-            <Pane
-              client:load
-              resourcePayload={
-                perCodeHookPayloads[idx] && codeHooksResourcePayload?.length
-                  ? (codeHooksResourcePayload as ResourceDatumProps[])
-                  : []
-              }
-              payload={
-                panesPayload
-                  .filter((p: PaneDatumProps) => p.id === pane.id)
-                  .at(0)!
-              }
+          <Filter
+            client:load
+            id={pane.id}
+            heldBeliefsFilter={pane.optionsPayload?.heldBeliefs}
+            withheldBeliefsFilter={pane.optionsPayload?.withheldBeliefs}
+          />
+          {perCodeHookPayload[idx] ? (
+            <CodeHook
+              target={perCodeHookPayload[idx].target}
+              resourceCategory={perCodeHookResources[idx] || null}
             />
           ) : (
             <Pane
-              client:idle
-              resourcePayload={
-                perCodeHookPayloads[idx] && codeHooksResourcePayload?.length
-                  ? (codeHooksResourcePayload as ResourceDatumProps[])
-                  : []
-              }
               payload={
                 panesPayload
                   .filter((p: PaneDatumProps) => p.id === pane.id)

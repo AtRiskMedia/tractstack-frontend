@@ -1,5 +1,5 @@
 ---
-import Pane from "@components/Pane";
+import Pane from "./Pane.astro";
 import { Close } from "./other/Close";
 import type { Current, ContentMap, PaneDatumProps } from "../types";
 
@@ -17,7 +17,7 @@ const { pane, contentMap, current } = Astro.props;
 >
   <div class="py-16">
     <div id={`pane-${pane.id}`} class="pane" data-hidden="false">
-      <Pane client:load payload={pane} />
+      <Pane payload={pane} />
     </div>
     <Close client:load />
   </div>
