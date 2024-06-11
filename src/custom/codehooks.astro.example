@@ -1,0 +1,47 @@
+---
+//import Branding from "./Branding.tsx";
+//import Give from "./Give.astro";
+//import { cleanResourceDatum } from "../utils/compositor/cleanResourceDatum";
+import type { ResourceDatumProps } from "../types";
+
+interface Props {
+  target: string;
+  resourceCategory: string | null;
+}
+
+const { target, resourceCategory } = Astro.props;
+
+// check for codeHooks with payloads
+const resourceCategoryUrl = `${Astro.url.origin}/api/resources/${resourceCategory || `|`}.json`;
+const codeHooksResourceCategoryRequest: Response =
+  await fetch(resourceCategoryUrl);
+const codeHooksResourcePayloadRaw: ResourceDatum[] =
+  codeHooksResourceCategoryRequest.status === 404
+    ? []
+    : await codeHooksResourceCategoryRequest.json();
+const codeHooksResourcePayload =
+  (codeHooksResourcePayloadRaw?.length &&
+    cleanResourceDatum(
+      codeHooksResourcePayloadRaw.filter(
+        (r: ResourceDatum) =>
+          r?.field_category_slug &&
+          resourceCategory.includes(r.field_category_slug)
+      )
+    )) ||
+  [];
+
+/*
+use:
+{
+  target === `Branding` ? (
+    <Branding />
+  ) : target === `Give` ? (
+    <Give />
+  ) : target === `PassData` ? (
+    <PassData client:load payload={codeHooksResourcePayload} />
+  ) : null
+}
+
+or keep blank for no code hooks!
+*/
+---
