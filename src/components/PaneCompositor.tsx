@@ -17,12 +17,14 @@ export function PaneCompositor({
   files,
   paneHeight,
   paneId,
+  hasYTAutoplay,
 }: {
   payload: MarkdownPaneDatum | BgPaneDatum;
   markdown: MarkdownPaneProps[];
   files: FileNode[];
   paneHeight: [number, number, number];
   paneId: string;
+  hasYTAutoplay: string | null;
 }) {
   switch (payload.internal.type) {
     case `bgPane`: {
@@ -111,6 +113,7 @@ export function PaneCompositor({
           markdown={markdown}
           files={files}
           paneId={paneId}
+          hasYTAutoplay={hasYTAutoplay}
         />
       );
     }

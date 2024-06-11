@@ -1,5 +1,4 @@
-import LiteYouTubeEmbed from "react-lite-youtube-embed";
-import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
+import { YouTubeWrapper } from "@components/other/YouTubeWrapper";
 import { Belief } from "@components/widgets/Belief";
 import { IdentifyAs } from "@components/widgets/IdentifyAs";
 import { ToggleBelief } from "@components/widgets/ToggleBelief";
@@ -232,7 +231,11 @@ export default function PaneFromAst({
             if (hook === `youtube` && value1 && value2) {
               return (
                 <div key={thisId} className={injectClassNames}>
-                  <LiteYouTubeEmbed key={thisId} id={value1} title={value2} />
+                  <YouTubeWrapper
+                    id={value1}
+                    title={value2}
+                    autoplay={memory.hasYTAutoplay}
+                  />
                 </div>
               );
             } else if (hook === `belief` && value1 && value2) {

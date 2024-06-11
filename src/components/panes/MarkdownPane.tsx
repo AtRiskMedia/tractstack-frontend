@@ -11,11 +11,13 @@ export function MarkdownPane({
   markdown,
   files,
   paneId,
+  hasYTAutoplay,
 }: {
   payload: MarkdownPaneDatum;
   markdown: MarkdownPaneProps[];
   files: FileNode[];
   paneId: string;
+  hasYTAutoplay: string | null;
 }) {
   const hasHidden =
     payload.hiddenViewports.includes(`desktop`) ||
@@ -75,7 +77,7 @@ export function MarkdownPane({
           <PaneFromAst
             payload={astPayload}
             thisClassNames={injectClassNames}
-            memory={{}}
+            memory={{ hasYTAutoplay }}
             id={thisMarkdown.id}
             paneId={paneId}
             idx={0}
