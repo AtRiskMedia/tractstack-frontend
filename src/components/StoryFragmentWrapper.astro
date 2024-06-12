@@ -99,10 +99,12 @@ panesPayload.forEach((p: PaneDatumProps, idx: number) => {
             withheldBeliefsFilter={pane.optionsPayload?.withheldBeliefs}
           />
           {perCodeHookPayload[idx] ? (
-            <CodeHook
-              target={perCodeHookPayload[idx].target}
-              resourceCategory={perCodeHookResources[idx] || null}
-            />
+            <div id={pane.slug}>
+              <CodeHook
+                target={perCodeHookPayload[idx].target}
+                resourceCategory={perCodeHookResources[idx] || null}
+              />
+            </div>
           ) : (
             <Pane
               payload={
