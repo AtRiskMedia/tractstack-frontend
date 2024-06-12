@@ -92,7 +92,7 @@ panesPayload.forEach((p: PaneDatumProps, idx: number) => {
             typeof hiddenPanes[pane.id] === `boolean` ? `true` : `false`
           }
         >
-          {typeof hiddenPanes[pane.id] === `boolean` ? (
+          {!hiddenPanes[pane.id] ? (
             <Filter
               client:load
               id={pane.id}
