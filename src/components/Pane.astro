@@ -1,5 +1,6 @@
 ---
 import { classNames } from "../utils/helpers";
+import BgPane from "./panes/BgPane.astro";
 import { PaneCompositor } from "./PaneCompositor";
 import type {
   PaneDatumProps,
@@ -110,15 +111,20 @@ const hasYTAutoplay = (urlParams.has("t") && urlParams.get("t")) || null;
             class="relative w-full h-auto justify-self-start"
             style={paneFragmentStyle}
           >
-            <PaneCompositor
-              client:load
-              payload={f}
-              markdown={payload.markdown}
-              files={payload.files}
-              paneHeight={paneHeight}
-              paneId={payload.id}
-              hasYTAutoplay={hasYTAutoplay}
-            />
+            {f.internal.type === `bgPane` ? (
+              <BgPane payload={f as BgPaneDatum} />
+            ) : null}
+            {f.internal.type === `markdown` ? (
+              <PaneCompositor
+                client:load
+                payload={f}
+                markdown={payload.markdown}
+                files={payload.files}
+                paneHeight={paneHeight}
+                paneId={payload.id}
+                hasYTAutoplay={hasYTAutoplay}
+              />
+            ) : null}
           </div>
         ))
   }

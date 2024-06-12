@@ -1,4 +1,3 @@
-import { BgPane } from "./panes/BgPane";
 import { MarkdownPane } from "./panes/MarkdownPane";
 import { MarkdownInsidePane } from "./panes/MarkdownInsidePane";
 import { Modal } from "./panes/Modal";
@@ -27,11 +26,6 @@ export function PaneCompositor({
   hasYTAutoplay: string | null;
 }) {
   switch (payload.internal.type) {
-    case `bgPane`: {
-      const thisPayload = payload as BgPaneDatum;
-      return <BgPane payload={thisPayload} />;
-    }
-
     case `markdown`: {
       const thisPayload = payload as MarkdownPaneDatum;
 

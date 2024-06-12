@@ -92,12 +92,14 @@ panesPayload.forEach((p: PaneDatumProps, idx: number) => {
             typeof hiddenPanes[pane.id] === `boolean` ? `true` : `false`
           }
         >
-          <Filter
-            client:load
-            id={pane.id}
-            heldBeliefsFilter={pane.optionsPayload?.heldBeliefs}
-            withheldBeliefsFilter={pane.optionsPayload?.withheldBeliefs}
-          />
+          {typeof hiddenPanes[pane.id] === `boolean` ? (
+            <Filter
+              client:load
+              id={pane.id}
+              heldBeliefsFilter={pane.optionsPayload?.heldBeliefs}
+              withheldBeliefsFilter={pane.optionsPayload?.withheldBeliefs}
+            />
+          ) : null}
           {perCodeHookPayload[idx] ? (
             <div id={pane.slug}>
               <CodeHook

@@ -114,6 +114,7 @@ const gtagUrl =
       document.addEventListener("astro:page-load", () => {
         init();
         handleScroll();
+        handleResize();
         inView();
         eventStream();
         scrollToTop();
