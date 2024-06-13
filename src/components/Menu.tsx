@@ -43,7 +43,7 @@ const Menu = (props: { payload: MenuDatum; theme?: string }) => {
           <div key={item.name} className="relative">
             <a
               href={item.to}
-              className="block text-lg leading-6 text-mydarkgrey hover:text-black"
+              className="block text-xl leading-6 text-mydarkgrey hover:text-black hover:underline"
               title={item.description}
             >
               {item.name}

@@ -1,7 +1,8 @@
 ---
 import { classNames } from "../utils/helpers";
 import BgPane from "./panes/BgPane.astro";
-import { PaneCompositor } from "./PaneCompositor";
+//import { PaneCompositor } from "./PaneCompositor";
+import MarkdownWrapper from "./panes/MarkdownWrapper.astro";
 import type {
   PaneDatumProps,
   BgColourDatum,
@@ -115,8 +116,7 @@ const hasYTAutoplay = (urlParams.has("t") && urlParams.get("t")) || null;
               <BgPane payload={f as BgPaneDatum} />
             ) : null}
             {f.internal.type === `markdown` ? (
-              <PaneCompositor
-                client:load
+              <MarkdownWrapper
                 payload={f}
                 markdown={payload.markdown}
                 files={payload.files}
