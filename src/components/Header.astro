@@ -61,7 +61,7 @@ const isHome = slug === import.meta.env.PUBLIC_HOME;
     class="flex flex-row flex-nowrap justify-between pt-4 pb-3
 px-4 md:px-8 bg-mywhite shadow-inner"
   >
-    <h1 class="text-mydarkgrey truncate text-xl">{title}</h1>
+    <h1 class="text-mydarkgrey truncate text-xl" title={title}>{title}</h1>
     <div class="flex flex-row flex-nowrap">
       {
         !isHome ? (
