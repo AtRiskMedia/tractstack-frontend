@@ -35,6 +35,7 @@ export const BunnyVideo = ({
   return (
     <div className="relative aspect-video">
       <iframe
+        id="bunny"
         ref={iframeRef}
         src={`${videoUrl}?autoplay=${startTime > 0}&loop=false&muted=false&preload=${startTime > 0}&responsive=true&t=${startTime}`}
         title={title}
