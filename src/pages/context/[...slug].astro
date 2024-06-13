@@ -28,14 +28,14 @@ const stylesVer: StylesVersion =
 const stylesUrl = `${import.meta.env.PUBLIC_CONCIERGE_STYLES_URL}/frontend.css?v=${stylesVer?.v || 0}`;
 
 const { slug } = Astro.params;
-const lookup = slug || import.meta.env.PUBLIC_HOME;
+const lookup = slug;
 const url = `${Astro.url.origin}/api/contentMap.json`;
 const request: Response = await fetch(url);
 const contentMap: ContentMap[] =
   request.status === 404 ? [] : await request.json();
-const id = contentMap.find(c => c.slug === lookup)?.id;
+const id = contentMap.find(c => c.slug === lookup && c.isContextPane)?.id;
 if (id === undefined) {
-  throw new Error("Slug not found");
+  return Astro.redirect("/404");
 }
 const urlDatum = `${Astro.url.origin}/api/context/${id}.json`;
 const requestDatum: Response = await fetch(urlDatum);

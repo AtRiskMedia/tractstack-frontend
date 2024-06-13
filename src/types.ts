@@ -146,6 +146,7 @@ export interface TractStack extends T8kNode {
 }
 export interface Pane extends T8kNode {
   field_slug: string;
+  field_is_context_pane: boolean;
 }
 export interface ContextPaneSiteMap extends T8kNode {
   field_slug: string;
@@ -642,6 +643,7 @@ export type ContentMap = {
   parentSlug?: string;
   parentTitle?: string;
   panes?: string[];
+  isContextPane?: boolean;
 };
 
 export type PanesVisible = {
