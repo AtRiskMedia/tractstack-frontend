@@ -59,20 +59,19 @@ const hasTextShapeOutside =
 ---
 
 {
-  isModal ? (
+  isModal && thisModalPayload ? (
     <div
-      className={classNames(hidden, `h-fit-contents`)}
+      class={classNames(hidden, `h-fit-contents`)}
       id={`t8k-${thisPayload.id}-modal-container`}
-      key={`t8k-${thisPayload.id}-modal-container`}
     >
       <div
-        className="relative w-full h-full justify-self-start"
+        class="relative w-full h-full justify-self-start"
         style={paneFragmentStyle}
       >
         <Modal payload={thisPayload} modalPayload={thisModalPayload} />
       </div>
       <div
-        className="relative w-full h-full justify-self-start"
+        class="relative w-full h-full justify-self-start"
         style={paneFragmentStyle}
       >
         <MarkdownInsideModal
