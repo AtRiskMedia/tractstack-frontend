@@ -8,6 +8,7 @@ export type Site = {
   desc: string;
   title: string;
   ogImage?: string;
+  ogLogo?: string;
 };
 
 export interface Event {
