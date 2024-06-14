@@ -52,15 +52,14 @@ src/custom/*
 # custom assets
 public/custom
 
-# custom Dockerfile
-Dockerfile
-!Dockerfile.example
-
-# og image
-public/og.*
-
 # fonts
 public/fonts
 
 # custom css
 public/styles
+
+# custom Dockerfile
+Dockerfile
+!Dockerfile.example
+
+
