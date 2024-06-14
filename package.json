@@ -38,7 +38,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-lite-youtube-embed": "^2.4.0",
-    "sharp": "^0.33.4",
+    "sharp": "^0.33.3",
     "uuid": "^9.0.1",
     "vis-data": "^7.1.9",
     "vis-network": "^9.1.9",
