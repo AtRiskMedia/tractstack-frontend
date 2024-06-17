@@ -10,21 +10,24 @@ interface Props {
 }
 
 const { target, resourceCategory } = Astro.props;
+const category = resourceCategory || `|`;
 
 // check for codeHooks with payloads
-const resourceCategoryUrl = `${Astro.url.origin}/api/resources/${resourceCategory || `|`}.json`;
-const codeHooksResourceCategoryRequest: Response =
+const resourceCategoryUrl =
+  `${Astro.url.origin}/api/resources/${category}.json`;
+const codeHooksResourceCategoryRequest =
   await fetch(resourceCategoryUrl);
 const codeHooksResourcePayloadRaw: ResourceDatum[] =
   codeHooksResourceCategoryRequest.status === 404
     ? []
-    : await codeHooksResourceCategoryRequest.json();
+    : resourceCategory && (await codeHooksResourceCategoryRequest.json());
 const codeHooksResourcePayload =
   (codeHooksResourcePayloadRaw?.length &&
     cleanResourceDatum(
       codeHooksResourcePayloadRaw.filter(
         (r: ResourceDatum) =>
           r?.field_category_slug &&
+          resourceCategory &&
           resourceCategory.includes(r.field_category_slug)
       )
     )) ||
