@@ -1,5 +1,6 @@
 ---
-import Pane from "@components/Pane";
+import Pane from "./Pane.astro";
+import CodeHook from "../custom/codehooks.astro";
 import { Close } from "./other/Close";
 import type { Current, ContentMap, PaneDatumProps } from "../types";
 
@@ -9,6 +10,13 @@ export interface Props {
   current: Current;
 }
 const { pane, contentMap, current } = Astro.props;
+
+const isCodeHook = pane.optionsPayload?.codeHook;
+const codeHookOptionsRaw =
+  isCodeHook &&
+  pane.optionsPayload.codeHook?.options &&
+  JSON.parse(pane.optionsPayload.codeHook.options);
+const codeHookOptions = codeHookOptionsRaw?.category;
 ---
 
 <astro-context-pane-wrapper
@@ -17,7 +25,18 @@ const { pane, contentMap, current } = Astro.props;
 >
   <div class="py-16">
     <div id={`pane-${pane.id}`} class="pane" data-hidden="false">
-      <Pane client:load payload={pane} />
+      {
+        isCodeHook ? (
+          <div id={pane.slug}>
+            <CodeHook
+              target={pane.optionsPayload.codeHook.target}
+              resourceCategory={codeHookOptions?.category}
+            />
+          </div>
+        ) : (
+          <Pane payload={pane} />
+        )
+      }
     </div>
     <Close client:load />
   </div>

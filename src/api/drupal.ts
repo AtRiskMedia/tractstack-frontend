@@ -306,7 +306,13 @@ export const getPane = async (id: string): Promise<PaneDatum[]> => {
 export const getAllPanes = async (): Promise<Pane[]> => {
   const params: DrupalJsonApiParams = new DrupalJsonApiParams();
   params
-    .addFields("node--pane", ["type", "id", "title", "field_slug"])
+    .addFields("node--pane", [
+      "type",
+      "id",
+      "title",
+      "field_slug",
+      "field_is_context_pane",
+    ])
     .addFilter("status", "1");
   const path: string = params.getQueryString();
   return await fetchUrl(baseUrl + "/jsonapi/node/pane?" + path);

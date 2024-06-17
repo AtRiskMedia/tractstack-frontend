@@ -1,6 +1,6 @@
 ---
 import Socials from "./other/Socials.astro";
-import FooterMenu from "./FooterMenu";
+import FooterMenu from "./FooterMenu.astro";
 import Link from "./other/Link.astro";
 import type { MenuDatum } from "../types";
 
@@ -32,22 +32,22 @@ const { created = new Date(), backToTop = false, menu } = Astro.props;
     {menu ? <FooterMenu payload={menu} /> : null}
     <Socials />
     <div
-      class="my-2 flex flex-col items-center justify-center xs:flex-row text-myblue/80"
+      class="my-2 flex flex-col items-center justify-center xs:flex-row text-myblue"
     >
-      <div class="px-12 text-center">
+      <div class="px-12 text-center text-2xl">
         Copyright &#169; {created.getFullYear()}
         &nbsp;|&nbsp;
         {footer}
       </div>
     </div>
     <div
-      class="my-2 flex flex-col items-center justify-center xs:flex-row text-myblue/80"
+      class="my-2 flex flex-col items-center justify-center xs:flex-row text-myblue"
     >
-      <div class="px-12 text-center">
+      <div class="px-12 text-center text-lg">
         This website is pressed with
         <Link
           href="https://tractstack.com/?utm_source=tractstack&utm_medium=www&utm_campaign=community"
-          className="hover:underline font-bold hover:text-black"
+          className="underline font-bold hover:text-black"
           target="_blank"
           title="Tract Stack by At Risk Media"
         >
@@ -55,7 +55,7 @@ const { created = new Date(), backToTop = false, menu } = Astro.props;
         >
         and powered by <Link
           href="https://atriskmedia.com/?utm_source=tractstack&utm_medium=www&utm_campaign=community"
-          className="hover:underline font-bold hover:text-black"
+          className="underline font-bold hover:text-black"
           target="_blank"
           title="At Risk Media">At Risk Media</Link
         > next chapter in digital analytics

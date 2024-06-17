@@ -7,6 +7,7 @@ export interface Props {
   author?: string;
   description?: string;
   ogImage?: string;
+  ogLogo?: string;
   canonicalURL?: string;
   pubDatetime?: Date;
   modDatetime?: Date | null;
@@ -19,6 +20,7 @@ const {
   author = SITE.author,
   description = SITE.desc,
   ogImage = SITE.ogImage,
+  ogLogo = SITE.ogLogo,
   canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
   pubDatetime,
   modDatetime,
@@ -27,6 +29,7 @@ const {
 } = Astro.props;
 
 const socialImageURL = `${canonicalURL}${ogImage ?? SITE.ogImage ?? `og.png`}`;
+const socialLogoURL = `${canonicalURL}${ogLogo ?? SITE.ogLogo ?? `logo.png`}`;
 
 const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
 const gtagUrl =
@@ -60,9 +63,11 @@ const gtagUrl =
 
     <!-- Open Graph / Facebook -->
     <meta property="og:title" content={title} />
+    <meta property="og:type" content="website" />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:image" content={socialImageURL} />
+    <meta property="og:logo" content={socialLogoURL} />
 
     <!-- Article Published/Modified time -->
     {
@@ -114,6 +119,7 @@ const gtagUrl =
       document.addEventListener("astro:page-load", () => {
         init();
         handleScroll();
+        handleResize();
         inView();
         eventStream();
         scrollToTop();

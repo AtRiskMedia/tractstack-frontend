@@ -8,6 +8,7 @@ export type Site = {
   desc: string;
   title: string;
   ogImage?: string;
+  ogLogo?: string;
 };
 
 export interface Event {
@@ -146,6 +147,7 @@ export interface TractStack extends T8kNode {
 }
 export interface Pane extends T8kNode {
   field_slug: string;
+  field_is_context_pane: boolean;
 }
 export interface ContextPaneSiteMap extends T8kNode {
   field_slug: string;
@@ -419,7 +421,7 @@ export interface ImpressionDatum {
   parentId: string;
 }
 
-export interface CodeHook {
+export interface CodeHookDatum {
   target: string;
   url: string | undefined;
   options: string | undefined;
@@ -541,7 +543,7 @@ export interface PaneOptionsPayload {
   id: string;
   paneFragmentsPayload: BgPaneDatum[] | BgColourDatum[] | MarkdownPaneDatum[];
   impressions: ImpressionsDatum;
-  codeHook: CodeHook;
+  codeHook: CodeHookDatum;
   hiddenPane: boolean;
   overflowHidden: boolean;
   maxHScreen: boolean;
@@ -642,6 +644,7 @@ export type ContentMap = {
   parentSlug?: string;
   parentTitle?: string;
   panes?: string[];
+  isContextPane?: boolean;
 };
 
 export type PanesVisible = {

@@ -6,16 +6,10 @@ export const SITE: Site = {
   desc: "Story Keeper Analytics + Web Press",
   title: "TractStack",
   ogImage: "og.png",
+  ogLogo: "logo.png",
 };
 
 export const LOCALE = {
   lang: "en",
   langTag: ["en-EN"],
 } as const;
-
-export const LOGO_IMAGE = {
-  enable: false,
-  svg: true,
-  width: 216,
-  height: 46,
-};

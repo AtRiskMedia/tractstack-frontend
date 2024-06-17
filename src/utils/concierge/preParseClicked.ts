@@ -28,6 +28,8 @@ export const preParseClicked = (id: string, payload: any) => {
             targetSlug: parameterTwo,
           };
 
+        case `bunny`:
+        case `bunnyContext`:
         case `context`:
         case `concierge`:
         case `product`:

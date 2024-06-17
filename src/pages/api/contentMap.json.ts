@@ -23,6 +23,7 @@ export async function GET() {
           id: p.id,
           slug: p.field_slug,
           title: p.title,
+          isContextPane: p.field_is_context_pane,
           type: `Pane`,
         } as ContentMap;
       })

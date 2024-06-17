@@ -3,16 +3,15 @@ import { useStore } from "@nanostores/react";
 import { heldBeliefs } from "../store/beliefs";
 import type { BeliefStore, BeliefDatum } from "../types";
 
-const PaneFilter = (props: {
+const Filter = (props: {
+  id: string;
   heldBeliefsFilter: BeliefDatum[];
   withheldBeliefsFilter: BeliefDatum[];
-  children: JSX.Element;
 }) => {
-  const { heldBeliefsFilter, withheldBeliefsFilter } = props;
+  const { id, heldBeliefsFilter, withheldBeliefsFilter } = props;
   const $heldBeliefsAll = useStore(heldBeliefs);
 
   const [reveal, setReveal] = useState(false);
-  const [hasReveal, setHasReveal] = useState(false);
   const [overrideWithhold, setOverrideWithhold] = useState(false);
 
   useEffect(() => {
@@ -48,7 +47,6 @@ const PaneFilter = (props: {
         }
       });
       if (match && all) {
-        if (!hasReveal) setHasReveal(true);
         setReveal(true);
       } else setReveal(false);
     } else setReveal(true);
@@ -86,10 +84,30 @@ const PaneFilter = (props: {
     } else setOverrideWithhold(true);
   }, [$heldBeliefsAll, heldBeliefsFilter, withheldBeliefsFilter]);
 
-  if (hasReveal && reveal && overrideWithhold)
-    return <div className="motion-safe:animate-fadeInUp">{props.children}</div>;
-  if (reveal && overrideWithhold) return props.children;
-  return <div className="invisible h-0">{props.children}</div>;
+  // now handle state changes!
+  useEffect(() => {
+    const thisPane = document.querySelector(`#pane-${id}`);
+    const add =
+      (heldBeliefsFilter && !withheldBeliefsFilter && reveal) ||
+      (!heldBeliefsFilter && withheldBeliefsFilter && overrideWithhold) ||
+      (heldBeliefsFilter &&
+        withheldBeliefsFilter &&
+        reveal &&
+        overrideWithhold);
+    const del = (heldBeliefsFilter || withheldBeliefsFilter) && !add;
+    if (add && thisPane) {
+      // reveal -- conditions met
+      thisPane.classList.remove(`invisible`);
+      thisPane.classList.remove(`h-0`);
+      thisPane.classList.add(`motion-safe:animate-fadeInUp`);
+    } else if (del && thisPane) {
+      thisPane.classList.remove(`motion-safe:animate-fadeInUp`);
+      thisPane.classList.add(`invisible`);
+      thisPane.classList.add(`h-0`);
+    }
+  }, [id, heldBeliefsFilter, withheldBeliefsFilter, reveal, overrideWithhold]);
+
+  return <div />;
 };
 
-export default PaneFilter;
+export default Filter;

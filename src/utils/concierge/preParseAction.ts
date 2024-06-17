@@ -7,6 +7,7 @@ export const preParseAction = (payload: any) => {
   const parameterOne = (parameters && parameters[0]) || null;
   const parameterTwo = (parameters && parameters[1]) || null;
   const parameterThree = (parameters && parameters[2]) || null;
+  //const parameterFour = (parameters && parameters[3]) || null;
 
   switch (command) {
     case `goto`:
@@ -24,21 +25,34 @@ export const preParseAction = (payload: any) => {
             return `/${parameterTwo}`;
           return `/`;
         case `storyFragmentPane`:
-          if (parameterThree) {
+          if (parameterTwo && parameterThree) {
             if (parameterTwo !== import.meta.env.PUBLIC_HOME)
               return `/${parameterTwo}#${parameterThree}`;
             return `/#${parameterThree}`;
           }
-          console.log(`LispActionPayload preParse misfire on goto`, parameters);
+          console.log(`LispActionPayload preParse misfire on goto`, payload);
+          break;
+        case `bunny`:
+          if (parameterTwo && parameterThree) {
+            if (parameterTwo !== import.meta.env.PUBLIC_HOME)
+              return `/${parameterTwo}?t=${parameterThree}s#bunny`;
+            return `/?t=${parameterThree}s#bunny`;
+          }
+          console.log(`LispActionPayload preParse misfire on goto`, payload);
+          break;
+        case `bunnyContext`:
+          if (parameterTwo && parameterThree)
+            return `/context/${parameterTwo}?t=${parameterThree}s#bunny`;
+          console.log(`LispActionPayload preParse misfire on goto`, payload);
           break;
         case `url`:
           return parameterTwo;
         default:
-          console.log(`LispActionPayload preParse misfire on goto`, parameters);
+          console.log(`LispActionPayload preParse misfire on goto`, payload);
       }
       break;
     default:
-      console.log(`LispActionPayload preParse misfire`, command, parameters);
+      console.log(`LispActionPayload preParse misfire`, payload);
       break;
   }
   return ``;
