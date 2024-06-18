@@ -38,12 +38,12 @@ const Menu = (props: { payload: MenuDatum; theme?: string }) => {
 
   return (
     <>
-      <nav className="hidden md:flex flex-wrap items-center space-x-6 justify-around ml-12">
+      <nav className="hidden md:flex flex-wrap items-center space-x-3 md:space-x-6 justify-end ml-6">
         {featuredLinks.map((item: MenuLink) => (
-          <div key={item.name} className="relative">
+          <div key={item.name} className="relative py-1.5">
             <a
               href={item.to}
-              className="block text-xl leading-6 text-mydarkgrey hover:text-black hover:underline"
+              className="font-bold block text-2xl leading-6 text-mydarkgrey hover:text-black hover:underline"
               title={item.description}
             >
               {item.name}
