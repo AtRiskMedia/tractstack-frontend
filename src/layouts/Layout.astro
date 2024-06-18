@@ -8,6 +8,7 @@ export interface Props {
   description?: string;
   ogImage?: string;
   ogLogo?: string;
+  website?: string;
   canonicalURL?: string;
   pubDatetime?: Date;
   modDatetime?: Date | null;
@@ -21,6 +22,7 @@ const {
   description = SITE.desc,
   ogImage = SITE.ogImage,
   ogLogo = SITE.ogLogo,
+  website = SITE.website,
   canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
   pubDatetime,
   modDatetime,
@@ -28,8 +30,8 @@ const {
   stylesUrl = ``,
 } = Astro.props;
 
-const socialImageURL = `${canonicalURL}${ogImage ?? SITE.ogImage ?? `og.png`}`;
-const socialLogoURL = `${canonicalURL}${ogLogo ?? SITE.ogLogo ?? `logo.png`}`;
+const socialImageURL = `${website}/${ogImage ?? SITE.ogImage ?? `og.png`}`;
+const socialLogoURL = `${website}${ogLogo ?? SITE.ogLogo ?? `logo.png`}`;
 
 const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
 const gtagUrl =
