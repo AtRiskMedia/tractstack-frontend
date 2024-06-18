@@ -31,7 +31,7 @@ const {
 } = Astro.props;
 
 const socialImageURL = `${website}/${ogImage ?? SITE.ogImage ?? `og.png`}`;
-const socialLogoURL = `${website}${ogLogo ?? SITE.ogLogo ?? `logo.png`}`;
+const socialLogoURL = `${website}/${ogLogo ?? SITE.ogLogo ?? `logo.png`}`;
 
 const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
 const gtagUrl =
