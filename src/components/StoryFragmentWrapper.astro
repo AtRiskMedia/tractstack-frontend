@@ -52,12 +52,16 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
 
 const perCodeHookPayload: { [key: number]: CodeHookDatum } = {};
 const perCodeHookResources: { [key: number]: string } = {};
+const perCodeHookOptions: { [key: number]: string } = {};
 panesPayload.forEach((p: PaneDatumProps, idx: number) => {
   if (p?.optionsPayload?.codeHook?.options) {
     try {
       const thisOptions = JSON.parse(p.optionsPayload.codeHook.options);
       if (thisOptions.category)
         perCodeHookResources[idx] = thisOptions.category;
+      else {
+        perCodeHookOptions[idx] = thisOptions;
+      }
     } finally {
     }
   }
@@ -105,6 +109,7 @@ panesPayload.forEach((p: PaneDatumProps, idx: number) => {
               <CodeHook
                 target={perCodeHookPayload[idx].target}
                 resourceCategory={perCodeHookResources[idx] || null}
+                options={perCodeHookOptions[idx] || null}
               />
             </div>
           ) : (

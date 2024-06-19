@@ -7,9 +7,12 @@ import type { ResourceDatumProps } from "../types";
 interface Props {
   target: string;
   resourceCategory: string | null;
+/* eslint-disable @typescript-eslint/no-explicit-any */
+  options: any | null;
 }
 
-const { target, resourceCategory } = Astro.props;
+const { target /*, resourceCategory */ } = Astro.props;
+/*
 const category = resourceCategory || `|`;
 
 // check for codeHooks with payloads
@@ -32,6 +35,7 @@ const codeHooksResourcePayload =
       )
     )) ||
   [];
+*/
 
 /*
 use:

@@ -16,7 +16,8 @@ const codeHookOptionsRaw =
   isCodeHook &&
   pane.optionsPayload.codeHook?.options &&
   JSON.parse(pane.optionsPayload.codeHook.options);
-const codeHookOptions = codeHookOptionsRaw?.category;
+const resourceCategory = codeHookOptionsRaw?.category;
+const codeHookOptions = codeHookOptionsRaw;
 ---
 
 <astro-context-pane-wrapper
@@ -31,6 +32,7 @@ const codeHookOptions = codeHookOptionsRaw?.category;
             <CodeHook
               target={pane.optionsPayload.codeHook.target}
               resourceCategory={codeHookOptions?.category}
+              options={!resourceCategory && codeHookOptions}
             />
           </div>
         ) : (
