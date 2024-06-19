@@ -2,7 +2,7 @@
 //import Branding from "./Branding.tsx";
 //import Give from "./Give.astro";
 //import { cleanResourceDatum } from "../utils/compositor/cleanResourceDatum";
-import type { ResourceDatumProps } from "../types";
+//import type { ResourceDatumProps } from "../types";
 
 interface Props {
   target: string;
@@ -11,7 +11,7 @@ interface Props {
   options: any | null;
 }
 
-const { target /*, resourceCategory */ } = Astro.props;
+//const { target /*, resourceCategory */ } = Astro.props;
 /*
 const category = resourceCategory || `|`;
 
