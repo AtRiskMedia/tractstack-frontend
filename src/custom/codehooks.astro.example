@@ -1,8 +1,8 @@
 ---
 //import Branding from "./Branding.tsx";
 //import Give from "./Give.astro";
-//import { cleanResourceDatum } from "../utils/compositor/cleanResourceDatum";
-//import type { ResourceDatumProps } from "../types";
+import { cleanResourceDatum } from "../utils/compositor/cleanResourceDatum";
+import type { ResourceDatum } from "../types";
 
 interface Props {
   target: string;
@@ -11,30 +11,37 @@ interface Props {
   options: any | null;
 }
 
-//const { target /*, resourceCategory */ } = Astro.props;
 /*
-const category = resourceCategory || `|`;
+const { target, resourceCategory, options } = Astro.props;
 
-// check for codeHooks with payloads
-const resourceCategoryUrl =
-  `${Astro.url.origin}/api/resources/${category}.json`;
-const codeHooksResourceCategoryRequest =
-  await fetch(resourceCategoryUrl);
-const codeHooksResourcePayloadRaw: ResourceDatum[] =
-  codeHooksResourceCategoryRequest.status === 404
-    ? []
-    : resourceCategory && (await codeHooksResourceCategoryRequest.json());
-const codeHooksResourcePayload =
-  (codeHooksResourcePayloadRaw?.length &&
-    cleanResourceDatum(
-      codeHooksResourcePayloadRaw.filter(
-        (r: ResourceDatum) =>
-          r?.field_category_slug &&
-          resourceCategory &&
-          resourceCategory.includes(r.field_category_slug)
-      )
-    )) ||
-  [];
+// Initialize variables with null
+let resourceCategoryUrl: string | null = null;
+let codeHooksResourceCategoryRequest: Response | null = null;
+let codeHooksResourcePayloadRaw: ResourceDatum[] | null = null;
+let codeHooksResourcePayload: ResourceDatum[] | null = null;
+
+// Only perform the lookup if resourceCategory is not null
+if (resourceCategory !== null) {
+  resourceCategoryUrl = `${Astro.url.origin}/api/resources/${resourceCategory}.json`;
+  codeHooksResourceCategoryRequest = await fetch(resourceCategoryUrl);
+
+  codeHooksResourcePayloadRaw =
+    codeHooksResourceCategoryRequest.status === 404
+      ? []
+      : await codeHooksResourceCategoryRequest.json();
+
+  codeHooksResourcePayload =
+    (codeHooksResourcePayloadRaw?.length &&
+      cleanResourceDatum(
+        codeHooksResourcePayloadRaw.filter(
+          (r: ResourceDatum) =>
+            r?.field_category_slug &&
+            resourceCategory &&
+            resourceCategory.includes(r.field_category_slug)
+        )
+      )) ||
+    [];
+}
 */
 
 /*
