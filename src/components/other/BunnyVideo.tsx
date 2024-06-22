@@ -25,9 +25,15 @@ export const BunnyVideo = ({
 
   useEffect(() => {
     if ($storyFragmentBunnyWatch?.slug === slug)
+    {
       setStartTime($storyFragmentBunnyWatch.t);
+      storyFragmentBunnyWatch.set(null)
+    }
     else if ($contextBunnyWatch?.slug === slug)
+    {
       setStartTime($contextBunnyWatch.t);
+      contextBunnyWatch.set(null)
+    }
     if (startTime && iframeRef.current) {
       iframeRef.current.onload = () => {
         setTimeout(() => {
