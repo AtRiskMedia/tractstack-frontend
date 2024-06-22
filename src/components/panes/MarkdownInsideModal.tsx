@@ -15,6 +15,7 @@ export function MarkdownInsideModal({
   paneHeight,
   modalPayload,
   paneId,
+  slug,
 }: {
   payload: MarkdownPaneDatum;
   markdown: MarkdownPaneProps[];
@@ -28,6 +29,7 @@ export function MarkdownInsideModal({
     };
   };
   paneId: string;
+  slug: string;
 }) {
   const thisMarkdown = markdown
     .filter((m: MarkdownPaneProps) => m.id === payload.markdownId)
@@ -120,6 +122,7 @@ export function MarkdownInsideModal({
                 memory={{}}
                 id={thisMarkdown.id}
                 paneId={paneId}
+                slug={slug}
                 idx={0}
               />
             </div>
@@ -175,6 +178,7 @@ export function MarkdownInsideModal({
                   memory={{}}
                   id={thisMarkdown.id}
                   paneId={paneId}
+                  slug={slug}
                   idx={0}
                 />
               </div>

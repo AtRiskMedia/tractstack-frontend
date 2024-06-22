@@ -1,21 +1,33 @@
-import { useRef, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
+import { useStore } from "@nanostores/react";
+import { storyFragmentBunnyWatch, contextBunnyWatch } from "../../store/events";
 
 export const BunnyVideo = ({
   videoUrl,
   title,
   autoplay,
+  slug,
 }: {
   videoUrl: string;
   title: string;
   autoplay: string;
+  slug: string;
 }) => {
   const regex = /^(\d+)s$/;
   const match = autoplay?.match(regex);
-  const startTime = (match && parseInt(match[1])) || 0;
+  const [startTime, setStartTime] = useState<number>(
+    (match && parseInt(match[1])) || 0
+  );
+  const $storyFragmentBunnyWatch = useStore(storyFragmentBunnyWatch);
+  const $contextBunnyWatch = useStore(contextBunnyWatch);
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
+    if ($storyFragmentBunnyWatch?.slug === slug)
+      setStartTime($storyFragmentBunnyWatch.t);
+    else if ($contextBunnyWatch?.slug === slug)
+      setStartTime($contextBunnyWatch.t);
     if (startTime && iframeRef.current) {
       iframeRef.current.onload = () => {
         setTimeout(() => {
@@ -30,7 +42,13 @@ export const BunnyVideo = ({
         }, 100); // wait for 100ms to ensure the iframe is fully loaded
       };
     }
-  }, [startTime, iframeRef]);
+  }, [
+    startTime,
+    iframeRef,
+    slug,
+    $storyFragmentBunnyWatch,
+    $contextBunnyWatch,
+  ]);
 
   return (
     <div className="relative aspect-video">

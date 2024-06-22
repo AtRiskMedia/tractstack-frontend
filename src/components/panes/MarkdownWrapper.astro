@@ -17,10 +17,11 @@ interface Props {
   files: FileNode[];
   paneHeight: [number, number, number];
   paneId: string;
+  slug: string;
   hasYTAutoplay: string | null;
 }
 
-const { payload, markdown, files, paneHeight, paneId, hasYTAutoplay } =
+const { payload, markdown, files, paneHeight, paneId, slug, hasYTAutoplay } =
   Astro.props;
 
 // this is either MarkdownPane, Modal+MarkdownInsideModal, or MarkdownInsidePane
@@ -82,6 +83,7 @@ const hasTextShapeOutside =
           paneHeight={paneHeight}
           modalPayload={thisModalPayload}
           paneId={paneId}
+          slug={slug}
         />
       </div>
     </div>
@@ -97,6 +99,7 @@ const hasTextShapeOutside =
       files={files}
       paneHeight={paneHeight}
       paneId={paneId}
+      slug={slug}
     />
   ) : null
 }
@@ -110,6 +113,7 @@ const hasTextShapeOutside =
       files={files}
       paneId={paneId}
       hasYTAutoplay={hasYTAutoplay}
+      slug={slug}
     />
   ) : null
 }

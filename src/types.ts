@@ -574,6 +574,7 @@ export interface PaneFromAstProps {
   memory: any;
   id: string;
   paneId: string;
+  slug: string;
   idx: number;
 }
 
@@ -604,6 +605,11 @@ export type BeliefStore = {
   slug: string;
   verb: string;
   object?: string;
+};
+
+export type BunnyWatch = {
+  slug: string;
+  t: number;
 };
 
 export interface Current {

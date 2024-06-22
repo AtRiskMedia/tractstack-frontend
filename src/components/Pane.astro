@@ -12,9 +12,10 @@ import type {
 
 interface Props {
   payload: PaneDatumProps;
+  slug: string;
 }
 
-const { payload } = Astro.props;
+const { payload, slug } = Astro.props;
 
 // - if paneHeightRatio[Desktop|Tablet|Mobile], calculate height and inject
 const paneHeightRatioDesktop =
@@ -123,6 +124,7 @@ const hasYTAutoplay = (urlParams.has("t") && urlParams.get("t")) || null;
                 paneHeight={paneHeight}
                 paneId={payload.id}
                 hasYTAutoplay={hasYTAutoplay}
+                slug={slug}
               />
             ) : null}
           </div>

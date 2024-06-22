@@ -11,12 +11,14 @@ export function MarkdownPane({
   markdown,
   files,
   paneId,
+  slug,
   hasYTAutoplay,
 }: {
   payload: MarkdownPaneDatum;
   markdown: MarkdownPaneProps[];
   files: FileNode[];
   paneId: string;
+  slug: string;
   hasYTAutoplay: string | null;
 }) {
   const hasHidden =
@@ -60,6 +62,7 @@ export function MarkdownPane({
           memory={{}}
           id={thisMarkdown.id}
           paneId={paneId}
+          slug={slug}
           idx={0}
         />
       </div>
@@ -80,6 +83,7 @@ export function MarkdownPane({
             memory={{ hasYTAutoplay }}
             id={thisMarkdown.id}
             paneId={paneId}
+            slug={slug}
             idx={0}
           />
         </div>

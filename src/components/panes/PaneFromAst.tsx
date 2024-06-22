@@ -7,7 +7,12 @@ import { classNames } from "../../utils/helpers";
 import { lispLexer } from "../../utils/concierge/lispLexer";
 import { preParseAction } from "../../utils/concierge/preParseAction";
 import { preParseClicked } from "../../utils/concierge/preParseClicked";
-import { events } from "../../store/events";
+import { preParseBunny } from "../../utils/concierge/preParseBunny";
+import {
+  events,
+  storyFragmentBunnyWatch,
+  contextBunnyWatch,
+} from "../../store/events";
 import type { PaneFromAstProps } from "../../types";
 
 export default function PaneFromAst({
@@ -16,6 +21,7 @@ export default function PaneFromAst({
   memory,
   id,
   paneId,
+  slug,
   idx,
 }: PaneFromAstProps) {
   return (
@@ -72,6 +78,7 @@ export default function PaneFromAst({
                       memory={memory}
                       id={id}
                       paneId={paneId}
+                      slug={slug}
                       idx={idx + 1}
                     />
                   </span>
@@ -95,7 +102,6 @@ export default function PaneFromAst({
             const isExternalUrl =
               typeof e?.properties?.href === `string` &&
               e.properties.href.substring(0, 8) === `https://`;
-
             if (isExternalUrl) {
               return (
                 <a
@@ -114,10 +120,38 @@ export default function PaneFromAst({
               // inject button with callback function, add css className
               const callbackPayload = lispLexer(buttonPayload?.callbackPayload);
               const targetUrl = preParseAction(callbackPayload);
+              const bunny = preParseBunny(callbackPayload);
               const event = preParseClicked(paneId, callbackPayload);
               const pushEvent = function (): void {
+                if (bunny) {
+                  if (bunny.isContext)
+                    contextBunnyWatch.set({ slug, t: bunny.t });
+                  else storyFragmentBunnyWatch.set({ slug, t: bunny.t });
+                  console.log(
+                    `bunny jump`,
+                    bunny,
+                    storyFragmentBunnyWatch.get()
+                  );
+                  const targetDiv = document.getElementById(`bunny`);
+                  if (targetDiv) {
+                    targetDiv.scrollIntoView({ behavior: "smooth" });
+                  }
+                }
                 if (event) events.set([...events.get(), event]);
               };
+              // if this is a bunny video event, check if same page
+              if (bunny && bunny.slug === slug) {
+                return (
+                  <button
+                    className={buttonPayload.className}
+                    onClick={() => pushEvent()}
+                    key={thisId}
+                    title={targetUrl}
+                  >
+                    {e?.children[0].value}
+                  </button>
+                );
+              }
               if (targetUrl)
                 return (
                   <a
@@ -232,11 +266,7 @@ export default function PaneFromAst({
             if (hook === `youtube` && value1 && value2) {
               return (
                 <div key={thisId} className={injectClassNames}>
-                  <YouTubeWrapper
-                    id={value1}
-                    title={value2}
-                    autoplay={memory.hasYTAutoplay}
-                  />
+                  <YouTubeWrapper id={value1} title={value2} />
                 </div>
               );
             } else if (hook === `bunny` && value1 && value2) {
@@ -246,6 +276,7 @@ export default function PaneFromAst({
                     videoUrl={value1}
                     title={value2}
                     autoplay={memory.hasYTAutoplay}
+                    slug={slug}
                   />
                 </div>
               );
@@ -331,6 +362,7 @@ export default function PaneFromAst({
                 memory={{ ...memory, parent: thisIdx }}
                 id={id}
                 paneId={paneId}
+                slug={slug}
                 idx={idx + 1}
               />
             );
@@ -352,6 +384,7 @@ export default function PaneFromAst({
                       memory={{ ...memory, child: thisIdx }}
                       id={id}
                       paneId={paneId}
+                      slug={slug}
                       idx={idx + 1}
                     />
                   </span>

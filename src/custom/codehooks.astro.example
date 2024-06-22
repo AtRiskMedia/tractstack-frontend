@@ -2,7 +2,7 @@
 //import Branding from "./Branding.tsx";
 //import Give from "./Give.astro";
 import { cleanResourceDatum } from "../utils/compositor/cleanResourceDatum";
-import type { ResourceDatum } from "../types";
+import type { ResourceDatum, ResourceDatumProps } from "../types";
 
 interface Props {
   target: string;
@@ -17,8 +17,8 @@ const { target, resourceCategory, options } = Astro.props;
 // Initialize variables with null
 let resourceCategoryUrl: string | null = null;
 let codeHooksResourceCategoryRequest: Response | null = null;
-let codeHooksResourcePayloadRaw: ResourceDatum[] | null = null;
-let codeHooksResourcePayload: ResourceDatum[] | null = null;
+let codeHooksResourcePayloadRaw: ResourceDatum[] = [];
+let codeHooksResourcePayload: ResourceDatumProps[] = [];
 
 // Only perform the lookup if resourceCategory is not null
 if (resourceCategory !== null) {

@@ -14,12 +14,14 @@ export function MarkdownInsidePane({
   files,
   paneHeight,
   paneId,
+  slug,
 }: {
   payload: MarkdownPaneDatum;
   markdown: MarkdownPaneProps[];
   files: FileNode[];
   paneHeight: [number, number, number];
   paneId: string;
+  slug: string;
 }) {
   const thisMarkdown = markdown
     .filter((m: MarkdownPaneProps) => m.id === payload.markdownId)
@@ -110,6 +112,7 @@ export function MarkdownInsidePane({
                 memory={{}}
                 id={thisMarkdown.id}
                 paneId={paneId}
+                slug={slug}
                 idx={0}
               />
             </div>
@@ -163,6 +166,7 @@ export function MarkdownInsidePane({
                   memory={{}}
                   id={thisMarkdown.id}
                   paneId={paneId}
+                  slug={slug}
                   idx={0}
                 />
               </div>
