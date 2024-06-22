@@ -24,15 +24,12 @@ export const BunnyVideo = ({
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
-    if ($storyFragmentBunnyWatch?.slug === slug)
-    {
+    if ($storyFragmentBunnyWatch?.slug === slug) {
       setStartTime($storyFragmentBunnyWatch.t);
-      storyFragmentBunnyWatch.set(null)
-    }
-    else if ($contextBunnyWatch?.slug === slug)
-    {
+      storyFragmentBunnyWatch.set(null);
+    } else if ($contextBunnyWatch?.slug === slug) {
       setStartTime($contextBunnyWatch.t);
-      contextBunnyWatch.set(null)
+      contextBunnyWatch.set(null);
     }
     if (startTime && iframeRef.current) {
       iframeRef.current.onload = () => {
