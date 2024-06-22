@@ -564,6 +564,8 @@ export interface ButtonData {
   };
 }
 
+export type LispTokens = (string | LispTokens)[];
+
 export interface PaneFromAstProps {
   payload: {
     ast: any[];

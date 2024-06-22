@@ -1,3 +1,5 @@
+//import type {LispTokens} from '../../types.ts';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const preParseClicked = (id: string, payload: any) => {
   const thisPayload = (payload && payload[0]) || false;

@@ -1,0 +1,77 @@
+---
+import PaneFromAst from "./PaneFromAst.astro";
+import { classNames } from "../../utils/helpers";
+import type {
+  FileNode,
+  MarkdownPaneProps,
+  MarkdownPaneDatum,
+} from "../../types";
+
+interface Props {
+  payload: MarkdownPaneDatum;
+  markdown: MarkdownPaneProps[];
+  files: FileNode[];
+  paneId: string;
+  slug: string;
+  hasYTAutoplay: string | null;
+}
+
+const { payload, markdown, files, paneId, slug, hasYTAutoplay } = Astro.props;
+
+const hasHidden =
+  payload.hiddenViewports.includes(`desktop`) ||
+  payload.hiddenViewports.includes(`tablet`) ||
+  payload.hiddenViewports.includes(`mobile`);
+const hidden = hasHidden
+  ? ``.concat(
+      payload.hiddenViewports.includes(`desktop`) ? `xl:hidden` : `xl:grid`,
+      payload.hiddenViewports.includes(`tablet`) ? `md:hidden` : `md:grid`,
+      payload.hiddenViewports.includes(`mobile`) ? `hidden` : `grid`
+    )
+  : ``;
+const thisMarkdown = markdown
+  .filter((m: MarkdownPaneProps) => m.id === payload.markdownId)
+  .at(0)!;
+const optionsPayload = payload.optionsPayload;
+const astPayload = {
+  ast: thisMarkdown.htmlAst.children,
+  buttonData: optionsPayload?.buttons || {},
+  imageData: files,
+};
+const injectClassNames = optionsPayload?.classNames?.all || {};
+const classNamesParent = optionsPayload?.classNamesParent
+  ? optionsPayload.classNamesParent?.all
+  : ``;
+// ensure this is an array
+const parentClasses =
+  typeof classNamesParent === `string` ? [classNamesParent] : classNamesParent;
+---
+
+{
+  parentClasses.reverse().reduce(
+    (content, cssClass) => {
+      return <div class={classNames(hidden, cssClass)}>{content}</div>;
+    },
+    astPayload.ast
+      .filter(
+        /* eslint-disable @typescript-eslint/no-explicit-any */
+        (e: any) => !(e?.type === `text` && e?.value === `\n`)
+      )
+      /* eslint-disable @typescript-eslint/no-explicit-any */
+      .map((thisAstPayload: any, idx: number) => (
+        <PaneFromAst
+          payload={{
+            ...astPayload,
+            ast: [thisAstPayload],
+          }}
+          thisClassNames={injectClassNames}
+          memory={{ hasYTAutoplay }}
+          id={thisMarkdown.id}
+          paneId={paneId}
+          slug={slug}
+          idx={0}
+          outerIdx={idx}
+        />
+      ))
+  )
+}

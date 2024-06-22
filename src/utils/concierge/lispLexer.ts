@@ -1,3 +1,5 @@
+//import type { LispTokens } from "../../types.ts";
+
 const DOUBLEQUOTE = [`"`];
 const BRACKETLEFT = `(`;
 const BRACKETRIGHT = `)`;
