@@ -127,11 +127,6 @@ export default function PaneFromAst({
                   if (bunny.isContext)
                     contextBunnyWatch.set({ slug, t: bunny.t });
                   else storyFragmentBunnyWatch.set({ slug, t: bunny.t });
-                  console.log(
-                    `bunny jump`,
-                    bunny,
-                    storyFragmentBunnyWatch.get()
-                  );
                   const targetDiv = document.getElementById(`bunny`);
                   if (targetDiv) {
                     targetDiv.scrollIntoView({ behavior: "smooth" });
