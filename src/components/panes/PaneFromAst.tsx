@@ -26,13 +26,12 @@ export default function PaneFromAst({
 }: PaneFromAstProps) {
   return (
     payload.ast
-      //      .filter((e: any) => !(e?.type === `text` && e?.value === `\n`))
+      /* eslint-disable @typescript-eslint/no-explicit-any */
+      //.filter((e: any) => !(e?.type === `text` && e?.value === `\n`))
       /* eslint-disable @typescript-eslint/no-explicit-any */
       .map((e: any, thisIdx: number) => {
         const Tag = e?.tagName || e?.type;
         const thisId = `t8k-${id}--${Tag}-${idx}-${thisIdx}`;
-        if (!Tag) console.log(id, paneId, slug, idx, payload);
-        else console.log(Tag);
         if (!Tag) return <div key={thisId} />;
 
         // if string[], use idx to select correct nth style to inject
