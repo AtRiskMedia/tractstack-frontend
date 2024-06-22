@@ -1,8 +1,8 @@
 ---
 import MarkdownPane from "./MarkdownPane.astro";
-import { MarkdownInsidePane } from "./MarkdownInsidePane";
+import MarkdownInsidePane from "./MarkdownInsidePane.astro";
 import Modal from "./Modal.astro";
-import { MarkdownInsideModal } from "./MarkdownInsideModal";
+import MarkdownInsideModal from "./MarkdownInsideModal.astro";
 import { classNames } from "../../utils/helpers";
 import type {
   MarkdownPaneProps,
@@ -76,7 +76,6 @@ const hasTextShapeOutside =
         style={paneFragmentStyle}
       >
         <MarkdownInsideModal
-          client:idle
           payload={thisPayload}
           markdown={markdown}
           files={files}
@@ -93,7 +92,6 @@ const hasTextShapeOutside =
 {
   !isModal && hasTextShapeOutside ? (
     <MarkdownInsidePane
-      client:idle
       payload={thisPayload}
       markdown={markdown}
       files={files}
