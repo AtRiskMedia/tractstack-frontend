@@ -85,7 +85,8 @@ const payloads = [`mobile`, `tablet`, `desktop`].map((viewportKey: string) => {
       <div
         class={classNames(
           thisPayload?.classNamesParent.join(` `) || ``,
-          thisPayload?.viewportKey && baseClasses[thisPayload?.viewportKey] || ``,
+          (thisPayload?.viewportKey && baseClasses[thisPayload?.viewportKey]) ||
+            ``,
           `h-fit-contents`
         )}
       >
