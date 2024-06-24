@@ -1,4 +1,12 @@
 ---
+//import type { ResourceDatumProps } from "../types";
+//
+//export interface Props {
+//  resources: ResourceDatumProps[];
+//}
+//
+//const { resources } = Astro.props;
+
 // this is an empty file
 // to use, set ENABLE_HEADER_WIDGET=true and add your stuff
 ---

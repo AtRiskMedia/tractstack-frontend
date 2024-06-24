@@ -421,6 +421,14 @@ export interface ImpressionDatum {
   parentId: string;
 }
 
+export interface ResourcesPayload {
+  perCodeHookPayload: { [key: number]: CodeHookDatum };
+  perCodeHookResourceCategory: { [key: number]: string[] };
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  perCodeHookOptions: any;
+  resources: ResourceDatumProps[];
+}
+
 export interface CodeHookDatum {
   target: string;
   url: string | undefined;
