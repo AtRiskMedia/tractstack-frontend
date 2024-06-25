@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
 import { useStore } from "@nanostores/react";
 import { auth } from "../../store/auth";
+import { heldBeliefs } from "../../store/beliefs";
 import { BoltIcon, BoltSlashIcon } from "@heroicons/react/24/outline";
 
 export const RememberMe = () => {
   const [consent, setConsent] = useState(false);
+  const [active, setActive] = useState(false);
   const $authPayload = useStore(auth);
+  const $heldBeliefsAll = useStore(heldBeliefs);
 
   useEffect(() => {
     if ($authPayload.consent === `1`) setConsent(true);
     else if (consent) setConsent(false);
-  }, [$authPayload]);
+    if ($heldBeliefsAll.length) setActive(true);
+  }, [$heldBeliefsAll, $authPayload]);
 
-  if (!import.meta.env.PROD) return <div />;
+  if (!import.meta.env.PROD || (!active && !consent)) return <div />;
   if (!consent)
     return (
       <a

@@ -62,11 +62,11 @@ export function AstToButton({
         onClick={() => pushEvent()}
         title={targetUrl}
       >
-      <span className="px-2">
-        {text}
-        {` `}
-        <PlayButton />
-      </span>
+        <span className="px-2">
+          {text}
+          {` `}
+          <PlayButton />
+        </span>
       </button>
     );
   }

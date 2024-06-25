@@ -18,6 +18,7 @@ export interface Props {
 
 const { title, slug, menu, impressions } = Astro.props;
 const isHome = slug === import.meta.env.PUBLIC_HOME;
+const disableFastTravel = import.meta.env.PUBLIC_DISABLE_FAST_TRAVEL;
 ---
 
 <header class="relative bg-white shadow-inner">
@@ -74,13 +75,17 @@ px-4 md:px-8 bg-mywhite shadow-inner"
           </a>
         ) : null
       }
-      <a
-        href="/concierge/graph"
-        class="text-myblue/80 hover:text-myblue hover:rotate-6"
-        title="Your Content Journey"
-      >
-        <StorySteps client:load />
-      </a>
+      {
+        !disableFastTravel ? (
+          <a
+            href="/concierge/graph"
+            class="text-myblue/80 hover:text-myblue hover:rotate-6"
+            title="Your Content Journey"
+          >
+            <StorySteps client:load />
+          </a>
+        ) : null
+      }
       <RememberMe client:load />
       <CartIcon client:load />
       {
