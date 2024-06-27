@@ -13,10 +13,9 @@ interface Props {
   files: FileNode[];
   paneId: string;
   slug: string;
-  hasYTAutoplay: string | null;
 }
 
-const { payload, markdown, files, paneId, slug, hasYTAutoplay } = Astro.props;
+const { payload, markdown, files, paneId, slug } = Astro.props;
 
 const hasHidden =
   payload.hiddenViewports.includes(`desktop`) ||
@@ -65,7 +64,7 @@ const parentClasses =
             ast: [thisAstPayload],
           }}
           thisClassNames={injectClassNames}
-          memory={{ hasYTAutoplay }}
+          memory={{}}
           id={thisMarkdown.id}
           paneId={paneId}
           slug={slug}

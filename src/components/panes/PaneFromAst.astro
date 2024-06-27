@@ -220,13 +220,7 @@ const value3 =
 {
   Tag === `code` && hook === `bunny` && value1 && value2 ? (
     <div class={injectClassNames}>
-      <BunnyVideo
-        client:visible
-        videoUrl={value1}
-        title={value2}
-        autoplay={memory.hasYTAutoplay}
-        slug={slug}
-      />
+      <BunnyVideo client:load videoUrl={value1} title={value2} slug={slug} />
     </div>
   ) : null
 }

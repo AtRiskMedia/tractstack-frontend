@@ -5,23 +5,32 @@ import { storyFragmentBunnyWatch, contextBunnyWatch } from "../../store/events";
 export const BunnyVideo = ({
   videoUrl,
   title,
-  autoplay,
   slug,
 }: {
   videoUrl: string;
   title: string;
-  autoplay: string;
   slug: string;
 }) => {
-  const regex = /^(\d+)s$/;
-  const match = autoplay?.match(regex);
-  const [startTime, setStartTime] = useState<number>(
-    (match && parseInt(match[1])) || 0
-  );
+  const [startTime, setStartTime] = useState<number | null>(null);
   const $storyFragmentBunnyWatch = useStore(storyFragmentBunnyWatch);
   const $contextBunnyWatch = useStore(contextBunnyWatch);
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // if t=?s is in urlParams, jump to play
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const t = params.get(`t`);
+    const regex = /^(\d+)s$/;
+    const match = t?.match(regex);
+    if (match && match[1]) {
+      setStartTime(parseInt(match[1]));
+      const targetDiv = document.getElementById(`bunny`);
+      if (targetDiv) {
+        targetDiv.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if ($storyFragmentBunnyWatch?.slug === slug) {
@@ -31,7 +40,7 @@ export const BunnyVideo = ({
       setStartTime($contextBunnyWatch.t);
       contextBunnyWatch.set(null);
     }
-    if (startTime && iframeRef.current) {
+    if (typeof startTime === `number` && iframeRef.current) {
       iframeRef.current.onload = () => {
         setTimeout(() => {
           if (iframeRef.current && iframeRef.current.contentDocument) {
@@ -58,7 +67,7 @@ export const BunnyVideo = ({
       <iframe
         id="bunny"
         ref={iframeRef}
-        src={`${videoUrl}?autoplay=${startTime > 0}&loop=false&muted=false&preload=${startTime > 0}&responsive=true&t=${startTime}`}
+        src={`${videoUrl}?autoplay=${typeof startTime === `number`}&loop=false&muted=false&preload=${typeof startTime === `number`}&responsive=true&t=${startTime || 0}`}
         title={title}
         loading="lazy"
         className="border-none absolute top-0 h-full w-full"
