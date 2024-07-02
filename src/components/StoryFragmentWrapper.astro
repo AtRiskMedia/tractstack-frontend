@@ -7,7 +7,7 @@ import type {
   Current,
   ContentMap,
   PaneDatumProps,
-  CodeHookDatum,
+  ResourcesPayload,
 } from "../types";
 
 export interface Props {
@@ -15,9 +15,16 @@ export interface Props {
   panesPayload: PaneDatumProps[];
   contentMap: ContentMap[];
   current: Current;
+  resourcesPayload: ResourcesPayload | null;
 }
 
-const { tailwindBgColour, panesPayload, contentMap, current } = Astro.props;
+const {
+  tailwindBgColour,
+  panesPayload,
+  contentMap,
+  current,
+  resourcesPayload,
+} = Astro.props;
 
 // per pane settings
 const applyFilter: { [key: string]: boolean } = panesPayload.reduce(function (
@@ -49,25 +56,6 @@ const maxHScreen: { [key: string]: boolean } = panesPayload.reduce(function (
   if (cur.optionsPayload.maxHScreen) return { ...acc, [cur.id]: true };
   return acc;
 }, {});
-
-const perCodeHookPayload: { [key: number]: CodeHookDatum } = {};
-const perCodeHookResources: { [key: number]: string } = {};
-const perCodeHookOptions: { [key: number]: string } = {};
-panesPayload.forEach((p: PaneDatumProps, idx: number) => {
-  if (p?.optionsPayload?.codeHook?.options) {
-    try {
-      const thisOptions = JSON.parse(p.optionsPayload.codeHook.options);
-      if (thisOptions.category)
-        perCodeHookResources[idx] = thisOptions.category;
-      else {
-        perCodeHookOptions[idx] = thisOptions;
-      }
-    } finally {
-    }
-  }
-  if (p?.optionsPayload?.codeHook?.target)
-    perCodeHookPayload[idx] = p.optionsPayload.codeHook;
-});
 ---
 
 <astro-storyfragment
@@ -104,12 +92,18 @@ panesPayload.forEach((p: PaneDatumProps, idx: number) => {
               withheldBeliefsFilter={pane.optionsPayload?.withheldBeliefs}
             />
           ) : null}
-          {perCodeHookPayload[idx] ? (
+          {resourcesPayload?.perCodeHookPayload[idx] ? (
             <div id={pane.slug}>
               <CodeHook
-                target={perCodeHookPayload[idx].target}
-                resourceCategory={perCodeHookResources[idx] || null}
-                options={perCodeHookOptions[idx] || null}
+                target={resourcesPayload?.perCodeHookPayload[idx].target}
+                resources={resourcesPayload?.resources?.filter(
+                  resource =>
+                    resourcesPayload?.perCodeHookResourceCategory[idx] &&
+                    resourcesPayload?.perCodeHookResourceCategory[idx].includes(
+                      resource?.category || ``
+                    )
+                )}
+                options={resourcesPayload?.perCodeHookOptions[idx] || null}
               />
             </div>
           ) : (

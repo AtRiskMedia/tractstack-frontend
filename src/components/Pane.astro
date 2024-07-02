@@ -1,7 +1,6 @@
 ---
 import { classNames } from "../utils/helpers";
 import BgPane from "./panes/BgPane.astro";
-//import { PaneCompositor } from "./PaneCompositor";
 import MarkdownWrapper from "./panes/MarkdownWrapper.astro";
 import type {
   PaneDatumProps,
@@ -85,10 +84,6 @@ const paneFragments =
       a.internal.type !== `bgColour`
   ) as BgPaneDatum[] | MarkdownPaneDatum[]);
 
-// check for YouTube timecode autoplay
-const urlParams = Astro.url.searchParams;
-const hasYTAutoplay = (urlParams.has("t") && urlParams.get("t")) || null;
-
 // returns a Rendered Pane as a div
 ---
 
@@ -123,7 +118,6 @@ const hasYTAutoplay = (urlParams.has("t") && urlParams.get("t")) || null;
                 files={payload.files}
                 paneHeight={paneHeight}
                 paneId={payload.id}
-                hasYTAutoplay={hasYTAutoplay}
                 slug={slug}
               />
             ) : null}

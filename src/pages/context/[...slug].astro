@@ -8,6 +8,7 @@ import { getImage } from "astro:assets";
 import { cleanPaneDatum } from "../../utils/compositor/cleanPaneDatum";
 import { cleanFileDatum } from "../../utils/compositor/cleanFileDatum";
 import { cleanImpressionsDatum } from "../../utils/compositor/cleanImpressionsDatum";
+import { cleanResourceDatum } from "../../utils/compositor/cleanResourceDatum";
 import type {
   ImpressionDatum,
   PaneDatumProps,
@@ -19,6 +20,8 @@ import type {
   FileNode,
   ContextPaneFullDatum,
   StylesVersion,
+  ResourceDatum,
+  ResourceDatumProps,
 } from "../../types";
 
 const stylesVerUrl = `${import.meta.env.PUBLIC_CONCIERGE_STYLES_URL}/v.json`;
@@ -135,6 +138,42 @@ const current = {
   slug: slug || `404`,
   title,
 };
+
+const isCodeHook = panePayload.optionsPayload?.codeHook;
+const codeHookOptionsRaw =
+  isCodeHook &&
+  panePayload.optionsPayload.codeHook?.options &&
+  JSON.parse(panePayload.optionsPayload.codeHook.options);
+const resourceCategory = codeHookOptionsRaw?.category;
+const codeHookOptions = codeHookOptionsRaw;
+
+// if resources are referenced, load and pass
+let resourceCategoryUrl: string | null = null;
+let codeHooksResourceCategoryRequest: Response | null = null;
+let codeHooksResourcePayloadRaw: ResourceDatum[] = [];
+let codeHooksResourcePayload: ResourceDatumProps[] = [];
+// Only perform the lookup if resourceCategory is not null
+if (resourceCategory !== null) {
+  resourceCategoryUrl = `${Astro.url.origin}/api/resources/${resourceCategory}.json`;
+  codeHooksResourceCategoryRequest = await fetch(resourceCategoryUrl);
+
+  codeHooksResourcePayloadRaw =
+    codeHooksResourceCategoryRequest.status === 404
+      ? []
+      : await codeHooksResourceCategoryRequest.json();
+
+  codeHooksResourcePayload =
+    (codeHooksResourcePayloadRaw?.length &&
+      cleanResourceDatum(
+        codeHooksResourcePayloadRaw.filter(
+          (r: ResourceDatum) =>
+            r?.field_category_slug &&
+            resourceCategory &&
+            resourceCategory.includes(r.field_category_slug)
+        )
+      )) ||
+    [];
+}
 ---
 
 <Layout
@@ -147,6 +186,8 @@ const current = {
   <main id="main-content">
     <ContextPaneWrapper
       pane={panePayload}
+      resources={codeHooksResourcePayload}
+      codeHookOptions={codeHookOptions}
       contentMap={contentMap}
       current={current}
     />

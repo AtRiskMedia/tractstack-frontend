@@ -9,6 +9,7 @@ import { getImage } from "astro:assets";
 import { cleanPaneDatum } from "../utils/compositor/cleanPaneDatum";
 import { cleanFileDatum } from "../utils/compositor/cleanFileDatum";
 import { cleanImpressionsDatum } from "../utils/compositor/cleanImpressionsDatum";
+import { cleanResourceDatum } from "../utils/compositor/cleanResourceDatum";
 import { ENABLE_HEADER_WIDGET } from "../constants";
 import type {
   StoryFragmentFullDatum,
@@ -23,6 +24,9 @@ import type {
   Current,
   ContentMap,
   StylesVersion,
+  ResourceDatum,
+  ResourceDatumProps,
+  CodeHookDatum,
 } from "../types";
 
 const stylesVerUrl = `${import.meta.env.PUBLIC_CONCIERGE_STYLES_URL}/v.json`;
@@ -180,6 +184,81 @@ const impressionsRaw = panesPayload
   })
   .filter((e: ImpressionDatum | null) => e);
 const impressions = impressionsRaw as ImpressionDatum[];
+
+// check if resources are referenced
+const perCodeHookPayload: { [key: number]: CodeHookDatum } = {};
+const perCodeHookResourcesPayload: { [key: number]: ResourceDatumProps[] } = {};
+const perCodeHookResourceCategory: { [key: number]: string[] } = {};
+const setOfAllResourceCategory: Set<string[]> = new Set();
+const perCodeHookOptions: { [key: number]: string } = {};
+panesPayload?.forEach((p: PaneDatumProps, idx: number) => {
+  if (p?.optionsPayload?.codeHook?.options) {
+    try {
+      const thisOptions = JSON.parse(p.optionsPayload.codeHook.options);
+      if (thisOptions.category) {
+        perCodeHookResourceCategory[idx] = thisOptions.category.split(`|`);
+        for (const str of thisOptions.category.split(`|`)) {
+          setOfAllResourceCategory.add(str);
+        }
+      } else {
+        perCodeHookOptions[idx] = thisOptions;
+      }
+    } finally {
+    }
+  }
+  if (p?.optionsPayload?.codeHook?.target)
+    perCodeHookPayload[idx] = p.optionsPayload.codeHook;
+});
+// check for HeaderWidget resources
+const headerWidgetResourcesCategory = import.meta.env
+  .HEADER_WIDGET_RESOURCE_CATEGORY || ``;
+for (const str of headerWidgetResourcesCategory.split(`|`)) {
+  setOfAllResourceCategory.add(str);
+}
+// if resources are referenced, load and pass
+let resourceCategoryUrl: string | null = null;
+let codeHooksResourceCategoryRequest: Response | null = null;
+let codeHooksResourcePayloadRaw: ResourceDatum[] = [];
+let codeHooksResourcePayload: ResourceDatumProps[] = [];
+const resourceCategory = Array.from(setOfAllResourceCategory).join("|");
+// Only perform the lookup if resourceCategory is not null
+if (typeof resourceCategory === `string` && resourceCategory.length ) {
+  resourceCategoryUrl = `${Astro.url.origin}/api/resources/${resourceCategory}.json`;
+  codeHooksResourceCategoryRequest = await fetch(resourceCategoryUrl);
+
+  codeHooksResourcePayloadRaw =
+    codeHooksResourceCategoryRequest.status === 404
+      ? []
+      : await codeHooksResourceCategoryRequest.json();
+
+  codeHooksResourcePayload =
+    (codeHooksResourcePayloadRaw?.length &&
+      cleanResourceDatum(
+        codeHooksResourcePayloadRaw.filter(
+          (r: ResourceDatum) =>
+            r?.field_category_slug &&
+            resourceCategory &&
+            resourceCategory.includes(r.field_category_slug)
+        )
+      )) ||
+    [];
+}
+// prepare per codeHook resource bundles
+Object.keys(perCodeHookResourceCategory).forEach((s: string) => {
+  const c = parseInt(s);
+  perCodeHookResourcesPayload[c] = codeHooksResourcePayload.filter(resource =>
+    perCodeHookResourceCategory[c].includes(resource?.category || ``)
+  );
+});
+const resourcesPayload = {
+  perCodeHookPayload,
+  perCodeHookResourceCategory,
+  perCodeHookOptions,
+  resources: codeHooksResourcePayload,
+};
+const headerWidgetResources = codeHooksResourcePayload?.filter(resource =>
+  headerWidgetResourcesCategory.split(`|`).includes(resource?.category || ``)
+);
 ---
 
 <Layout
@@ -189,7 +268,11 @@ const impressions = impressionsRaw as ImpressionDatum[];
   ogImage={socialImagePath}
   stylesUrl={stylesUrl}
 >
-  {ENABLE_HEADER_WIDGET ? <HeaderWidget /> : null}
+  {
+    ENABLE_HEADER_WIDGET ? (
+      <HeaderWidget resources={headerWidgetResources || []} />
+    ) : null
+  }
   <Header
     title={title || ``}
     menu={menu}
@@ -202,6 +285,7 @@ const impressions = impressionsRaw as ImpressionDatum[];
       panesPayload={panesPayload}
       contentMap={contentMap}
       current={current}
+      resourcesPayload={resourcesPayload}
     />
   </main>
   {
