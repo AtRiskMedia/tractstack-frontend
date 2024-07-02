@@ -210,8 +210,8 @@ panesPayload?.forEach((p: PaneDatumProps, idx: number) => {
     perCodeHookPayload[idx] = p.optionsPayload.codeHook;
 });
 // check for HeaderWidget resources
-const headerWidgetResourcesCategory = import.meta.env
-  .HEADER_WIDGET_RESOURCE_CATEGORY || ``;
+const headerWidgetResourcesCategory =
+  import.meta.env.HEADER_WIDGET_RESOURCE_CATEGORY || ``;
 for (const str of headerWidgetResourcesCategory.split(`|`)) {
   setOfAllResourceCategory.add(str);
 }
@@ -222,7 +222,7 @@ let codeHooksResourcePayloadRaw: ResourceDatum[] = [];
 let codeHooksResourcePayload: ResourceDatumProps[] = [];
 const resourceCategory = Array.from(setOfAllResourceCategory).join("|");
 // Only perform the lookup if resourceCategory is not null
-if (typeof resourceCategory === `string` && resourceCategory.length ) {
+if (typeof resourceCategory === `string` && resourceCategory.length) {
   resourceCategoryUrl = `${Astro.url.origin}/api/resources/${resourceCategory}.json`;
   codeHooksResourceCategoryRequest = await fetch(resourceCategoryUrl);
 
