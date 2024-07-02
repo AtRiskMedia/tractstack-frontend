@@ -1,61 +1,24 @@
 ---
-//import Branding from "./Branding.tsx";
-//import Give from "./Give.astro";
-import { cleanResourceDatum } from "../utils/compositor/cleanResourceDatum";
-import type { ResourceDatum, ResourceDatumProps } from "../types";
+//import Branding from "./Branding";
+//import Hero from "./Hero.astro";
+import type { ResourceDatumProps } from "../types";
 
 interface Props {
   target: string;
-  resourceCategory: string | null;
-/* eslint-disable @typescript-eslint/no-explicit-any */
+  resources: ResourceDatumProps[] | null;
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   options: any | null;
 }
 
-/*
-const { target, resourceCategory, options } = Astro.props;
+const { target, options, /* resources */ } = Astro.props;
 
-// Initialize variables with null
-let resourceCategoryUrl: string | null = null;
-let codeHooksResourceCategoryRequest: Response | null = null;
-let codeHooksResourcePayloadRaw: ResourceDatum[] = [];
-let codeHooksResourcePayload: ResourceDatumProps[] = [];
-
-// Only perform the lookup if resourceCategory is not null
-if (resourceCategory !== null) {
-  resourceCategoryUrl = `${Astro.url.origin}/api/resources/${resourceCategory}.json`;
-  codeHooksResourceCategoryRequest = await fetch(resourceCategoryUrl);
-
-  codeHooksResourcePayloadRaw =
-    codeHooksResourceCategoryRequest.status === 404
-      ? []
-      : await codeHooksResourceCategoryRequest.json();
-
-  codeHooksResourcePayload =
-    (codeHooksResourcePayloadRaw?.length &&
-      cleanResourceDatum(
-        codeHooksResourcePayloadRaw.filter(
-          (r: ResourceDatum) =>
-            r?.field_category_slug &&
-            resourceCategory &&
-            resourceCategory.includes(r.field_category_slug)
-        )
-      )) ||
-    [];
-}
-*/
-
-/*
-use:
+/* copy below fences:
 {
   target === `Branding` ? (
-    <Branding />
-  ) : target === `Give` ? (
-    <Give />
-  ) : target === `PassData` ? (
-    <PassData client:load payload={codeHooksResourcePayload} />
+    <Branding client:idle payload={resources || []} />
+  ) : target === `Hero` ? (
+    <Hero />
   ) : null
 }
-
-or keep blank for no code hooks!
 */
 ---
