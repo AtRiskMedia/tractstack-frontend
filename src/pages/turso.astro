@@ -1,0 +1,417 @@
+---
+import {
+  getAllStoryFragments,
+  getStoryFragmentDatum,
+  getAllTractStacks,
+  getAllPaneFullDatum,
+  getTractStack,
+  getMarkdown,
+  getAllMarkdowns,
+  getAllMenus,
+  getMenu,
+  getAllResources,
+  getResource,
+  getAllFiles,
+  getFile,
+} from "../api/drupal";
+import { ulid } from "ulid";
+
+import { createClient } from "@libsql/client/web";
+
+const uuidToUlidMap = new Map<string, string>();
+
+function getOrCreateUlid(uuid: string): string {
+  let existingUlid = uuidToUlidMap.get(uuid);
+  if (!existingUlid) {
+    existingUlid = ulid();
+    uuidToUlidMap.set(uuid, existingUlid);
+  }
+  return existingUlid;
+}
+
+export const turso = createClient({
+  url: import.meta.env.TURSO_DATABASE_URL,
+  authToken: import.meta.env.TURSO_AUTH_TOKEN,
+});
+
+const allTractStacks = await getAllTractStacks();
+const _tractstacks = await Promise.all(
+  allTractStacks.map(async t => {
+    const tractstack = await getTractStack(t.id);
+    return tractstack;
+  })
+);
+const tractstacks = _tractstacks.map(innerArray => innerArray[0]).flat() || [];
+//console.log(`tractstacks`);
+//console.log(tractstacks);
+
+const files = await getAllFiles();
+//console.log(`files`);
+//console.log(files);
+
+const allMenus = await getAllMenus();
+const _menus = await Promise.all(
+  allMenus.map(async m => {
+    const menu = await getMenu(m.id);
+    return menu;
+  })
+);
+const menus = _menus.map(innerArray => innerArray[0]).flat() || [];
+//console.log(`menus`);
+//console.log(menus);
+
+const allResources = await getAllResources();
+const _resources = await Promise.all(
+  allResources.map(async r => {
+    const resource = await getResource(r.id);
+    return resource;
+  })
+);
+const resources = _resources.map(innerArray => innerArray[0]).flat() || [];
+//console.log(`resources`);
+//console.log(resources);
+
+const allMarkdowns = await getAllMarkdowns();
+const _markdowns = await Promise.all(
+  allMarkdowns.map(async m => {
+    const markdown = await getMarkdown(m.id);
+    return markdown;
+  })
+);
+const markdowns = _markdowns.map(innerArray => innerArray[0]).flat() || [];
+//console.log(`markdowns`);
+//console.log(markdowns);
+
+const allStoryFragments = await getAllStoryFragments();
+const _storyfragments = await Promise.all(
+  allStoryFragments.map(async s => {
+    const storyfragment = await getStoryFragmentDatum(s.id);
+    return storyfragment;
+  })
+);
+const storyfragments =
+  _storyfragments.map(innerArray => innerArray[0]).flat() || [];
+//console.log(`storyfragments`);
+//console.log(storyfragments);
+
+const panes = await getAllPaneFullDatum();
+//console.log(`panes`);
+//console.log(panes);
+
+const tractstacksData = tractstacks.map(s => {
+  const ulid = getOrCreateUlid(s.id);
+  return {
+    id: ulid,
+    title: s.title,
+    slug: s.field_slug,
+    social_image_path: s.field_social_image_path,
+  };
+});
+console.log(`tractstackData`);
+console.log(tractstacksData);
+
+const storyfragmentsData = storyfragments.map(s => {
+  const ulid = getOrCreateUlid(s.id);
+  const menuId = s?.field_menu?.id && getOrCreateUlid(s.field_menu.id);
+  const tractStackId = getOrCreateUlid(s.field_tract_stack.id);
+  return {
+    id: ulid,
+    title: s.title,
+    slug: s.field_slug,
+    social_image_path: s.field_social_image_path,
+    tailwind_background_colour: s.field_tailwind_background_colour,
+    created: new Date(s.created).toISOString().slice(0, 19).replace("T", " "),
+    changed:
+      (s.changed &&
+        new Date(s.changed).toISOString().slice(0, 19).replace("T", " ")) ||
+      null,
+    menu_id: menuId,
+    tractstack_id: tractStackId,
+  };
+});
+console.log(`storyfragmentsData`);
+console.log(storyfragmentsData);
+
+const panesData = panes.map(s => {
+  const ulid = getOrCreateUlid(s.id);
+  const thisMarkdown = s.field_markdown.at(0);
+  const markdownId = thisMarkdown?.id && getOrCreateUlid(thisMarkdown.id);
+  return {
+    id: ulid,
+    title: s.title,
+    slug: s.field_slug,
+    created: new Date(s.created).toISOString().slice(0, 19).replace("T", " "),
+    changed:
+      (s.changed &&
+        new Date(s.changed).toISOString().slice(0, 19).replace("T", " ")) ||
+      null,
+    is_context_pane: s.field_is_context_pane,
+    markdown_id: markdownId,
+    options_payload: s.field_options,
+    height_offset_desktop: s.field_height_offset_desktop,
+    height_offset_tablet: s.field_height_offset_tablet,
+    height_offset_mobile: s.field_height_offset_mobile,
+    height_ratio_desktop: s.field_height_ratio_desktop,
+    height_ratio_tablet: s.field_height_ratio_tablet,
+    height_ratio_mobile: s.field_height_ratio_mobile,
+  };
+});
+console.log(`panesData`);
+console.log(panesData);
+
+const resourcesData = resources.map(s => {
+  const ulid = getOrCreateUlid(s.id);
+  return {
+    id: ulid,
+    title: s.title,
+    slug: s.field_slug,
+    category_slug: s.field_category_slug,
+    oneliner: s.field_oneliner,
+    options_payload: s.field_options,
+    action_lisp: s.field_action_lisp,
+  };
+});
+console.log(`resourcesData`);
+console.log(resourcesData);
+
+const markdownsData = markdowns.map(s => {
+  const ulid = getOrCreateUlid(s.id);
+  return {
+    id: ulid,
+    body: s.field_markdown_body,
+  };
+});
+console.log(`markdownsData`);
+console.log(markdownsData);
+
+const filesData = files.map(s => {
+  const ulid = getOrCreateUlid(s.id);
+  return { id: ulid, filename: s.filename };
+});
+console.log(`filesData`);
+console.log(filesData);
+
+const menusData = menus.map(s => {
+  const ulid = getOrCreateUlid(s.id);
+  return {
+    id: ulid,
+    title: s.title,
+    theme: s.field_theme,
+    options_payload: s.field_options,
+  };
+});
+console.log(`menusData`);
+console.log(menusData);
+
+const storyfragmentsPanesData = storyfragments.map(s => {
+  const ulid = getOrCreateUlid(s.id);
+  return {
+    id: ulid,
+    paneIds: s.field_panes.map(t => getOrCreateUlid(t.id)),
+  };
+});
+console.log(`storyfragmentsPanesData`);
+console.log(storyfragmentsPanesData);
+
+const filesPanesData = panes
+  .map(s => {
+    const ulid = getOrCreateUlid(s.id);
+    const images = s.field_image.map(t => getOrCreateUlid(t.id));
+    const svgs = s.field_image_svg.map(t => getOrCreateUlid(t.id));
+    if (images.length || svgs.length)
+      return {
+        id: ulid,
+        images,
+        svgs,
+      };
+    else return null;
+  })
+  .filter(n => n);
+console.log(`filesPanesData`);
+console.log(filesPanesData);
+
+const filesMarkdownsData = markdowns
+  .map(s => {
+    const ulid = getOrCreateUlid(s.id);
+    const images = s.field_image.map(t => getOrCreateUlid(t.id));
+    const svgs = s.field_image_svg.map(t => getOrCreateUlid(t.id));
+    if (images.length || svgs.length)
+      return {
+        id: ulid,
+        images,
+        svgs,
+      };
+    else return null;
+  })
+  .filter(n => n);
+console.log(`filesMarkdownsData`);
+console.log(filesMarkdownsData);
+
+// must init database
+try {
+  await turso.execute(`
+      CREATE TABLE IF NOT EXISTS tractstack (
+        id TEXT PRIMARY_KEY,
+        title TEXT NOT NULL,
+        slug TEXT NOT NULL UNIQUE,
+        social_image_path TEXT
+      )
+    `);
+
+  await turso.execute(`
+      CREATE TABLE IF NOT EXISTS menu (
+        id TEXT PRIMARY_KEY,
+        title TEXT NOT NULL,
+        theme TEXT NOT NULL UNIQUE,
+        options_payload TEXT NOT NULL
+      )
+    `);
+
+  await turso.execute(`
+      CREATE TABLE IF NOT EXISTS resource (
+        id TEXT PRIMARY_KEY,
+        title TEXT NOT NULL,
+        slug TEXT NOT NULL UNIQUE,
+        category_slug TEXT,
+        oneliner TEXT NOT NULL,
+        options_payload TEXT NOT NULL,
+        action_lisp TEXT
+      )
+    `);
+
+  await turso.execute(`
+      CREATE TABLE IF NOT EXISTS file (
+        id TEXT PRIMARY_KEY,
+        filename TEXT NOT NULL
+      )
+    `);
+
+  await turso.execute(`
+      CREATE TABLE IF NOT EXISTS markdown (
+        id TEXT PRIMARY_KEY,
+        body TEXT NOT NULL
+      )
+    `);
+
+  await turso.execute(`
+      CREATE TABLE IF NOT EXISTS storyfragment (
+        id TEXT PRIMARY_KEY,
+        title TEXT NOT NULL,
+        slug TEXT NOT NULL UNIQUE,
+        social_image_path TEXT,
+        tailwind_background_colour TEXT,
+        created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        changed TIMESTAMP,
+        menu_id TEXT REFERENCES menu(id),
+        tractstack_id TEXT NOT NULL REFERENCES tractstack(id)
+      )
+    `);
+
+  await turso.execute(`
+      CREATE TABLE IF NOT EXISTS pane (
+        id TEXT PRIMARY_KEY,
+        title TEXT NOT NULL,
+        slug TEXT NOT NULL UNIQUE,
+        created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        changed TIMESTAMP,
+        markdown_id TEXT REFERENCES markdown(id),
+        options_payload TEXT NOT NULL,
+        is_context_pane BOOLEAN DEFAULT 0,
+        height_offset_desktop INTEGER,
+        height_offset_mobile INTEGER, 
+        height_offset_tablet INTEGER,
+        height_ratio_desktop TEXT,
+        height_ratio_mobile TEXT,
+        height_ratio_tablet TEXT
+      )
+    `);
+
+  await turso.execute(`
+      CREATE TABLE IF NOT EXISTS storyfragment_pane (
+        id TEXT PRIMARY_KEY,
+        storyfragment_id TEXT NOT NULL REFERENCES storyfragment(id),
+        pane_id TEXT NOT NULL REFERENCES pane(id)
+      )
+    `);
+
+  await turso.execute(`
+      CREATE TABLE IF NOT EXISTS file_pane (
+        id TEXT PRIMARY_KEY,
+        file_id TEXT NOT NULL REFERENCES file(id),
+        pane_id TEXT NOT NULL REFERENCES pane(id)
+      )
+    `);
+
+  await turso.execute(`
+      CREATE TABLE IF NOT EXISTS file_markdown (
+        id TEXT PRIMARY_KEY,
+        file_id TEXT NOT NULL REFERENCES file(id),
+        markdown_id TEXT NOT NULL REFERENCES markdown(id)
+      )
+    `);
+
+  //// Prepare initial records
+  //const initialUsers = [
+  //  { name: "John Doe", email: "john@example.com" },
+  //  { name: "Jane Smith", email: "jane@example.com" },
+  //  { name: "Bob Johnson", email: "bob@example.com" },
+  //];
+
+  //// Insert initial records
+  //for (const user of initialUsers) {
+  //  await turso.execute({
+  //    sql: "INSERT INTO users (name, email) VALUES (?, ?)",
+  //    args: [user.name, user.email],
+  //  });
+  //}
+  //
+} catch (error) {
+  console.error("Error accessing Turso database:", error);
+}
+//console.log(uuidToUlidMap);
+---
+
+<h2>push data to Turso</h2>
+<br />
+<h3>Tract Stacks by uuid</h3>
+<ul>
+  {tractstacks.map(n => <li>{n.id}</li>)}
+  {!tractstacks.length ? <li>none</li> : null}
+</ul>
+<br />
+<h3>Story Fragments by uuid</h3>
+<ul>
+  {storyfragments.map(n => <li>{n.id}</li>)}
+  {!storyfragments.length ? <li>none</li> : null}
+</ul>
+<br />
+<h3>Panes by uuid</h3>
+<ul>
+  {panes.map(n => <li>{n.id}</li>)}
+  {!panes.length ? <li>none</li> : null}
+</ul>
+<br />
+<h3>Markdowns by uuid</h3>
+<ul>
+  {markdowns.map(n => <li>{n.id}</li>)}
+  {!markdowns.length ? <li>none</li> : null}
+</ul>
+<br />
+<h3>Files by uuid</h3>
+<ul>
+  {files.map(n => <li>{n.id}</li>)}
+  {!files.length ? <li>none</li> : null}
+</ul>
+<br />
+<h3>Resources by uuid</h3>
+<ul>
+  {resources.map(n => <li>{n.id}</li>)}
+  {!resources.length ? <li>none</li> : null}
+</ul>
+<br />
+<h3>Menus by uuid</h3>
+<ul>
+  {menus.map(n => <li>{n.id}</li>)}
+  {!menus.length ? <li>none</li> : null}
+</ul>
+<br />

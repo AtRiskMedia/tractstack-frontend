@@ -484,6 +484,8 @@ export const getAllPaneFullDatum = async (): Promise<PaneFullDatum[]> => {
       "field_markdown",
       "field_image",
       "field_image_svg",
+      "changed",
+      "created",
     ])
     .addFields("node--markdown", [
       "type",
