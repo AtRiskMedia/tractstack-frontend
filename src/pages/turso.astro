@@ -34,6 +34,8 @@ export const turso = createClient({
   authToken: import.meta.env.TURSO_AUTH_TOKEN,
 });
 
+// source data from Drupal
+
 const allTractStacks = await getAllTractStacks();
 const _tractstacks = await Promise.all(
   allTractStacks.map(async t => {
@@ -42,11 +44,9 @@ const _tractstacks = await Promise.all(
   })
 );
 const tractstacks = _tractstacks.map(innerArray => innerArray[0]).flat() || [];
-//console.log(`tractstacks`);
 //console.log(tractstacks);
 
 const files = await getAllFiles();
-//console.log(`files`);
 //console.log(files);
 
 const allMenus = await getAllMenus();
@@ -57,7 +57,6 @@ const _menus = await Promise.all(
   })
 );
 const menus = _menus.map(innerArray => innerArray[0]).flat() || [];
-//console.log(`menus`);
 //console.log(menus);
 
 const allResources = await getAllResources();
@@ -68,7 +67,6 @@ const _resources = await Promise.all(
   })
 );
 const resources = _resources.map(innerArray => innerArray[0]).flat() || [];
-//console.log(`resources`);
 //console.log(resources);
 
 const allMarkdowns = await getAllMarkdowns();
@@ -79,7 +77,6 @@ const _markdowns = await Promise.all(
   })
 );
 const markdowns = _markdowns.map(innerArray => innerArray[0]).flat() || [];
-//console.log(`markdowns`);
 //console.log(markdowns);
 
 const allStoryFragments = await getAllStoryFragments();
@@ -91,12 +88,12 @@ const _storyfragments = await Promise.all(
 );
 const storyfragments =
   _storyfragments.map(innerArray => innerArray[0]).flat() || [];
-//console.log(`storyfragments`);
 //console.log(storyfragments);
 
 const panes = await getAllPaneFullDatum();
-//console.log(`panes`);
 //console.log(panes);
+
+// Prepare initial records
 
 const tractstacksData = tractstacks.map(s => {
   const ulid = getOrCreateUlid(s.id);
@@ -107,12 +104,12 @@ const tractstacksData = tractstacks.map(s => {
     social_image_path: s.field_social_image_path,
   };
 });
-console.log(`tractstackData`);
-console.log(tractstacksData);
+//console.log(tractstacksData);
 
 const storyfragmentsData = storyfragments.map(s => {
   const ulid = getOrCreateUlid(s.id);
-  const menuId = s?.field_menu?.id && getOrCreateUlid(s.field_menu.id);
+  const menuId =
+    (s?.field_menu?.id && getOrCreateUlid(s.field_menu.id)) || null;
   const tractStackId = getOrCreateUlid(s.field_tract_stack.id);
   return {
     id: ulid,
@@ -129,13 +126,13 @@ const storyfragmentsData = storyfragments.map(s => {
     tractstack_id: tractStackId,
   };
 });
-console.log(`storyfragmentsData`);
-console.log(storyfragmentsData);
+//console.log(storyfragmentsData);
 
 const panesData = panes.map(s => {
   const ulid = getOrCreateUlid(s.id);
   const thisMarkdown = s.field_markdown.at(0);
-  const markdownId = thisMarkdown?.id && getOrCreateUlid(thisMarkdown.id);
+  const markdownId =
+    (thisMarkdown?.id && getOrCreateUlid(thisMarkdown.id)) || null;
   return {
     id: ulid,
     title: s.title,
@@ -156,8 +153,7 @@ const panesData = panes.map(s => {
     height_ratio_mobile: s.field_height_ratio_mobile,
   };
 });
-console.log(`panesData`);
-console.log(panesData);
+//console.log(panesData);
 
 const resourcesData = resources.map(s => {
   const ulid = getOrCreateUlid(s.id);
@@ -171,8 +167,7 @@ const resourcesData = resources.map(s => {
     action_lisp: s.field_action_lisp,
   };
 });
-console.log(`resourcesData`);
-console.log(resourcesData);
+//console.log(resourcesData);
 
 const markdownsData = markdowns.map(s => {
   const ulid = getOrCreateUlid(s.id);
@@ -181,15 +176,13 @@ const markdownsData = markdowns.map(s => {
     body: s.field_markdown_body,
   };
 });
-console.log(`markdownsData`);
-console.log(markdownsData);
+//console.log(markdownsData);
 
 const filesData = files.map(s => {
   const ulid = getOrCreateUlid(s.id);
   return { id: ulid, filename: s.filename };
 });
-console.log(`filesData`);
-console.log(filesData);
+//console.log(filesData);
 
 const menusData = menus.map(s => {
   const ulid = getOrCreateUlid(s.id);
@@ -200,8 +193,7 @@ const menusData = menus.map(s => {
     options_payload: s.field_options,
   };
 });
-console.log(`menusData`);
-console.log(menusData);
+//console.log(menusData);
 
 const storyfragmentsPanesData = storyfragments.map(s => {
   const ulid = getOrCreateUlid(s.id);
@@ -210,8 +202,7 @@ const storyfragmentsPanesData = storyfragments.map(s => {
     paneIds: s.field_panes.map(t => getOrCreateUlid(t.id)),
   };
 });
-console.log(`storyfragmentsPanesData`);
-console.log(storyfragmentsPanesData);
+//console.log(storyfragmentsPanesData);
 
 const filesPanesData = panes
   .map(s => {
@@ -227,8 +218,7 @@ const filesPanesData = panes
     else return null;
   })
   .filter(n => n);
-console.log(`filesPanesData`);
-console.log(filesPanesData);
+//console.log(filesPanesData);
 
 const filesMarkdownsData = markdowns
   .map(s => {
@@ -244,14 +234,14 @@ const filesMarkdownsData = markdowns
     else return null;
   })
   .filter(n => n);
-console.log(`filesMarkdownsData`);
-console.log(filesMarkdownsData);
+//console.log(filesMarkdownsData);
 
 // must init database
+
 try {
   await turso.execute(`
       CREATE TABLE IF NOT EXISTS tractstack (
-        id TEXT PRIMARY_KEY,
+        id TEXT PRIMARY KEY,
         title TEXT NOT NULL,
         slug TEXT NOT NULL UNIQUE,
         social_image_path TEXT
@@ -260,16 +250,16 @@ try {
 
   await turso.execute(`
       CREATE TABLE IF NOT EXISTS menu (
-        id TEXT PRIMARY_KEY,
+        id TEXT PRIMARY KEY,
         title TEXT NOT NULL,
-        theme TEXT NOT NULL UNIQUE,
+        theme TEXT NOT NULL,
         options_payload TEXT NOT NULL
       )
     `);
 
   await turso.execute(`
       CREATE TABLE IF NOT EXISTS resource (
-        id TEXT PRIMARY_KEY,
+        id TEXT PRIMARY KEY,
         title TEXT NOT NULL,
         slug TEXT NOT NULL UNIQUE,
         category_slug TEXT,
@@ -281,21 +271,21 @@ try {
 
   await turso.execute(`
       CREATE TABLE IF NOT EXISTS file (
-        id TEXT PRIMARY_KEY,
+        id TEXT PRIMARY KEY,
         filename TEXT NOT NULL
       )
     `);
 
   await turso.execute(`
       CREATE TABLE IF NOT EXISTS markdown (
-        id TEXT PRIMARY_KEY,
+        id TEXT PRIMARY KEY,
         body TEXT NOT NULL
       )
     `);
 
   await turso.execute(`
       CREATE TABLE IF NOT EXISTS storyfragment (
-        id TEXT PRIMARY_KEY,
+        id TEXT PRIMARY KEY,
         title TEXT NOT NULL,
         slug TEXT NOT NULL UNIQUE,
         social_image_path TEXT,
@@ -309,7 +299,7 @@ try {
 
   await turso.execute(`
       CREATE TABLE IF NOT EXISTS pane (
-        id TEXT PRIMARY_KEY,
+        id TEXT PRIMARY KEY,
         title TEXT NOT NULL,
         slug TEXT NOT NULL UNIQUE,
         created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -328,7 +318,7 @@ try {
 
   await turso.execute(`
       CREATE TABLE IF NOT EXISTS storyfragment_pane (
-        id TEXT PRIMARY_KEY,
+        id TEXT PRIMARY KEY,
         storyfragment_id TEXT NOT NULL REFERENCES storyfragment(id),
         pane_id TEXT NOT NULL REFERENCES pane(id)
       )
@@ -336,7 +326,7 @@ try {
 
   await turso.execute(`
       CREATE TABLE IF NOT EXISTS file_pane (
-        id TEXT PRIMARY_KEY,
+        id TEXT PRIMARY KEY,
         file_id TEXT NOT NULL REFERENCES file(id),
         pane_id TEXT NOT NULL REFERENCES pane(id)
       )
@@ -344,27 +334,144 @@ try {
 
   await turso.execute(`
       CREATE TABLE IF NOT EXISTS file_markdown (
-        id TEXT PRIMARY_KEY,
+        id TEXT PRIMARY KEY,
         file_id TEXT NOT NULL REFERENCES file(id),
         markdown_id TEXT NOT NULL REFERENCES markdown(id)
       )
     `);
 
-  //// Prepare initial records
-  //const initialUsers = [
-  //  { name: "John Doe", email: "john@example.com" },
-  //  { name: "Jane Smith", email: "jane@example.com" },
-  //  { name: "Bob Johnson", email: "bob@example.com" },
-  //];
+  // Insert initial records
 
-  //// Insert initial records
-  //for (const user of initialUsers) {
-  //  await turso.execute({
-  //    sql: "INSERT INTO users (name, email) VALUES (?, ?)",
-  //    args: [user.name, user.email],
-  //  });
-  //}
-  //
+  for (const resource of resourcesData) {
+    await turso.execute({
+      sql: "INSERT INTO resource (id,title,slug,category_slug,oneliner,options_payload,action_lisp) VALUES (?, ?,?,?,?,?,?)",
+      args: [
+        resource.id,
+        resource.title,
+        resource.slug,
+        resource.category_slug,
+        resource.oneliner,
+        resource.options_payload,
+        resource.action_lisp,
+      ],
+    });
+  }
+
+  for (const menu of menusData) {
+    await turso.execute({
+      sql: "INSERT INTO menu (id,title,theme,options_payload) VALUES (?,?,?,?)",
+      args: [menu.id, menu.title, menu.theme, menu.options_payload],
+    });
+  }
+
+  for (const file of filesData) {
+    await turso.execute({
+      sql: "INSERT INTO file (id,filename) VALUES (?,?)",
+      args: [file.id, file.filename],
+    });
+  }
+
+  for (const markdown of markdownsData) {
+    await turso.execute({
+      sql: "INSERT INTO markdown (id,body) VALUES (?,?)",
+      args: [markdown.id, markdown.body],
+    });
+  }
+
+  for (const tractstack of tractstacksData) {
+    await turso.execute({
+      sql: "INSERT INTO tractstack (id,title,slug,social_image_path) VALUES (?,?,?,?)",
+      args: [
+        tractstack.id,
+        tractstack.title,
+        tractstack.slug,
+        tractstack.social_image_path,
+      ],
+    });
+  }
+
+  for (const storyfragment of storyfragmentsData) {
+    await turso.execute({
+      sql: "INSERT INTO storyfragment (id,title,slug,social_image_path,tailwind_background_colour,created,changed,menu_id,tractstack_id) VALUES (?,?,?,?,?,?,?,?,?)",
+      args: [
+        storyfragment.id,
+        storyfragment.title,
+        storyfragment.slug,
+        storyfragment.social_image_path,
+        storyfragment.tailwind_background_colour,
+        storyfragment.created,
+        storyfragment.changed,
+        storyfragment.menu_id,
+        storyfragment.tractstack_id,
+      ],
+    });
+  }
+
+  for (const pane of panesData) {
+    await turso.execute({
+      sql: "INSERT INTO pane (id,title,slug,created,changed,markdown_id,options_payload,is_context_pane,height_offset_desktop,height_offset_tablet,height_offset_mobile,height_ratio_desktop,height_ratio_tablet,height_ratio_mobile) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+      args: [
+        pane.id,
+        pane.title,
+        pane.slug,
+        pane.created,
+        pane.changed,
+        pane.markdown_id,
+        pane.options_payload,
+        pane.is_context_pane,
+        pane.height_offset_desktop,
+        pane.height_offset_tablet,
+        pane.height_offset_mobile,
+        pane.height_ratio_desktop,
+        pane.height_ratio_tablet,
+        pane.height_ratio_mobile,
+      ],
+    });
+  }
+
+  for (const fileMarkdown of filesMarkdownsData) {
+    for (const imageId of fileMarkdown.images) {
+      const thisUlid = ulid();
+      await turso.execute({
+        sql: "INSERT INTO file_markdown (id,file_id,markdown_id) VALUES (?,?,?)",
+        args: [thisUlid, imageId, fileMarkdown.id],
+      });
+    }
+    for (const imageId of fileMarkdown.svgs) {
+      const thisUlid = ulid();
+      await turso.execute({
+        sql: "INSERT INTO file_markdown (id,file_id,markdown_id) VALUES (?,?,?)",
+        args: [thisUlid, imageId, fileMarkdown.id],
+      });
+    }
+  }
+
+  for (const filePane of filesPanesData) {
+    for (const imageId of filePane.images) {
+      const thisUlid = ulid();
+      await turso.execute({
+        sql: "INSERT INTO file_pane (id,file_id,pane_id) VALUES (?,?,?)",
+        args: [thisUlid, imageId, filePane.id],
+      });
+    }
+    for (const imageId of fileMarkdown.svgs) {
+      const thisUlid = ulid();
+      await turso.execute({
+        sql: "INSERT INTO file_pane (id,file_id,pane_id) VALUES (?,?,?)",
+        args: [thisUlid, imageId, filePane.id],
+      });
+    }
+  }
+
+  for (const storyfragmentPane of storyfragmentsPanesData) {
+    for (const paneId of storyfragmentPane.paneIds) {
+      const thisUlid = ulid();
+      await turso.execute({
+        sql: "INSERT INTO storyfragment_pane (id,storyfragment_id,pane_id) VALUES (?,?,?)",
+        args: [thisUlid, storyfragmentPane.id, paneId],
+      });
+    }
+  }
 } catch (error) {
   console.error("Error accessing Turso database:", error);
 }
