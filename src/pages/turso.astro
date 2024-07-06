@@ -18,7 +18,33 @@ import { ulid } from "ulid";
 
 import { createClient } from "@libsql/client/web";
 
-const uuidToUlidMap = new Map<string, string>();
+//const uuidToUlidMap = new Map<string, string>();
+
+// from last run --- turso.tractstack.com
+const uuidToUlidMap = new Map<string, string>([
+  ['792591d0-e19e-4e08-830d-d49f02b446e7', '01J22X51DX0FYFKZ5BRVFM48GW'],
+  ['55888ffb-2edf-47c0-b659-f7443c513fc9', '01J22X51DXWSE3MJB610GP9YV5'],
+  ['20a8e8c8-89b2-45b7-bd55-c3a07bfe56a8', '01J22X51DXYMK60DBK256XVAQQ'],
+  ['bf122f39-a91b-4c1e-97ee-75e53f7a50fb', '01J22X51DX2PFNXZ8CQSZPW8T6'],
+  ['8c3e1bc5-f986-4426-8177-39cbfd541d03', '01J22X51DX3CPFTTF97K7B3RYT'],
+  ['c8232957-f74f-4033-a1d7-c64c12c07556', '01J22X51DX2XFE4QHYQ9YFQDRW'],
+  ['5c7d57ad-bbb8-4292-b92f-78ec086fbcd5', '01J22X51DXKF06FPAN5KG6GBR4'],
+  ['e0b69a44-7230-451d-9bf0-c9cfd364d096', '01J22X51DXYWFVBTR1R4BANC4M'],
+  ['d0dbdc6a-b642-4739-84d9-4944ac9c4719', '01J22X51DX7TMJQ93J64AFBD1Q'],
+  ['2b693750-fb5a-421e-bc99-68e8219d9652', '01J22X51DY15RCJKHHND5YJYRE'],
+  ['44936067-3c55-40c5-b6ad-1493bfa01a98', '01J22X51DY6C4WZ5F80T5ETD25'],
+  ['bf5e368b-3b9a-4011-a75f-2f53ea317cde', '01J22X51DYMN0G1Y6KY0AAR3BG'],
+  ['f4cc513c-97ba-40af-bfb5-6c0a9a240bd1', '01J22X51DY61M2BDTKZFEYTSDV'],
+  ['834be9de-af2f-430c-8e08-3640f7a23396', '01J22X51DYT46CB51FSB5NHC62'],
+  ['c619080c-05ac-4176-86e6-8218b0970efb', '01J22X51DYN0GTYZN0YF72YNZ5'],
+  ['f09e6639-069c-43fd-9037-800ecc5d669b', '01J22X51DY999VD5S2ARX2AZ5Y'],
+  ['c5a217d7-047c-4aa5-abc3-391c1a2ed485', '01J22X51DYWXVW7QA2X8M7JH84'],
+  ['9a8b719d-fb39-4675-9cfa-20eb6f54981c', '01J22X51DYCFS2SBQT77W9EDEX'],
+  ['dd8243d1-8530-415f-ab9b-56003fdfabf1', '01J22X51DYG0XSSYZH41M3MGRE'],
+  ['58a9d317-c5a3-48c6-935c-cc54e8866d05', '01J22X51DYTSV8A7HC12DCR9QH'],
+  ['0a0dce17-2a83-434d-b102-ad8f3aa520c3', '01J22X51DYE889PEHA4BSX2QMC'],
+  ['c365c8e3-3e82-4952-8b77-d6f3791906db', '01J22X51DYJDREG7JX4WDHAWYK']
+]);
 
 function getOrCreateUlid(uuid: string): string {
   let existingUlid = uuidToUlidMap.get(uuid);
@@ -133,6 +159,46 @@ const panesData = panes.map(s => {
   const thisMarkdown = s.field_markdown.at(0);
   const markdownId =
     (thisMarkdown?.id && getOrCreateUlid(thisMarkdown.id)) || null;
+  const tempVal = s?.field_options && JSON.parse(s.field_options);
+  const fragments = tempVal.paneFragmentsPayload;
+  tempVal.paneFragmentsPayload = fragments?.map(f => {
+    const newVal = f;
+    delete newVal.id;
+    delete newVal.markdownId;
+    if (newVal?.optionsPayload?.classNamesPayload?.toggle)
+      delete newVal.optionsPayload.classNamesPayload.toggle;
+    if (newVal?.optionsPayload?.classNamesPayload?.imageContainer)
+      delete newVal.optionsPayload.classNamesPayload.imageContainer;
+    newVal.type = newVal.internal.type;
+    delete newVal.internal.type;
+    delete newVal.internal;
+    //if (newVal?.optionsPayload?.classNamesPayload?.parent?.classes) {
+    //  console.log(`<parent>`);
+    //  console.log(newVal.optionsPayload.classNamesPayload.parent.classes);
+    //}
+    //if (newVal?.optionsPayload?.classNamesPayload?.p?.classes) {
+    //  console.log(`<p>`);
+    //  console.log(newVal.optionsPayload.classNamesPayload.p.classes);
+    //}
+    //if (newVal?.optionsPayload?.classNamesPayload?.h2?.classes) {
+    //  console.log(`<h2>`);
+    //  console.log(newVal.optionsPayload.classNamesPayload.h2.classes);
+    //}
+    //console.log(``);
+    //console.log(newVal);
+    return newVal;
+  });
+  tempVal.impressions =
+    tempVal?.impressions &&
+    Object.keys(tempVal.impressions).map(i => {
+      const tempI = tempVal.impressions[i];
+      delete tempI.id;
+      tempI.parentId = getOrCreateUlid(tempI.parentId);
+      return tempI;
+    });
+  if (typeof tempVal.impressions === `undefined`) delete tempVal.impressions;
+  if (typeof tempVal.paneFragmentsPayload === `undefined`)
+    delete tempVal.paneFragmentsPayload;
   return {
     id: ulid,
     title: s.title,
@@ -144,7 +210,7 @@ const panesData = panes.map(s => {
       null,
     is_context_pane: s.field_is_context_pane,
     markdown_id: markdownId,
-    options_payload: s.field_options,
+    options_payload: (s?.field_options && JSON.stringify(tempVal)) || `{}`,
     height_offset_desktop: s.field_height_offset_desktop,
     height_offset_tablet: s.field_height_offset_tablet,
     height_offset_mobile: s.field_height_offset_mobile,
@@ -246,6 +312,22 @@ const filesMarkdownsData = markdowns
 
 try {
   await turso.execute(`
+  PRAGMA foreign_keys = OFF;`);
+  await turso.execute(`DROP TABLE IF EXISTS storyfragment_pane;`);
+  await turso.execute(`DROP TABLE IF EXISTS file_pane;`);
+  await turso.execute(`DROP TABLE IF EXISTS file_markdown;`);
+  await turso.execute(`DROP TABLE IF EXISTS pane;`);
+  await turso.execute(`DROP TABLE IF EXISTS storyfragment;`);
+  await turso.execute(`DROP TABLE IF EXISTS markdown;`);
+  await turso.execute(`DROP TABLE IF EXISTS file;`);
+  await turso.execute(`DROP TABLE IF EXISTS resource;`);
+  await turso.execute(`DROP TABLE IF EXISTS menu;`);
+  await turso.execute(`DROP TABLE IF EXISTS tractstack;`);
+  await turso.execute(`
+  PRAGMA foreign_keys = ON;
+`);
+
+  await turso.execute(`
       CREATE TABLE IF NOT EXISTS tractstack (
         id TEXT PRIMARY KEY,
         title TEXT NOT NULL,
@@ -315,7 +397,7 @@ try {
         options_payload TEXT NOT NULL,
         is_context_pane BOOLEAN DEFAULT 0,
         height_offset_desktop INTEGER,
-        height_offset_mobile INTEGER, 
+        height_offset_mobile INTEGER,
         height_offset_tablet INTEGER,
         height_ratio_desktop TEXT,
         height_ratio_mobile TEXT,
@@ -482,7 +564,7 @@ try {
 } catch (error) {
   console.error("Error accessing Turso database:", error);
 }
-//console.log(uuidToUlidMap);
+console.log(uuidToUlidMap);
 ---
 
 <h2>push data to Turso</h2>
