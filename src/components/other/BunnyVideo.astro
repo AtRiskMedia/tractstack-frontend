@@ -5,70 +5,86 @@ export interface Props {
 }
 const { videoUrl, title } = Astro.props;
 ---
-
 <astro-bunny-video data-src={videoUrl} data-title={title}>
-  <div id="video-container" class="w-full"></div>
+  <div class="w-full">
+    <div id="video-container"></div>
+  </div>
 </astro-bunny-video>
 <script>
   class AstroBunnyVideo extends HTMLElement {
+    private currentIframe: HTMLIFrameElement | null = null;
+    private videoContainer: HTMLElement | null = null;
+
     constructor() {
       super();
       const videoUrl = this.dataset.src;
       const title = this.dataset.title;
-      let currentIframe:HTMLIFrameElement | null = null;
 
       const getStartTime = () => {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get("t") || null;
       };
 
-      const adjustIframeHeight =( iframe :HTMLIFrameElement ) => {
+      const adjustIframeHeight = (iframe: HTMLIFrameElement) => {
         const width = iframe.offsetWidth;
         const height = width * (9 / 16);
         iframe.style.height = `${height}px`;
       };
 
-      const embedVideo = (t:string) => {
+      const embedVideo = (t: string) => {
         const regex = /^(\d+)s$/;
         const match = t?.match(regex);
         const startTime = match && match[1] && parseInt(match[1]);
-        const videoContainer = document.getElementById("video-container");
-        if (currentIframe) {
-          videoContainer?.removeChild(currentIframe);
+
+        if (!this.videoContainer) {
+          this.videoContainer = this.querySelector("#video-container");
         }
+
+        if (this.currentIframe && this.videoContainer) {
+          this.videoContainer.removeChild(this.currentIframe);
+          this.currentIframe = null;
+        }
+
         const iframe = document.createElement("iframe");
-        iframe.src = `${videoUrl}?autoplay=${typeof startTime === `number` ? 1 : 0}&loop=false&muted=false&preload=${typeof startTime === `number`}&responsive=true&t=${startTime || 0}`;
+        iframe.src = `${videoUrl}?autoplay=${typeof startTime === 'number' ? 1 : 0}&loop=false&muted=false&preload=${typeof startTime === 'number'}&responsive=true&t=${startTime || 0}`;
         iframe.width = "100%";
         iframe.style.aspectRatio = "16 / 9";
         iframe.allowFullscreen = true;
         iframe.title = title || `Video Embed`;
         iframe.setAttribute("playsinline", "");
         iframe.setAttribute("allow", "autoplay; fullscreen");
-        videoContainer?.appendChild(iframe);
-        currentIframe = iframe;
-        adjustIframeHeight(iframe);
 
-        if (typeof startTime === `number`) {
-          setTimeout(() => {
-            iframe.scrollIntoView({ behavior: "smooth", block: "center" });
-          }, 1000);
+        if (this.videoContainer) {
+          this.videoContainer.appendChild(iframe);
+          this.currentIframe = iframe;
+          adjustIframeHeight(iframe);
+
+          if (typeof startTime === 'number') {
+            setTimeout(() => {
+              iframe.scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 1000);
+          }
         }
 
         window.addEventListener("resize", () => adjustIframeHeight(iframe));
       };
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-      const handleUpdateVideo = (event:any) => {
+      const handleUpdateVideo = (event: CustomEvent) => {
         const { startTime } = event.detail;
-        console.log(startTime,event)
         embedVideo(startTime);
       };
 
-      document.addEventListener("DOMContentLoaded", () =>
-        embedVideo(getStartTime()||``)
-      );
-      document.addEventListener("updateVideo", handleUpdateVideo);
+      document.addEventListener("astro:page-load", () => {
+        embedVideo(getStartTime() || ``);
+      });
+
+      document.addEventListener("updateVideo", handleUpdateVideo as EventListener);
+    }
+
+    disconnectedCallback() {
+      document.removeEventListener("updateVideo", this.handleUpdateVideo as EventListener);
     }
   }
+
   customElements.define("astro-bunny-video", AstroBunnyVideo);
 </script>
