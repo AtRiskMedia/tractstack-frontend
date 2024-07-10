@@ -1,0 +1,74 @@
+---
+export interface Props {
+  videoUrl: string;
+  title: string;
+}
+const { videoUrl, title } = Astro.props;
+---
+
+<astro-bunny-video data-src={videoUrl} data-title={title}>
+  <div id="video-container" class="w-full"></div>
+</astro-bunny-video>
+<script>
+  class AstroBunnyVideo extends HTMLElement {
+    constructor() {
+      super();
+      const videoUrl = this.dataset.src;
+      const title = this.dataset.title;
+      let currentIframe:HTMLIFrameElement | null = null;
+
+      const getStartTime = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get("t") || null;
+      };
+
+      const adjustIframeHeight =( iframe :HTMLIFrameElement ) => {
+        const width = iframe.offsetWidth;
+        const height = width * (9 / 16);
+        iframe.style.height = `${height}px`;
+      };
+
+      const embedVideo = (t:string) => {
+        const regex = /^(\d+)s$/;
+        const match = t?.match(regex);
+        const startTime = match && match[1] && parseInt(match[1]);
+        const videoContainer = document.getElementById("video-container");
+        if (currentIframe) {
+          videoContainer?.removeChild(currentIframe);
+        }
+        const iframe = document.createElement("iframe");
+        iframe.src = `${videoUrl}?autoplay=${typeof startTime === `number` ? 1 : 0}&loop=false&muted=false&preload=${typeof startTime === `number`}&responsive=true&t=${startTime || 0}`;
+        iframe.width = "100%";
+        iframe.style.aspectRatio = "16 / 9";
+        iframe.allowFullscreen = true;
+        iframe.title = title || `Video Embed`;
+        iframe.setAttribute("playsinline", "");
+        iframe.setAttribute("allow", "autoplay; fullscreen");
+        videoContainer?.appendChild(iframe);
+        currentIframe = iframe;
+        adjustIframeHeight(iframe);
+
+        if (typeof startTime === `number`) {
+          setTimeout(() => {
+            iframe.scrollIntoView({ behavior: "smooth", block: "center" });
+          }, 1000);
+        }
+
+        window.addEventListener("resize", () => adjustIframeHeight(iframe));
+      };
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+      const handleUpdateVideo = (event:any) => {
+        const { startTime } = event.detail;
+        console.log(startTime,event)
+        embedVideo(startTime);
+      };
+
+      document.addEventListener("DOMContentLoaded", () =>
+        embedVideo(getStartTime()||``)
+      );
+      document.addEventListener("updateVideo", handleUpdateVideo);
+    }
+  }
+  customElements.define("astro-bunny-video", AstroBunnyVideo);
+</script>

@@ -617,11 +617,6 @@ export type BeliefStore = {
   object?: string;
 };
 
-export type BunnyWatch = {
-  slug: string;
-  t: number;
-};
-
 export interface Current {
   id: string;
   slug: string;
