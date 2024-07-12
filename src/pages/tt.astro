@@ -98,6 +98,7 @@ function getOrCreateUlid(uuid: string): string {
   let existingUlid = uuidToUlidMap.get(uuid);
   if (!existingUlid) {
     existingUlid = ulid();
+    console.log(`new mapping ${uuid} -> ${existingUlid}`);
     uuidToUlidMap.set(uuid, existingUlid);
   }
   return existingUlid;
@@ -457,7 +458,8 @@ try {
       CREATE TABLE IF NOT EXISTS storyfragment_pane (
         id TEXT PRIMARY KEY,
         storyfragment_id TEXT NOT NULL REFERENCES storyfragment(id),
-        pane_id TEXT NOT NULL REFERENCES pane(id)
+        pane_id TEXT NOT NULL REFERENCES pane(id),
+        weight INTEGER NOT NULL
       )
     `);
 
@@ -601,12 +603,14 @@ try {
   }
 
   for (const storyfragmentPane of storyfragmentsPanesData) {
+    let weight = 1;
     for (const paneId of storyfragmentPane.paneIds) {
       const thisUlid = ulid();
       await turso.execute({
-        sql: "INSERT INTO storyfragment_pane (id,storyfragment_id,pane_id) VALUES (?,?,?)",
-        args: [thisUlid, storyfragmentPane.id, paneId],
+        sql: "INSERT INTO storyfragment_pane (id, storyfragment_id, pane_id, weight) VALUES (?, ?, ?, ?)",
+        args: [thisUlid, storyfragmentPane.id, paneId, weight],
       });
+      weight++;
     }
   }
 } catch (error) {
