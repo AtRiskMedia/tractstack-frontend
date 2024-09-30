@@ -374,6 +374,7 @@ try {
       CREATE TABLE IF NOT EXISTS file (
         id TEXT PRIMARY KEY,
         filename TEXT NOT NULL,
+        alt_description TEXT NOT NULL,
         url TEXT NOT NULL
       )
     `);
@@ -469,8 +470,8 @@ try {
 
   for (const file of filesData) {
     await turso.execute({
-      sql: "INSERT INTO file (id,filename,url) VALUES (?,?,?)",
-      args: [file.id, file.filename, file.url],
+      sql: "INSERT INTO file (id,filename,url,alt_description) VALUES (?,?,?,?)",
+      args: [file.id, file.filename, file.url, file.filename],
     });
   }
 
