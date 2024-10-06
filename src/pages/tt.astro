@@ -452,6 +452,7 @@ try {
       CREATE TABLE IF NOT EXISTS file (
         id TEXT PRIMARY KEY,
         filename TEXT NOT NULL,
+        alt_description TEXT NOT NULL,
         url TEXT NOT NULL
       )
     `);
