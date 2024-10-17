@@ -118,6 +118,7 @@ const uuidToUlidMap = new Map<string, string>([
   ["243f4776-bd43-4e06-90d6-a068c973ecf4", "01J24GZ8Q9WT6Y9SKMRFBST5TY"],
   ["e4f20214-f843-4781-9855-86bda4bd642a", "01J24GZ8Q918N8VJMFE26CRZPY"],
   ["5ab42ffb-1643-4e51-8045-72d79bfddbb9", "01J24GZ8Q9R8NAW53VTDX6NXYG"],
+  ["1aec9691-7ef8-4d45-82c1-48ef93f046d5", "01J9KY4ZG8DEHB3NW2HDHTF8E0"],
 ]);
 
 function getOrCreateUlid(uuid: string): string {
@@ -322,6 +323,7 @@ const filesData = files.map(s => {
     filename: s.filename,
     alt_description: s.filename,
     url: `/custom/images/${formattedDate}/${s.filename}`,
+    src_set: false,
   };
 });
 //console.log(filesData);
@@ -432,7 +434,8 @@ try {
         id TEXT PRIMARY KEY,
         filename TEXT NOT NULL,
         alt_description TEXT NOT NULL,
-        url TEXT NOT NULL
+        url TEXT NOT NULL,
+        src_set BOOLEAN DEFAULT false
       )
     `);
 
@@ -527,8 +530,8 @@ try {
 
   for (const file of filesData) {
     await turso.execute({
-      sql: "INSERT INTO file (id,filename,alt_description,url) VALUES (?,?,?,?)",
-      args: [file.id, file.filename, file.alt_description, file.url],
+    sql: "INSERT INTO file (id,filename,alt_description,url,src_set) VALUES (?,?,?,?,?)",
+    args: [file.id, file.filename, file.alt_description, file.url, file.src_set],
     });
   }
 
